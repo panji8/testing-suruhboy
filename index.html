@@ -466,7 +466,7 @@
         .adhoc-cards {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px; /* DIKECILKAN DARI 25px */
             margin-top: 30px;
         }
         
@@ -478,16 +478,16 @@
             transition: all 0.3s ease;
             display: flex;
             border-left: 5px solid var(--secondary);
-            height: 200px;
+            height: 160px; /* DIKECILKAN DARI 200px */
         }
         
         .adhoc-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px); /* DIKECILKAN DARI -5px */
             box-shadow: 0 12px 30px rgba(10, 34, 105, 0.15);
         }
         
         .adhoc-image {
-            width: 250px;
+            width: 180px; /* DIKECILKAN DARI 250px */
             height: 100%;
             background: var(--light);
             display: flex;
@@ -500,13 +500,13 @@
         }
         
         .adhoc-image i {
-            font-size: 60px;
+            font-size: 48px; /* DIKECILKAN DARI 60px */
             opacity: 0.5;
             z-index: 1;
         }
         
         .adhoc-content {
-            padding: 30px;
+            padding: 20px; /* DIKECILKAN DARI 30px */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -514,18 +514,18 @@
         }
         
         .adhoc-title {
-            font-size: 24px;
+            font-size: 20px; /* DIKECILKAN DARI 24px */
             color: var(--primary);
-            margin-bottom: 12px;
+            margin-bottom: 8px; /* DIKECILKAN DARI 12px */
             font-weight: 700;
             line-height: 1.3;
         }
         
         .adhoc-desc {
-            font-size: 15px;
+            font-size: 14px; /* DIKECILKAN DARI 15px */
             color: var(--dark);
-            line-height: 1.6;
-            margin-bottom: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px; /* DIKECILKAN DARI 15px */
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -533,11 +533,11 @@
         }
         
         .adhoc-price {
-            font-size: 20px;
+            font-size: 18px; /* DIKECILKAN DARI 20px */
             color: var(--secondary);
             font-weight: 700;
             margin-top: auto;
-            padding-top: 15px;
+            padding-top: 12px; /* DIKECILKAN DARI 15px */
             border-top: 1px solid var(--light);
         }
         
@@ -595,7 +595,7 @@
         .services-detail-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px; /* INI DIPERBESAR DARI 30px JADI 40px */
+            gap: 40px;
             margin-top: 50px;
         }
         
@@ -614,7 +614,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 25px; /* INI DIPERBESAR DARI 20px JADI 25px */
+            margin-bottom: 25px;
         }
         
         .testimonial-avatar {
@@ -642,11 +642,11 @@
             color: var(--secondary);
             font-size: 14px;
             display: flex;
-            gap: 3px; /* TAMBAH SPACING ANTAR BINTANG */
+            gap: 3px;
         }
         
         .testimonial-rating i {
-            margin-right: 2px; /* TAMBAH SPACING ANTAR BINTANG */
+            margin-right: 2px;
         }
         
         .testimonial-text {
@@ -656,9 +656,9 @@
             line-height: 1.6;
             position: relative;
             padding-left: 20px;
-            margin-top: 15px; /* TAMBAH MARGIN ATAS */
-            padding-top: 10px; /* TAMBAH PADDING ATAS */
-            border-top: 1px solid rgba(10, 34, 105, 0.05); /* TAMBAH BORDER ATAS */
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(10, 34, 105, 0.05);
         }
         
         .testimonial-text::before {
@@ -976,22 +976,37 @@
                 padding: 60px 0;
             }
             
+            /* PERUBAHAN: Mobile tetap gambar di kiri, tulisan di kanan */
             .adhoc-card {
-                flex-direction: column;
-                height: auto;
+                height: 140px; /* LEBIH RENDAH UNTUK MOBILE */
             }
             
             .adhoc-image {
-                width: 100%;
-                height: 180px;
+                width: 120px; /* LEBIH KECIL UNTUK MOBILE */
+                height: 100%;
+            }
+            
+            .adhoc-image i {
+                font-size: 36px; /* LEBIH KECIL UNTUK MOBILE */
             }
             
             .adhoc-content {
-                padding: 25px;
+                padding: 15px; /* LEBIH KECIL UNTUK MOBILE */
             }
             
             .adhoc-title {
-                font-size: 22px;
+                font-size: 18px; /* LEBIH KECIL UNTUK MOBILE */
+                margin-bottom: 6px;
+            }
+            
+            .adhoc-desc {
+                font-size: 13px; /* LEBIH KECIL UNTUK MOBILE */
+                -webkit-line-clamp: 2; /* KURANGI BARIS UNTUK MOBILE */
+            }
+            
+            .adhoc-price {
+                font-size: 16px; /* LEBIH KECIL UNTUK MOBILE */
+                padding-top: 10px;
             }
             
             .testimonial-card {
@@ -1000,7 +1015,7 @@
             
             .services-detail-grid {
                 grid-template-columns: 1fr;
-                gap: 30px; /* KURANGI SEDIKIT UNTUK MOBILE */
+                gap: 30px;
             }
             
             .about-stats {
@@ -1064,30 +1079,38 @@
                 font-size: 7px;
             }
             
+            /* PERUBAHAN: Untuk layar sangat kecil, tetap gambar di kiri */
+            .adhoc-card {
+                height: 130px; /* LEBIH RENDAH LAGI */
+            }
+            
             .adhoc-image {
-                height: 150px;
+                width: 100px; /* LEBIH KECIL LAGI */
+            }
+            
+            .adhoc-image i {
+                font-size: 32px; /* LEBIH KECIL LAGI */
             }
             
             .adhoc-content {
-                padding: 20px;
+                padding: 12px; /* LEBIH KECIL LAGI */
             }
             
             .adhoc-title {
-                font-size: 20px;
-                margin-bottom: 10px;
+                font-size: 16px; /* LEBIH KECIL LAGI */
             }
             
             .adhoc-desc {
-                font-size: 14px;
+                font-size: 12px; /* LEBIH KECIL LAGI */
                 -webkit-line-clamp: 2;
             }
             
             .adhoc-price {
-                font-size: 18px;
+                font-size: 15px; /* LEBIH KECIL LAGI */
             }
             
             .services-detail-grid {
-                gap: 25px; /* KURANGI LAGI UNTUK SCREEN KECIL */
+                gap: 25px;
             }
         }
         
@@ -1275,8 +1298,6 @@
                     <div class="service-app-desc">Lihat semua</div>
                 </div>
             </div>
-            
-            <!-- TOMBOL INI SUDAH DIHAPUS -->
             
         </div>
     </section>
