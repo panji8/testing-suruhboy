@@ -1,199 +1,1245 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>SuruhBoy – Estimasi Biaya</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --blue:#15348f;
-  --orange:#ff8c00;
-  --bg:#f4f6fb;
-}
-*{box-sizing:border-box;font-family:system-ui,sans-serif}
-body{margin:0;background:var(--bg);padding:16px}
-.container{max-width:420px;margin:auto}
-h1{color:var(--blue);font-size:22px;margin-bottom:4px}
-.sub{font-size:13px;color:#555;margin-bottom:16px}
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:14px;
-  box-shadow:0 6px 16px rgba(0,0,0,.06)
-}
-.card h3{margin:0 0 12px;font-size:15px;color:var(--blue)}
-.services{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.service{
-  border:2px solid #e0e4f3;
-  border-radius:12px;
-  padding:10px;
-  font-size:13px;
-  text-align:center;
-  cursor:pointer
-}
-.service.active{
-  border-color:var(--blue);
-  background:#eef2ff;
-  font-weight:600
-}
-label{font-size:13px;color:#444}
-input,select{
-  width:100%;
-  padding:12px;
-  font-size:14px;
-  border-radius:10px;
-  border:1.5px solid #ddd;
-  margin-top:6px
-}
-.estimate{text-align:center}
-.price{font-size:24px;font-weight:700;color:var(--blue);margin:8px 0}
-.note{font-size:12px;color:#666}
-.cta{position:sticky;bottom:12px}
-.cta button{
-  width:100%;
-  padding:14px;
-  font-size:16px;
-  border:none;
-  border-radius:14px;
-  background:var(--orange);
-  color:#fff;
-  font-weight:700
-}
-.hidden{display:none}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuruhBoy - Cek Ongkir & Estimasi Biaya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2269;
+            --secondary: #fe7f2d;
+            --light: #e4eef0;
+            --dark: #0a1a4d;
+            --white: #ffffff;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        /* Navigation - Mobile First */
+        .calc-navbar {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(10, 34, 105, 0.2);
+        }
+        
+        .nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+            font-size: 22px;
+        }
+        
+        .back-button {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        
+        .back-button i {
+            font-size: 14px;
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        /* Calculator Container */
+        .calculator-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(10, 34, 105, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a3a8c 100%);
+            color: var(--white);
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .logo-large {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .logo-large i {
+            color: var(--secondary);
+            font-size: 26px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--light);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary);
+        }
+        
+        /* Services Grid - Mobile Optimized */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        @media (min-width: 480px) {
+            .services-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .services-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .service-item {
+            background: var(--white);
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+        }
+        
+        .service-item:hover {
+            border-color: var(--primary);
+        }
+        
+        .service-item.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+        
+        .service-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        /* Input Sections - Mobile Optimized */
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--primary);
+            font-size: 15px;
+        }
+        
+        input[type="number"], 
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--light);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: var(--white);
+            color: var(--dark);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="number"]:focus, 
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10, 34, 105, 0.1);
+        }
+        
+        .example {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--light), transparent);
+            margin: 24px 0;
+        }
+        
+        /* Estimation Section - Mobile Optimized */
+        .estimation-section {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--light) 0%, #e8f4f7 100%);
+            border-radius: 16px;
+            border: 2px solid rgba(10, 34, 105, 0.1);
+        }
+        
+        .estimation-label {
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .estimation-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 12px 0;
+            word-break: break-all;
+            padding: 0 10px;
+        }
+        
+        @media (min-width: 480px) {
+            .estimation-amount {
+                font-size: 36px;
+            }
+        }
+        
+        .estimation-amount span {
+            color: var(--secondary);
+        }
+        
+        .breakdown {
+            margin-top: 16px;
+            text-align: left;
+            background: var(--white);
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary);
+            font-size: 14px;
+        }
+        
+        .breakdown-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--light);
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .breakdown-label {
+            color: var(--dark);
+            flex: 1;
+            padding-right: 10px;
+        }
+        
+        .breakdown-value {
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        
+        .disclaimer {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.4;
+            margin-top: 16px;
+        }
+        
+        /* Chat Button - Mobile Optimized */
+        .chat-button {
+            background: linear-gradient(135deg, var(--secondary) 0%, #ff6a00 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(254, 127, 45, 0.2);
+            touch-action: manipulation;
+        }
+        
+        .chat-button:active {
+            transform: scale(0.98);
+        }
+        
+        .chat-button i {
+            font-size: 18px;
+        }
+        
+        /* Direct Chat Section (untuk Jasa Lainnya) */
+        .direct-chat-section {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--light) 0%, #e8f4f7 100%);
+            border-radius: 16px;
+            border: 2px dashed var(--secondary);
+        }
+        
+        .direct-chat-icon {
+            font-size: 48px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .direct-chat-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .direct-chat-text {
+            font-size: 15px;
+            color: var(--dark);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .direct-chat-button {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a3a8c 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            padding: 18px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(10, 34, 105, 0.2);
+        }
+        
+        .direct-chat-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(10, 34, 105, 0.3);
+        }
+        
+        /* Info Panel - Mobile Optimized */
+        .info-panel {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(10, 34, 105, 0.1);
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 1024px) {
+            .main-container {
+                display: flex;
+                gap: 30px;
+                max-width: 1200px;
+                padding: 30px;
+            }
+            
+            .calculator-container {
+                flex: 1;
+                margin-bottom: 0;
+            }
+            
+            .info-panel {
+                width: 320px;
+                margin-top: 0;
+                align-self: flex-start;
+                position: sticky;
+                top: 100px;
+            }
+        }
+        
+        .info-title {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-title i {
+            color: var(--secondary);
+        }
+        
+        .price-guide {
+            margin-top: 20px;
+        }
+        
+        .price-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .price-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .price-category {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+        
+        .price-details {
+            font-size: 13px;
+            color: var(--dark);
+            padding-left: 24px;
+        }
+        
+        .price-details li {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        
+        /* Footer */
+        .calc-footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px 16px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .calc-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Mobile Specific Fixes */
+        @media (max-width: 374px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-item {
+                font-size: 12px;
+                padding: 12px 6px;
+            }
+        }
+        
+        /* Prevent zoom on input focus on iOS */
+        @media (max-width: 768px) {
+            input[type="number"],
+            select {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Better touch targets */
+        button, 
+        .service-item, 
+        .back-button {
+            min-height: 44px;
+        }
+        
+        /* iOS Safari specific */
+        @supports (-webkit-touch-callout: none) {
+            .chat-button,
+            .direct-chat-button {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
+    <!-- Navigation -->
+    <nav class="calc-navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-running"></i>
+                <span>SuruhBoy</span>
+            </div>
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                <span class="back-text">Beranda</span>
+            </a>
+        </div>
+    </nav>
 
-<h1>SuruhBoy – Estimasi Biaya</h1>
-<div class="sub">Cek perkiraan biaya sebelum chat admin</div>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Calculator -->
+        <div class="calculator-container">
+            <div class="header">
+                <div class="logo-large">
+                    <i class="fas fa-calculator"></i>
+                    <span>Estimasi Biaya</span>
+                </div>
+                <div class="subtitle">Cek perkiraan biaya sebelum chat admin</div>
+            </div>
+            
+            <div class="content">
+                <h3 class="section-title">Pilih Layanan</h3>
+                
+                <div class="services-grid" id="servicesGrid"></div>
+                
+                <div class="input-section">
+                    <div class="input-group" id="distanceGroup">
+                        <label class="input-label">Jarak (KM)</label>
+                        <input type="number" id="distanceInput" placeholder="Contoh: 7" min="0" max="100" step="0.1">
+                        <div class="example">Contoh: 7 KM = Rp 14.000</div>
+                    </div>
+                    
+                    <div class="input-group hidden" id="durationGroup">
+                        <label class="input-label">Durasi (Jam)</label>
+                        <input type="number" id="durationInput" placeholder="Contoh: 2" min="0.5" max="24" step="0.5">
+                        <div class="example">Contoh: 2 jam (minimal 0.5 jam)</div>
+                    </div>
+                    
+                    <div class="input-group hidden" id="workersGroup">
+                        <label class="input-label">Jumlah Pekerja</label>
+                        <select id="workersInput">
+                            <option value="1">1 orang</option>
+                            <option value="2">2 orang</option>
+                            <option value="3">3 orang</option>
+                            <option value="4">4 orang</option>
+                            <option value="5">5 orang</option>
+                        </select>
+                        <div class="example">Pilih jumlah pekerja</div>
+                    </div>
+                </div>
+                
+                <!-- Section untuk layanan normal (estimasi biaya) -->
+                <div id="estimationContainer">
+                    <div class="divider" id="normalDivider"></div>
+                    
+                    <div class="estimation-section" id="normalEstimation">
+                        <div class="estimation-label">Estimasi Biaya</div>
+                        <div class="estimation-amount" id="estimatedAmount">Rp <span>–</span></div>
+                        
+                        <div class="breakdown hidden" id="breakdown"></div>
+                        
+                        <p class="disclaimer">
+                            *Ini hanya estimasi. Harga final ditentukan admin berdasarkan kondisi aktual.
+                        </p>
+                    </div>
+                    
+                    <button class="chat-button" id="chatButton">
+                        <i class="fas fa-comment-alt"></i>
+                        Chat Admin Sekarang
+                    </button>
+                </div>
+                
+                <!-- Section untuk Jasa Lainnya (tanpa estimasi) -->
+                <div class="hidden" id="directChatContainer">
+                    <div class="direct-chat-section">
+                        <div class="direct-chat-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="direct-chat-title">Layanan Khusus</div>
+                        <div class="direct-chat-text">
+                            Untuk jasa khusus seperti asisten pribadi, pembantu rumah tangga, 
+                            reparasi, atau layanan lainnya yang tidak termasuk dalam daftar standar, 
+                            silakan langsung konsultasi dengan admin kami.
+                        </div>
+                        <button class="direct-chat-button" id="directChatButton">
+                            <i class="fab fa-whatsapp"></i>
+                            Konsultasi via WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h3 class="info-title">
+                <i class="fas fa-info-circle"></i>
+                Panduan Harga
+            </h3>
+            
+            <div class="price-guide">
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-motorcycle"></i>
+                        Deliv Makan/Barang/Antar Orang
+                    </div>
+                    <ul class="price-details">
+                        <li>≤5 KM = Rp 10.000</li>
+                        <li>Setiap +1 KM = +Rp 2.000</li>
+                        <li>Contoh: 7 KM = Rp 14.000</li>
+                        <li>Contoh: 10 KM = Rp 20.000</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-shopping-cart"></i>
+                        Belanja Titip
+                    </div>
+                    <ul class="price-details">
+                        <li>Sama seperti deliv di atas</li>
+                        <li>+ Biaya jasa Rp 5.000</li>
+                        <li>Contoh: 7 KM = Rp 19.000</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-user-friends"></i>
+                        Jasa Nemenin
+                    </div>
+                    <ul class="price-details">
+                        <li>Rp 15.000 per jam</li>
+                        <li>Minimal 1 jam</li>
+                        <li>Contoh: 2 jam = Rp 30.000</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-heartbeat"></i>
+                        Caregiver
+                    </div>
+                    <ul class="price-details">
+                        <li>Rp 100.000 per 8 jam (paket)</li>
+                        <li>Rp 12.500 per jam (reguler)</li>
+                        <li>Dibawah 4 jam tetap boleh, dihitung per jam</li>
+                        <li>Contoh: 3 jam = Rp 37.500</li>
+                        <li>Contoh: 8 jam = Rp 100.000 (paket)</li>
+                        <li>Contoh: 10 jam = Rp 125.000 (paket + 2 jam tambahan)</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-broom"></i>
+                        Bersih-bersih & Jasa Tukang
+                    </div>
+                    <ul class="price-details">
+                        <li>1 orang = Rp 40.000/jam</li>
+                        <li>>1 orang = Rp 30.000/jam per orang</li>
+                        <li>Contoh: 2 orang 3 jam = Rp 180.000</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-search"></i>
+                        Jasa Intel
+                    </div>
+                    <ul class="price-details">
+                        <li>Rp 25.000 per jam</li>
+                        <li>Start dari 1 jam</li>
+                        <li>Contoh: 4 jam = Rp 100.000</li>
+                    </ul>
+                </div>
+                
+                <div class="price-item">
+                    <div class="price-category">
+                        <i class="fas fa-ellipsis-h"></i>
+                        Jasa Lainnya
+                    </div>
+                    <ul class="price-details">
+                        <li>Asisten pribadi</li>
+                        <li>Pembantu rumah tangga</li>
+                        <li>Jasa reparasi</li>
+                        <li>Layanan khusus lainnya</li>
+                        <li><em>Langsung konsultasi dengan admin</em></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- PILIH LAYANAN -->
-<div class="card">
-<h3>Pilih Layanan</h3>
-<div class="services" id="services">
-  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Deliv Makan</div>
-  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Deliv Barang</div>
-  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Antar Orang</div>
-  <div class="service" data-type="km" data-flat="10000" data-rate="2000" data-addon="5000">Belanja Titip</div>
+    <!-- Footer -->
+    <div class="calc-footer">
+        <p>&copy; 2024 SuruhBoy</p>
+        <a href="index.html">Kembali ke Beranda</a>
+    </div>
 
-  <div class="service" data-type="jam" data-rate="15000">Jasa Nemenin</div>
-  <div class="service" data-type="jam" data-rate="40000" data-multi="true">Bersih-bersih</div>
-  <div class="service" data-type="jam" data-rate="40000" data-multi="true">Jasa Tukang</div>
-  <div class="service" data-type="jam" data-rate="25000">Jasa Intel</div>
-</div>
-</div>
-
-<!-- INPUT DINAMIS -->
-<div class="card">
-<h3 id="inputTitle">Input</h3>
-
-<div id="unitWrap">
-  <label id="unitLabel">Jarak (KM)</label>
-  <input type="number" id="unitValue" placeholder="Contoh: 5" min="0">
-</div>
-
-<div id="peopleWrap" class="hidden">
-  <label>Jumlah Orang</label>
-  <select id="people">
-    <option value="1">1 Orang</option>
-    <option value="2">2 Orang</option>
-    <option value="3">3 Orang</option>
-  </select>
-</div>
-</div>
-
-<!-- ESTIMASI -->
-<div class="card estimate">
-<h3>Estimasi Biaya</h3>
-<div class="price" id="result">Rp –</div>
-<div class="note">Ini hanya estimasi. Harga final ditentukan admin.</div>
-</div>
-
-<!-- CTA -->
-<div class="cta">
-<button onclick="chatAdmin()">Chat Admin Sekarang</button>
-</div>
-
-</div>
-
-<script>
-let selected=null;
-const services=document.querySelectorAll('.service');
-const unitValue=document.getElementById('unitValue');
-const unitLabel=document.getElementById('unitLabel');
-const inputTitle=document.getElementById('inputTitle');
-const peopleWrap=document.getElementById('peopleWrap');
-const people=document.getElementById('people');
-const result=document.getElementById('result');
-
-services.forEach(s=>{
-  s.onclick=()=>{
-    services.forEach(x=>x.classList.remove('active'));
-    s.classList.add('active');
-    selected=s;
-    setupInput();
-    calculate();
-  }
-});
-
-unitValue.oninput=calculate;
-people.onchange=calculate;
-
-function setupInput(){
-  const type=selected.dataset.type;
-  peopleWrap.classList.add('hidden');
-
-  if(type==="km"){
-    inputTitle.innerText="Jarak Tempuh";
-    unitLabel.innerText="Jarak (KM)";
-    unitValue.placeholder="Contoh: 5";
-  }else{
-    inputTitle.innerText="Durasi";
-    unitLabel.innerText="Durasi (Jam)";
-    unitValue.placeholder="Contoh: 2";
-    if(selected.dataset.multi){
-      peopleWrap.classList.remove('hidden');
-    }
-  }
-}
-
-function calculate(){
-  if(!selected) return;
-  const val=Number(unitValue.value);
-  if(!val || val<=0){result.innerText="Rp –";return;}
-
-  let total=0;
-  const type=selected.dataset.type;
-
-  if(type==="km"){
-    const flat=Number(selected.dataset.flat);
-    const rate=Number(selected.dataset.rate);
-    total = val<=5 ? flat : val*rate;
-    if(selected.dataset.addon){
-      total+=Number(selected.dataset.addon);
-    }
-  }else{
-    const rate=Number(selected.dataset.rate);
-    const ppl=selected.dataset.multi ? Number(people.value) : 1;
-    total = rate * ppl * val;
-  }
-
-  result.innerText="Rp "+total.toLocaleString("id-ID");
-}
-
-function chatAdmin(){
-  if(!selected||!unitValue.value){
-    alert("Lengkapi data terlebih dahulu");
-    return;
-  }
-  const msg=`Halo Admin, saya mau order ${selected.innerText} dengan ${unitLabel.innerText} ${unitValue.value}.`;
-  window.open("https://wa.me/62XXXXXXXXXX?text="+encodeURIComponent(msg),"_blank");
-}
-</script>
-
+    <script>
+        const services = [
+            "Deliv Makan",
+            "Deliv Barang", 
+            "Antar Orang",
+            "Belanja Titip",
+            "Jasa Nemenin",
+            "Caregiver",
+            "Bersih-bersih",
+            "Jasa Tukang",
+            "Jasa Intel",
+            "Jasa Lainnya"
+        ];
+        
+        const serviceCategories = {
+            "transport": ["Deliv Makan", "Deliv Barang", "Antar Orang"],
+            "belanja": ["Belanja Titip"],
+            "perjam_15rb": ["Jasa Nemenin"],
+            "caregiver": ["Caregiver"],
+            "perjam_pekerja": ["Bersih-bersih", "Jasa Tukang"],
+            "perjam_25rb": ["Jasa Intel"],
+            "direct_wa": ["Jasa Lainnya"]
+        };
+        
+        const priceConfig = {
+            base_transport: 10000,
+            additional_per_km: 2000,
+            belanja_fee: 5000,
+            perjam_15rb: 15000,
+            caregiver_paket: 100000,
+            caregiver_perjam: 12500,
+            perjam_single: 40000,
+            perjam_multiple: 30000,
+            perjam_25rb: 25000
+        };
+        
+        const servicesGrid = document.getElementById('servicesGrid');
+        const distanceInput = document.getElementById('distanceInput');
+        const durationInput = document.getElementById('durationInput');
+        const workersInput = document.getElementById('workersInput');
+        const estimatedAmount = document.getElementById('estimatedAmount');
+        const breakdown = document.getElementById('breakdown');
+        const chatButton = document.getElementById('chatButton');
+        const directChatButton = document.getElementById('directChatButton');
+        
+        const distanceGroup = document.getElementById('distanceGroup');
+        const durationGroup = document.getElementById('durationGroup');
+        const workersGroup = document.getElementById('workersGroup');
+        
+        const estimationContainer = document.getElementById('estimationContainer');
+        const directChatContainer = document.getElementById('directChatContainer');
+        const normalDivider = document.getElementById('normalDivider');
+        const normalEstimation = document.getElementById('normalEstimation');
+        
+        let selectedService = null;
+        
+        // Populate services
+        services.forEach(service => {
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.textContent = service;
+            serviceItem.addEventListener('click', () => {
+                selectService(service);
+            });
+            serviceItem.addEventListener('touchstart', () => {
+                serviceItem.style.opacity = '0.7';
+            });
+            serviceItem.addEventListener('touchend', () => {
+                serviceItem.style.opacity = '1';
+            });
+            servicesGrid.appendChild(serviceItem);
+        });
+        
+        function selectService(service) {
+            document.querySelectorAll('.service-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            selectedService = service;
+            
+            showRelevantInputs(service);
+            updateEstimation();
+            
+            // Tampilkan section yang sesuai
+            if (serviceCategories.direct_wa.includes(service)) {
+                // Untuk Jasa Lainnya: tampilkan direct chat, sembunyikan estimasi
+                estimationContainer.classList.add('hidden');
+                directChatContainer.classList.remove('hidden');
+            } else {
+                // Untuk layanan lainnya: tampilkan estimasi, sembunyikan direct chat
+                estimationContainer.classList.remove('hidden');
+                directChatContainer.classList.add('hidden');
+            }
+        }
+        
+        function showRelevantInputs(service) {
+            distanceInput.value = '';
+            durationInput.value = '';
+            workersInput.value = '1';
+            
+            distanceGroup.classList.add('hidden');
+            durationGroup.classList.add('hidden');
+            workersGroup.classList.add('hidden');
+            
+            if (serviceCategories.transport.includes(service) || 
+                serviceCategories.belanja.includes(service)) {
+                distanceGroup.classList.remove('hidden');
+            } else if (serviceCategories.perjam_15rb.includes(service) ||
+                      serviceCategories.perjam_25rb.includes(service) ||
+                      serviceCategories.caregiver.includes(service)) {
+                durationGroup.classList.remove('hidden');
+            } else if (serviceCategories.perjam_pekerja.includes(service)) {
+                durationGroup.classList.remove('hidden');
+                workersGroup.classList.remove('hidden');
+            }
+            
+            // For "Jasa Lainnya" - hide all inputs
+            if (serviceCategories.direct_wa.includes(service)) {
+                // Semua input disembunyikan
+            }
+            
+            // Scroll to input for better UX on mobile
+            setTimeout(() => {
+                if (distanceGroup.classList.contains('hidden') === false) {
+                    distanceInput.focus();
+                } else if (durationGroup.classList.contains('hidden') === false) {
+                    durationInput.focus();
+                }
+            }, 300);
+        }
+        
+        function calculateTransportPrice(distance) {
+            let details = [];
+            let total = 0;
+            
+            if (distance <= 5) {
+                total = priceConfig.base_transport;
+                details.push({
+                    label: "Biaya dasar (≤5 KM)",
+                    amount: priceConfig.base_transport
+                });
+            } else {
+                total = priceConfig.base_transport;
+                details.push({
+                    label: "Biaya dasar (5 KM pertama)",
+                    amount: priceConfig.base_transport
+                });
+                
+                const additionalKm = distance - 5;
+                const additionalCharges = additionalKm * priceConfig.additional_per_km;
+                total += additionalCharges;
+                
+                if (additionalCharges > 0) {
+                    details.push({
+                        label: `Tambahan ${additionalKm.toFixed(1)} KM @ Rp2.000/KM`,
+                        amount: additionalCharges
+                    });
+                }
+            }
+            
+            return { total, details };
+        }
+        
+        function calculateCaregiverPrice(duration) {
+            let details = [];
+            let total = 0;
+            
+            if (duration >= 8) {
+                // Paket 8 jam (Rp 100.000)
+                total = priceConfig.caregiver_paket;
+                details.push({
+                    label: "Paket 8 jam",
+                    amount: priceConfig.caregiver_paket
+                });
+                
+                // Jika lebih dari 8 jam
+                if (duration > 8) {
+                    const extraHours = Math.ceil(duration - 8);
+                    const extraCharges = extraHours * priceConfig.caregiver_perjam;
+                    total += extraCharges;
+                    details.push({
+                        label: `${extraHours} jam tambahan @ Rp12.500/jam`,
+                        amount: extraCharges
+                    });
+                }
+            } else {
+                // Reguler - per jam untuk durasi berapapun
+                const hours = Math.ceil(duration); // Pembulatan ke atas
+                total = hours * priceConfig.caregiver_perjam;
+                details.push({
+                    label: `${hours} jam @ Rp12.500/jam`,
+                    amount: total
+                });
+                
+                // Info tentang paket 8 jam jika durasi mendekati 8 jam
+                if (duration >= 6 && duration < 8) {
+                    details.push({
+                        label: "Tips: Paket 8 jam = Rp 100.000 (lebih hemat untuk ≥8 jam)",
+                        amount: 0,
+                        isTip: true
+                    });
+                }
+            }
+            
+            return { total, details };
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        function updateEstimation() {
+            if (!selectedService) return;
+            
+            // Jangan update estimasi untuk Jasa Lainnya
+            if (serviceCategories.direct_wa.includes(selectedService)) {
+                return;
+            }
+            
+            let total = 0;
+            let calculationDetails = [];
+            
+            const distance = parseFloat(distanceInput.value) || 0;
+            const duration = parseFloat(durationInput.value) || 0;
+            const workers = parseInt(workersInput.value) || 1;
+            
+            if (serviceCategories.transport.includes(selectedService)) {
+                if (distance > 0) {
+                    const transport = calculateTransportPrice(distance);
+                    total = transport.total;
+                    calculationDetails = transport.details;
+                }
+                
+            } else if (serviceCategories.belanja.includes(selectedService)) {
+                if (distance > 0) {
+                    const transport = calculateTransportPrice(distance);
+                    total = transport.total + priceConfig.belanja_fee;
+                    calculationDetails = transport.details;
+                    calculationDetails.push({
+                        label: "Biaya jasa belanja",
+                        amount: priceConfig.belanja_fee
+                    });
+                }
+                
+            } else if (serviceCategories.perjam_15rb.includes(selectedService)) {
+                if (duration > 0) {
+                    const hours = Math.ceil(duration);
+                    total = hours * priceConfig.perjam_15rb;
+                    calculationDetails.push({
+                        label: `${hours} jam @ ${formatCurrency(priceConfig.perjam_15rb)}/jam`,
+                        amount: total
+                    });
+                }
+                
+            } else if (serviceCategories.caregiver.includes(selectedService)) {
+                if (duration > 0) {
+                    const caregiver = calculateCaregiverPrice(duration);
+                    total = caregiver.total;
+                    calculationDetails = caregiver.details;
+                }
+                
+            } else if (serviceCategories.perjam_pekerja.includes(selectedService)) {
+                if (duration > 0 && workers > 0) {
+                    const hours = Math.ceil(duration);
+                    let ratePerWorker;
+                    if (workers === 1) {
+                        ratePerWorker = priceConfig.perjam_single;
+                    } else {
+                        ratePerWorker = priceConfig.perjam_multiple;
+                    }
+                    
+                    total = hours * workers * ratePerWorker;
+                    
+                    calculationDetails.push({
+                        label: `${hours} jam × ${workers} pekerja @ ${formatCurrency(ratePerWorker)}/jam`,
+                        amount: total
+                    });
+                }
+                
+            } else if (serviceCategories.perjam_25rb.includes(selectedService)) {
+                if (duration > 0) {
+                    const hours = Math.ceil(duration);
+                    total = hours * priceConfig.perjam_25rb;
+                    calculationDetails.push({
+                        label: `${hours} jam @ ${formatCurrency(priceConfig.perjam_25rb)}/jam`,
+                        amount: total
+                    });
+                }
+            }
+            
+            if (total > 0) {
+                const formatted = formatCurrency(total);
+                estimatedAmount.innerHTML = `Rp <span>${formatted.replace('Rp', '').trim()}</span>`;
+                
+                if (calculationDetails.length > 0) {
+                    breakdown.classList.remove('hidden');
+                    let breakdownHTML = '<div class="breakdown-title">Rincian Perhitungan:</div>';
+                    
+                    calculationDetails.forEach(detail => {
+                        if (detail.isTip) {
+                            breakdownHTML += `
+                                <div class="breakdown-item" style="border-bottom: none; padding-top: 10px; margin-top: 5px;">
+                                    <span class="breakdown-label" style="font-style: italic; color: var(--gray);">💡 ${detail.label}</span>
+                                    <span class="breakdown-value" style="color: var(--gray);">–</span>
+                                </div>
+                            `;
+                        } else {
+                            breakdownHTML += `
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">${detail.label}</span>
+                                    <span class="breakdown-value">${formatCurrency(detail.amount)}</span>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    breakdownHTML += `
+                        <div class="breakdown-item" style="border-top: 2px solid var(--secondary); padding-top: 10px; margin-top: 10px;">
+                            <span class="breakdown-label" style="font-weight: bold; color: var(--primary);">TOTAL ESTIMASI</span>
+                            <span class="breakdown-value" style="font-weight: bold; color: var(--secondary); font-size: 16px;">${formatCurrency(total)}</span>
+                        </div>
+                    `;
+                    
+                    breakdown.innerHTML = breakdownHTML;
+                }
+            } else {
+                estimatedAmount.innerHTML = 'Rp <span>–</span>';
+                breakdown.classList.add('hidden');
+            }
+        }
+        
+        // Event listeners for normal services
+        distanceInput.addEventListener('input', updateEstimation);
+        durationInput.addEventListener('input', updateEstimation);
+        workersInput.addEventListener('change', updateEstimation);
+        
+        // Prevent keyboard from covering input on mobile
+        distanceInput.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+        
+        durationInput.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+        
+        // Chat button for normal services
+        chatButton.addEventListener('click', function() {
+            if (!selectedService || serviceCategories.direct_wa.includes(selectedService)) {
+                return;
+            }
+            
+            const distance = parseFloat(distanceInput.value) || 0;
+            const duration = parseFloat(durationInput.value) || 0;
+            const workers = parseInt(workersInput.value) || 1;
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            if ((serviceCategories.transport.includes(selectedService) || 
+                 serviceCategories.belanja.includes(selectedService)) && 
+                (distance <= 0 || distance > 100)) {
+                isValid = false;
+                errorMessage = 'Silakan masukkan jarak yang valid (0.1-100 KM)';
+            }
+            
+            if ((serviceCategories.perjam_15rb.includes(selectedService) ||
+                 serviceCategories.perjam_25rb.includes(selectedService) ||
+                 serviceCategories.caregiver.includes(selectedService) ||
+                 serviceCategories.perjam_pekerja.includes(selectedService)) && 
+                (duration <= 0 || duration > 24)) {
+                isValid = false;
+                errorMessage = 'Silakan masukkan durasi yang valid (0.5-24 jam)';
+            }
+            
+            if (!isValid) {
+                alert(errorMessage);
+                return;
+            }
+            
+            // Mobile touch feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            
+            let message = `Halo Admin SuruhBoy! 👋\n\n`;
+            message += `Saya ingin menggunakan layanan: *${selectedService}*\n`;
+            
+            if (serviceCategories.transport.includes(selectedService) || 
+                serviceCategories.belanja.includes(selectedService)) {
+                message += `Jarak: ${distance} KM\n`;
+            }
+            
+            if (serviceCategories.perjam_15rb.includes(selectedService) ||
+                serviceCategories.perjam_25rb.includes(selectedService) ||
+                serviceCategories.caregiver.includes(selectedService)) {
+                message += `Durasi: ${duration} jam\n`;
+            }
+            
+            if (serviceCategories.perjam_pekerja.includes(selectedService)) {
+                message += `Durasi: ${duration} jam\n`;
+                message += `Jumlah pekerja: ${workers} orang\n`;
+            }
+            
+            message += `Estimasi biaya: *${estimatedAmount.textContent}*\n\n`;
+            message += `Apakah tersedia untuk waktu terdekat?`;
+            
+            const userConfirmed = confirm(`Mengarahkan ke WhatsApp...\n\n${message}\n\nLanjutkan?`);
+            
+            if (userConfirmed) {
+                const phoneNumber = "6281234567890";
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            }
+        });
+        
+        // Direct chat button for "Jasa Lainnya"
+        directChatButton.addEventListener('click', function() {
+            // Mobile touch feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            
+            const phoneNumber = "6281234567890";
+            let message = `Halo Admin SuruhBoy! 👋\n\n`;
+            message += `Saya ingin berkonsultasi tentang: *Jasa Lainnya*\n\n`;
+            message += `Bisa tanya-tanya dulu mengenai layanan yang saya butuhkan?`;
+            
+            const userConfirmed = confirm(`Mengarahkan ke WhatsApp...\n\n${message}\n\nLanjutkan?`);
+            
+            if (userConfirmed) {
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            }
+        });
+        
+        // Initialize
+        if (servicesGrid.firstChild) {
+            selectService(services[0]);
+        }
+        
+        // Handle mobile viewport height
+        function setVH() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setVH();
+        window.addEventListener('resize', setVH);
+        window.addEventListener('orientationchange', setVH);
+    </script>
 </body>
 </html>
