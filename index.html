@@ -447,9 +447,9 @@
             box-shadow: 0 6px 20px rgba(247, 107, 28, 0.25);
         }
         
-        .icon-medical { 
-            background: linear-gradient(135deg, #FF9A9E, #FAD0C4);
-            box-shadow: 0 6px 20px rgba(255, 154, 158, 0.25);
+        .icon-transport { 
+            background: linear-gradient(135deg, #1E90FF, #4169E1);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.25);
         }
         
         .icon-more { 
@@ -1219,88 +1219,89 @@
     </section>
 
     <!-- Main Services Section - App Style -->
-    <section id="services" class="services-section">
-        <div class="container">
-            <h2 class="section-title">Layanan Utama Kami</h2>
-            
-            <!-- Grid Layanan seperti Gojek/Shopee -->
-            <div class="services-main-grid">
-                <!-- Service 1 -->
-                <div class="service-app-item" data-service="food">
-                    <div class="app-icon icon-food">
-                        <i class="fas fa-utensils"></i>
-                        <span class="app-badge">Hot</span>
-                    </div>
-                    <div class="service-app-name">Antar Makanan</div>
-                    <div class="service-app-desc">Restoran favoritmu</div>
+    <!-- Main Services Section - App Style -->
+<section id="services" class="services-section">
+    <div class="container">
+        <h2 class="section-title">Layanan Utama Kami</h2>
+        
+        <!-- Grid Layanan seperti Gojek/Shopee -->
+        <div class="services-main-grid">
+            <!-- Service 1 -->
+            <div class="service-app-item" data-service="food">
+                <div class="app-icon icon-food">
+                    <i class="fas fa-utensils"></i>
+                    <span class="app-badge">Hot</span>
                 </div>
-                
-                <!-- Service 2 -->
-                <div class="service-app-item" data-service="delivery">
-                    <div class="app-icon icon-delivery">
-                        <i class="fas fa-shipping-fast"></i>
-                    </div>
-                    <div class="service-app-name">Kirim Barang</div>
-                    <div class="service-app-desc">Aman & terpercaya</div>
-                </div>
-                
-                <!-- Service 3 -->
-                <div class="service-app-item" data-service="shopping">
-                    <div class="app-icon icon-shopping">
-                        <i class="fas fa-shopping-basket"></i>
-                    </div>
-                    <div class="service-app-name">Titip Beli</div>
-                    <div class="service-app-desc">Belanja kebutuhan</div>
-                </div>
-                
-                <!-- Service 4 -->
-                <div class="service-app-item" data-service="document">
-                    <div class="app-icon icon-document">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
-                    <div class="service-app-name">Dokumen</div>
-                    <div class="service-app-desc">Urusan penting</div>
-                </div>
-                
-                <!-- Service 5 -->
-                <div class="service-app-item" data-service="cleaning">
-                    <div class="app-icon icon-cleaning">
-                        <i class="fas fa-broom"></i>
-                    </div>
-                    <div class="service-app-name">Kebersihan</div>
-                    <div class="service-app-desc">Bersihkan rumah</div>
-                </div>
-                
-                <!-- Service 6 -->
-                <div class="service-app-item" data-service="repair">
-                    <div class="app-icon icon-repair">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <div class="service-app-name">Perbaikan</div>
-                    <div class="service-app-desc">Perbaiki barang</div>
-                </div>
-                
-                <!-- Service 7 -->
-                <div class="service-app-item" data-service="medical">
-                    <div class="app-icon icon-medical">
-                        <i class="fas fa-first-aid"></i>
-                    </div>
-                    <div class="service-app-name">Kesehatan</div>
-                    <div class="service-app-desc">Obat & kesehatan</div>
-                </div>
-                
-                <!-- Service 8 - Layanan Lainnya (BARU) -->
-                <div class="service-app-item" data-service="more">
-                    <div class="app-icon icon-more">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </div>
-                    <div class="service-app-name">Layanan Lainnya</div>
-                    <div class="service-app-desc">Lihat semua</div>
-                </div>
+                <div class="service-app-name">Antar Makanan</div>
+                <div class="service-app-desc">Restoran favoritmu</div>
             </div>
             
+            <!-- Service 2 - ANTAR JEMPUT ORANG (BARU) -->
+            <div class="service-app-item" data-service="transport">
+                <div class="app-icon icon-transport">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="service-app-name">Antar Jemput</div>
+                <div class="service-app-desc">Orang & barang</div>
+            </div>
+            
+            <!-- Service 3 - KIRIM BARANG (Pindah dari posisi 2) -->
+            <div class="service-app-item" data-service="delivery">
+                <div class="app-icon icon-delivery">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="service-app-name">Kirim Barang</div>
+                <div class="service-app-desc">Aman & terpercaya</div>
+            </div>
+            
+            <!-- Service 4 -->
+            <div class="service-app-item" data-service="shopping">
+                <div class="app-icon icon-shopping">
+                    <i class="fas fa-shopping-basket"></i>
+                </div>
+                <div class="service-app-name">Titip Beli</div>
+                <div class="service-app-desc">Belanja kebutuhan</div>
+            </div>
+            
+            <!-- Service 5 -->
+            <div class="service-app-item" data-service="document">
+                <div class="app-icon icon-document">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="service-app-name">Dokumen</div>
+                <div class="service-app-desc">Urusan penting</div>
+            </div>
+            
+            <!-- Service 6 -->
+            <div class="service-app-item" data-service="cleaning">
+                <div class="app-icon icon-cleaning">
+                    <i class="fas fa-broom"></i>
+                </div>
+                <div class="service-app-name">Kebersihan</div>
+                <div class="service-app-desc">Bersihkan rumah</div>
+            </div>
+            
+            <!-- Service 7 -->
+            <div class="service-app-item" data-service="repair">
+                <div class="app-icon icon-repair">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="service-app-name">Perbaikan</div>
+                <div class="service-app-desc">Perbaiki barang</div>
+            </div>
+            
+            <!-- Service 8 - Layanan Lainnya -->
+            <div class="service-app-item" data-service="more">
+                <div class="app-icon icon-more">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="service-app-name">Layanan Lainnya</div>
+                <div class="service-app-desc">Lihat semua</div>
+            </div>
         </div>
-    </section>
+        
+    </div>
+</section>
 
     <!-- Layanan Ad Hoc Section -->
     <section id="adhoc" class="adhoc-section">
