@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semua Layanan SuruhBoy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2269;
+            --secondary: #fe7f2d;
+            --light: #e4eef0;
+            --dark: #0a1a4d;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --gray-light: #f8f9fa;
+            --red: #FF6B6B;
+            --blue: #36D1DC;
+            --green: #4CAF50;
+            --orange: #FF8E53;
+            --purple: #A78BFA;
+            --yellow: #FAD961;
+            --pink: #FF9A9E;
+            --cyan: #0ea5e9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary), #1a3a8c);
+            color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(10, 34, 105, 0.2);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            font-size: 40px;
+            color: var(--secondary);
+        }
+        
+        .logo h1 {
+            font-size: 36px;
+            font-weight: 800;
+        }
+        
+        .tagline {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            width: 100%;
+        }
+        
+        .search-box {
+            position: relative;
+            background: var(--white);
+            border-radius: 30px;
+            padding: 15px 25px;
+            box-shadow: 0 8px 25px rgba(10, 34, 105, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-box:focus-within {
+            border-color: var(--secondary);
+            box-shadow: 0 8px 25px rgba(254, 127, 45, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .search-box i {
+            color: var(--gray);
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        #searchInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: var(--dark);
+            background: transparent;
+        }
+        
+        #searchInput::placeholder {
+            color: var(--gray);
+            opacity: 0.7;
+        }
+        
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .clear-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .clear-btn:hover {
+            color: var(--secondary);
+            background: rgba(254, 127, 45, 0.1);
+        }
+        
+        .search-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+        
+        #resultCount {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(10, 34, 105, 0.08);
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+        
+        .search-tip {
+            font-size: 13px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .search-tip i {
+            color: var(--secondary);
+        }
+        
+        /* Grid Layout */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        /* Card Style */
+        .service-card {
+            background: linear-gradient(145deg, var(--white), #f0f3ff);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(10, 34, 105, 0.1);
+            border-left: 5px solid;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(10, 34, 105, 0.15);
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        /* Header Card */
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+        
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+        
+        .service-title {
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .service-subtitle {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        /* Deskripsi */
+        .service-desc {
+            font-size: 16px;
+            color: var(--dark);
+            line-height: 1.7;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: rgba(10, 34, 105, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid;
+            border-left-color: inherit;
+        }
+        
+        /* Features */
+        .service-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            background: rgba(10, 34, 105, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            background: rgba(10, 34, 105, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .feature-text {
+            font-size: 15px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        /* Badge */
+        .service-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+        }
+        
+        /* Warna untuk setiap layanan */
+        .card-food {
+            border-left-color: var(--red);
+        }
+        .card-food .service-icon {
+            background: linear-gradient(135deg, var(--red), var(--orange));
+        }
+        .card-food .service-desc {
+            border-left-color: var(--red);
+        }
+        .card-food .feature-icon {
+            background: var(--red);
+        }
+        .card-food .service-badge {
+            background: var(--red);
+        }
+        
+        .card-delivery {
+            border-left-color: var(--blue);
+        }
+        .card-delivery .service-icon {
+            background: linear-gradient(135deg, var(--blue), #5B86E5);
+        }
+        .card-delivery .service-desc {
+            border-left-color: var(--blue);
+        }
+        .card-delivery .feature-icon {
+            background: var(--blue);
+        }
+        .card-delivery .service-badge {
+            background: var(--blue);
+        }
+        
+        .card-people {
+            border-left-color: var(--green);
+        }
+        .card-people .service-icon {
+            background: linear-gradient(135deg, var(--green), #2E7D32);
+        }
+        .card-people .service-desc {
+            border-left-color: var(--green);
+        }
+        .card-people .feature-icon {
+            background: var(--green);
+        }
+        .card-people .service-badge {
+            background: var(--green);
+        }
+        
+        .card-shopping {
+            border-left-color: var(--orange);
+        }
+        .card-shopping .service-icon {
+            background: linear-gradient(135deg, var(--orange), #FF6B6B);
+        }
+        .card-shopping .service-desc {
+            border-left-color: var(--orange);
+        }
+        .card-shopping .feature-icon {
+            background: var(--orange);
+        }
+        .card-shopping .service-badge {
+            background: var(--orange);
+        }
+        
+        .card-companion {
+            border-left-color: var(--purple);
+        }
+        .card-companion .service-icon {
+            background: linear-gradient(135deg, var(--purple), #8B5CF6);
+        }
+        .card-companion .service-desc {
+            border-left-color: var(--purple);
+        }
+        .card-companion .feature-icon {
+            background: var(--purple);
+        }
+        .card-companion .service-badge {
+            background: var(--purple);
+        }
+        
+        .card-cleaning {
+            border-left-color: var(--cyan);
+        }
+        .card-cleaning .service-icon {
+            background: linear-gradient(135deg, var(--cyan), #0ea5e9);
+        }
+        .card-cleaning .service-desc {
+            border-left-color: var(--cyan);
+        }
+        .card-cleaning .feature-icon {
+            background: var(--cyan);
+        }
+        .card-cleaning .service-badge {
+            background: var(--cyan);
+        }
+        
+        .card-repair {
+            border-left-color: var(--yellow);
+        }
+        .card-repair .service-icon {
+            background: linear-gradient(135deg, var(--yellow), #F76B1C);
+        }
+        .card-repair .service-desc {
+            border-left-color: var(--yellow);
+        }
+        .card-repair .feature-icon {
+            background: var(--yellow);
+        }
+        .card-repair .service-badge {
+            background: var(--yellow);
+            color: var(--dark);
+        }
+        
+        .card-investigation {
+            border-left-color: #6B7280;
+        }
+        .card-investigation .service-icon {
+            background: linear-gradient(135deg, #6B7280, #374151);
+        }
+        .card-investigation .service-desc {
+            border-left-color: #6B7280;
+        }
+        .card-investigation .feature-icon {
+            background: #6B7280;
+        }
+        .card-investigation .service-badge {
+            background: #6B7280;
+        }
+        
+        .card-caregiver {
+            border-left-color: var(--pink);
+        }
+        .card-caregiver .service-icon {
+            background: linear-gradient(135deg, var(--pink), #FAD0C4);
+        }
+        .card-caregiver .service-desc {
+            border-left-color: var(--pink);
+        }
+        .card-caregiver .feature-icon {
+            background: var(--pink);
+        }
+        .card-caregiver .service-badge {
+            background: var(--pink);
+        }
+        
+        .card-other {
+            border-left-color: #9D50BB;
+        }
+        .card-other .service-icon {
+            background: linear-gradient(135deg, #9D50BB, #6E48AA);
+        }
+        .card-other .service-desc {
+            border-left-color: #9D50BB;
+        }
+        .card-other .feature-icon {
+            background: #9D50BB;
+        }
+        .card-other .service-badge {
+            background: #9D50BB;
+        }
+        
+        /* Tombol */
+        .service-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            justify-content: center;
+            color: white;
+            background: var(--primary);
+        }
+        
+        .service-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(10, 34, 105, 0.2);
+            background: #1a3a8c;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .service-card {
+                padding: 25px 20px;
+            }
+            
+            .service-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .service-title {
+                font-size: 22px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .logo h1 {
+                font-size: 28px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+            }
+            
+            /* Responsive Search */
+            .search-container {
+                margin-bottom: 30px;
+            }
+            
+            .search-box {
+                padding: 12px 20px;
+            }
+            
+            .search-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .service-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .service-icon {
+                margin: 0 auto;
+            }
+            
+            .service-desc {
+                font-size: 15px;
+                padding: 12px;
+            }
+            
+            .feature-item {
+                padding: 8px 12px;
+            }
+            
+            .feature-text {
+                font-size: 14px;
+            }
+            
+            /* Responsive Search */
+            .search-box {
+                padding: 10px 15px;
+            }
+            
+            #searchInput::placeholder {
+                font-size: 14px;
+            }
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 20px;
+            margin-top: 50px;
+        }
+        
+        .footer p {
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        /* No Results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(10, 34, 105, 0.1);
+        }
+        
+        .no-results i {
+            font-size: 60px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .no-results h3 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .no-results p {
+            color: var(--gray);
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+        
+        .suggestion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .suggestion-tag {
+            padding: 8px 16px;
+            background: rgba(10, 34, 105, 0.08);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion-tag:hover {
+            background: rgba(10, 34, 105, 0.15);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-running"></i>
+                <h1>SuruhBoy</h1>
+            </div>
+            <p class="tagline">Semua kebutuhanmu, tinggal suruh. 10+ layanan profesional siap membantu Anda!</p>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari layanan... (contoh: makanan, kirim, bersih, tukang)">
+                <button id="clearSearch" class="clear-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="search-info">
+                <span id="resultCount">Menampilkan 10 layanan</span>
+                <span class="search-tip"><i class="fas fa-lightbulb"></i> Ketik nama layanan atau kategori</span>
+            </div>
+        </div>
+        
+        <div class="services-grid">
+            <!-- Card 1: Antar Makanan -->
+            <div class="service-card card-food" data-search="antar makanan restoran makan delivery kirim pesan makanan cepat panas">
+                <div class="service-badge">
+                    <i class="fas fa-fire"></i>
+                    PALING DIMINATI
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Antar Makanan</h3>
+                        <p class="service-subtitle">Restoran favorit langsung ke rumah</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Antar makanan dari restoran favoritmu kemanapun dengan cepat dan masih panas. Pilih dari ratusan restoran terbaik di kota Anda.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="feature-text">30-45 menit sampai tujuan</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <span class="feature-text">Masih panas saat tiba</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <span class="feature-text">200+ restoran pilihan</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-shopping-cart"></i>
+                    Pesan Sekarang
+                </a>
+            </div>
+            
+            <!-- Card 2: Kirim Barang -->
+            <div class="service-card card-delivery" data-search="kirim barang paket delivery ekspedisi pengiriman motor mobil truk">
+                <div class="service-badge">
+                    <i class="fas fa-shipping-fast"></i>
+                    EKSPRES
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Kirim Barang</h3>
+                        <p class="service-subtitle">Pengiriman aman & terpercaya</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Kirim paket dan barang penting dengan aman ke seluruh kota. Tersedia berbagai pilihan kendaraan sesuai kebutuhan Anda.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck-loading"></i>
+                        </div>
+                        <span class="feature-text">Sat-set pengiriman langsung</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-motorcycle"></i>
+                        </div>
+                        <span class="feature-text">Pengiriman via motor</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <span class="feature-text">Mobil & bak terbuka untuk barang besar</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-paper-plane"></i>
+                    Kirim Sekarang
+                </a>
+            </div>
+            
+            <!-- Card 3: Antar Orang -->
+            <div class="service-card card-people" data-search="antar orang jemput driver supir taksi travel antarjemput">
+                <div class="service-badge">
+                    <i class="fas fa-user-shield"></i>
+                    AMAN
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Antar Orang</h3>
+                        <p class="service-subtitle">Temani perjalanan Anda</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Layanan antar jemput orang dengan driver profesional. Aman, nyaman, dan terpercaya untuk semua kebutuhan perjalanan.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <span class="feature-text">Driver berpengalaman</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <span class="feature-text">Kendaraan nyaman & terawat</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span class="feature-text">Asuransi perjalanan</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-road"></i>
+                    Pesan Antar Jemput
+                </a>
+            </div>
+            
+            <!-- Card 4: Titip Belanja -->
+            <div class="service-card card-shopping" data-search="titip belanja shopping beli pasar supermarket jastip online">
+                <div class="service-badge">
+                    <i class="fas fa-shopping-bag"></i>
+                    HEMAT
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Titip Belanja</h3>
+                        <p class="service-subtitle">Belanja tanpa keluar rumah</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Belanja kebutuhan sehari-hari tanpa repot. Kami akan membelikan sesuai daftar belanja Anda dari tempat yang Anda inginkan.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-store-alt"></i>
+                        </div>
+                        <span class="feature-text">Belanja pasar tradisional</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shopping-basket"></i>
+                        </div>
+                        <span class="feature-text">Belanja supermarket/modern</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-city"></i>
+                        </div>
+                        <span class="feature-text">Jastip luar kota & online</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-list-alt"></i>
+                    Buat Daftar Belanja
+                </a>
+            </div>
+            
+            <!-- Card 5: Jasa Nemenin -->
+            <div class="service-card card-companion" data-search="nemenin temani pendamping companion travel teman jalan meeting">
+                <div class="service-badge">
+                    <i class="fas fa-hands-helping"></i>
+                    BARU
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Jasa Nemenin</h3>
+                        <p class="service-subtitle">Temani aktivitas Anda</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Butuh teman untuk meeting, jalan-jalan, atau aktivitas lainnya? Kami siap menemani dengan profesional.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <span class="feature-text">Tersedia itinerary perjalanan</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span class="feature-text">Flexible booking & jadwal</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <span class="feature-text">Agent ramah & komunikatif</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-user-plus"></i>
+                    Pesan Pendamping
+                </a>
+            </div>
+            
+            <!-- Card 6: Bersih-bersih -->
+            <div class="service-card card-cleaning" data-search="bersih bersih-bersih cleaning kebersihan rumah kantor cleaning service">
+                <div class="service-badge">
+                    <i class="fas fa-sparkles"></i>
+                    BERSIH
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Bersih-bersih</h3>
+                        <p class="service-subtitle">Rumah bersih, hati senang</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Layanan kebersihan rumah & kantor profesional. Hasil maksimal dengan peralatan lengkap dan ramah lingkungan.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <span class="feature-text">Peralatan lengkap & modern</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <span class="feature-text">Produk ramah lingkungan</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <span class="feature-text">Bisa berlangganan mingguan/bulanan</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-broom"></i>
+                    Pesan Cleaning Service
+                </a>
+            </div>
+            
+            <!-- Card 7: Jasa Tukang -->
+            <div class="service-card card-repair" data-search="tukang reparasi perbaikan instalasi montir ahli bangunan">
+                <div class="service-badge">
+                    <i class="fas fa-wrench"></i>
+                    PROFESIONAL
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Jasa Tukang</h3>
+                        <p class="service-subtitle">Perbaikan & instalasi ahli</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Tukang berpengalaman siap memperbaiki dan memasang berbagai kebutuhan rumah & kantor Anda.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <span class="feature-text">Tukang berpengalaman & bersertifikat</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span class="feature-text">Garansi pekerjaan 30 hari</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <span class="feature-text">Pantauan pekerjaan intensif</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-hammer"></i>
+                    Pesan Tukang
+                </a>
+            </div>
+            
+            <!-- Card 8: Jasa Intel -->
+            <div class="service-card card-investigation" data-search="intel investigasi detektif cari informasi rahasia privat">
+                <div class="service-badge">
+                    <i class="fas fa-search"></i>
+                    DISKRIT
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Jasa Intel</h3>
+                        <p class="service-subtitle">Investigasi profesional</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Layanan investigasi dan pengumpulan informasi dengan metode profesional dan terpercaya.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <span class="feature-text">Profesional & terpercaya</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <span class="feature-text">Laporan sesuai request detail</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <span class="feature-text">Kerahasiaan terjamin</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-clipboard-check"></i>
+                    Konsultasi Gratis
+                </a>
+            </div>
+            
+            <!-- Card 9: Caregiver -->
+            <div class="service-card card-caregiver" data-search="caregiver perawat lansia orang sakit jaga rawat medis">
+                <div class="service-badge">
+                    <i class="fas fa-heartbeat"></i>
+                    PEDULI
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Caregiver</h3>
+                        <p class="service-subtitle">Perawatan orang sakit/lansia</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Layanan perawatan dan pendampingan untuk orang sakit, lansia, atau yang membutuhkan perhatian khusus.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-nurse"></i>
+                        </div>
+                        <span class="feature-text">Caregiver berpengalaman</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="feature-text">Tersedia 24 jam non-stop</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <span class="feature-text">Training medical basic</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-user-md"></i>
+                    Pesan Caregiver
+                </a>
+            </div>
+            
+            <!-- Card 10: Layanan Lainnya -->
+            <div class="service-card card-other" data-search="lain lainnya custom khusus request konsultasi gratis solusi">
+                <div class="service-badge">
+                    <i class="fas fa-lightbulb"></i>
+                    FLEKSIBEL
+                </div>
+                
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div>
+                        <h3 class="service-title">Layanan Lainnya</h3>
+                        <p class="service-subtitle">Custom sesuai kebutuhan</p>
+                    </div>
+                </div>
+                
+                <p class="service-desc">Punya kebutuhan khusus? Kami siap membantu dengan solusi yang disesuaikan dengan permintaan Anda.</p>
+                
+                <div class="service-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-pen-fancy"></i>
+                        </div>
+                        <span class="feature-text">Custom request layanan</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <span class="feature-text">Konsultasi gratis</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <span class="feature-text">Solusi khusus semua kebutuhan</span>
+                    </div>
+                </div>
+                
+                <a href="cek-ongkir.html" class="service-button">
+                    <i class="fas fa-headset"></i>
+                    Konsultasi Kebutuhan
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 SuruhBoy. Semua Layanan Tersedia.</p>
+            <p>Hubungi kami: 1500-123 | support@suruhboy.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const resultCount = document.getElementById('resultCount');
+        const serviceCards = document.querySelectorAll('.service-card');
+        const servicesGrid = document.querySelector('.services-grid');
+        
+        // Suggestions for search
+        const suggestions = [
+            'makanan', 'kirim', 'barang', 'antar', 'jemput',
+            'belanja', 'tukang', 'bersih', 'nemenin', 'caregiver',
+            'intel', 'perbaikan', 'kebersihan', 'travel', 'driver'
+        ];
+        
+        // Show/hide clear button based on input
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                clearSearch.classList.add('visible');
+                searchCards(this.value.toLowerCase());
+            } else {
+                clearSearch.classList.remove('visible');
+                showAllCards();
+            }
+        });
+        
+        // Clear search button
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.focus();
+            this.classList.remove('visible');
+            showAllCards();
+        });
+        
+        // Search function
+        function searchCards(searchTerm) {
+            let visibleCount = 0;
+            let noResultsHTML = '';
+            
+            serviceCards.forEach(card => {
+                const title = card.querySelector('.service-title').textContent.toLowerCase();
+                const desc = card.querySelector('.service-desc').textContent.toLowerCase();
+                const features = Array.from(card.querySelectorAll('.feature-text'))
+                    .map(feature => feature.textContent.toLowerCase())
+                    .join(' ');
+                
+                const searchData = card.getAttribute('data-search').toLowerCase();
+                const cardText = title + ' ' + desc + ' ' + features + ' ' + searchData;
+                
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 10);
+                    visibleCount++;
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Update result count
+            resultCount.textContent = `Menampilkan ${visibleCount} layanan`;
+            
+            // Show no results message if no cards found
+            if (visibleCount === 0) {
+                const filteredSuggestions = suggestions.filter(s => s.includes(searchTerm));
+                
+                noResultsHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>Tidak ditemukan layanan dengan kata kunci "${searchTerm}"</h3>
+                        <p>Coba kata kunci lain atau gunakan saran di bawah ini:</p>
+                        <div class="suggestion-list">
+                            ${filteredSuggestions.map(suggestion => 
+                                `<span class="suggestion-tag" onclick="searchBySuggestion('${suggestion}')">${suggestion}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                // Check if no-results already exists
+                const existingNoResults = document.querySelector('.no-results');
+                if (existingNoResults) {
+                    existingNoResults.remove();
+                }
+                
+                servicesGrid.insertAdjacentHTML('beforeend', noResultsHTML);
+                resultCount.innerHTML = `<span style="color: var(--red)">Tidak ditemukan layanan dengan kata kunci "${searchTerm}"</span>`;
+            } else {
+                // Remove no results message if exists
+                const noResults = document.querySelector('.no-results');
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
+        }
+        
+        // Search by suggestion
+        window.searchBySuggestion = function(suggestion) {
+            searchInput.value = suggestion;
+            searchInput.focus();
+            clearSearch.classList.add('visible');
+            searchCards(suggestion);
+        };
+        
+        // Show all cards
+        function showAllCards() {
+            serviceCards.forEach(card => {
+                card.style.display = 'block';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 10);
+            });
+            
+            // Remove no results message if exists
+            const noResults = document.querySelector('.no-results');
+            if (noResults) {
+                noResults.remove();
+            }
+            
+            resultCount.textContent = `Menampilkan ${serviceCards.length} layanan`;
+        }
+        
+        // Focus search on Ctrl+/ or Cmd+/
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // ESC to clear search
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.value = '';
+                clearSearch.classList.remove('visible');
+                showAllCards();
+            }
+        });
+        
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: linear-gradient(135deg, var(--primary), #1a3a8c);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 15px;
+                z-index: 1000;
+                font-size: 14px;
+                font-weight: 600;
+                box-shadow: 0 5px 20px rgba(10, 34, 105, 0.3);
+                animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                max-width: 300px;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Add animation for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Hover effects for cards
+        serviceCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // Initialize result count
+        resultCount.textContent = `Menampilkan ${serviceCards.length} layanan`;
+    </script>
+</body>
+</html>
