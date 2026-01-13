@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>SuruhBoy – Estimasi Biaya</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --blue:#15348f;
+  --orange:#ff8c00;
+  --bg:#f4f6fb;
+}
+*{box-sizing:border-box;font-family:system-ui,sans-serif}
+body{margin:0;background:var(--bg);padding:16px}
+.container{max-width:420px;margin:auto}
+h1{color:var(--blue);font-size:22px;margin-bottom:4px}
+.sub{font-size:13px;color:#555;margin-bottom:16px}
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06)
+}
+.card h3{margin:0 0 12px;font-size:15px;color:var(--blue)}
+.services{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.service{
+  border:2px solid #e0e4f3;
+  border-radius:12px;
+  padding:10px;
+  font-size:13px;
+  text-align:center;
+  cursor:pointer
+}
+.service.active{
+  border-color:var(--blue);
+  background:#eef2ff;
+  font-weight:600
+}
+label{font-size:13px;color:#444}
+input,select{
+  width:100%;
+  padding:12px;
+  font-size:14px;
+  border-radius:10px;
+  border:1.5px solid #ddd;
+  margin-top:6px
+}
+.estimate{text-align:center}
+.price{font-size:24px;font-weight:700;color:var(--blue);margin:8px 0}
+.note{font-size:12px;color:#666}
+.cta{position:sticky;bottom:12px}
+.cta button{
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:14px;
+  background:var(--orange);
+  color:#fff;
+  font-weight:700
+}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>SuruhBoy – Estimasi Biaya</h1>
+<div class="sub">Cek perkiraan biaya sebelum chat admin</div>
+
+<!-- PILIH LAYANAN -->
+<div class="card">
+<h3>Pilih Layanan</h3>
+<div class="services" id="services">
+  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Deliv Makan</div>
+  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Deliv Barang</div>
+  <div class="service" data-type="km" data-flat="10000" data-rate="2000">Antar Orang</div>
+  <div class="service" data-type="km" data-flat="10000" data-rate="2000" data-addon="5000">Belanja Titip</div>
+
+  <div class="service" data-type="jam" data-rate="15000">Jasa Nemenin</div>
+  <div class="service" data-type="jam" data-rate="40000" data-multi="true">Bersih-bersih</div>
+  <div class="service" data-type="jam" data-rate="40000" data-multi="true">Jasa Tukang</div>
+  <div class="service" data-type="jam" data-rate="25000">Jasa Intel</div>
+</div>
+</div>
+
+<!-- INPUT DINAMIS -->
+<div class="card">
+<h3 id="inputTitle">Input</h3>
+
+<div id="unitWrap">
+  <label id="unitLabel">Jarak (KM)</label>
+  <input type="number" id="unitValue" placeholder="Contoh: 5" min="0">
+</div>
+
+<div id="peopleWrap" class="hidden">
+  <label>Jumlah Orang</label>
+  <select id="people">
+    <option value="1">1 Orang</option>
+    <option value="2">2 Orang</option>
+    <option value="3">3 Orang</option>
+  </select>
+</div>
+</div>
+
+<!-- ESTIMASI -->
+<div class="card estimate">
+<h3>Estimasi Biaya</h3>
+<div class="price" id="result">Rp –</div>
+<div class="note">Ini hanya estimasi. Harga final ditentukan admin.</div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+<button onclick="chatAdmin()">Chat Admin Sekarang</button>
+</div>
+
+</div>
+
+<script>
+let selected=null;
+const services=document.querySelectorAll('.service');
+const unitValue=document.getElementById('unitValue');
+const unitLabel=document.getElementById('unitLabel');
+const inputTitle=document.getElementById('inputTitle');
+const peopleWrap=document.getElementById('peopleWrap');
+const people=document.getElementById('people');
+const result=document.getElementById('result');
+
+services.forEach(s=>{
+  s.onclick=()=>{
+    services.forEach(x=>x.classList.remove('active'));
+    s.classList.add('active');
+    selected=s;
+    setupInput();
+    calculate();
+  }
+});
+
+unitValue.oninput=calculate;
+people.onchange=calculate;
+
+function setupInput(){
+  const type=selected.dataset.type;
+  peopleWrap.classList.add('hidden');
+
+  if(type==="km"){
+    inputTitle.innerText="Jarak Tempuh";
+    unitLabel.innerText="Jarak (KM)";
+    unitValue.placeholder="Contoh: 5";
+  }else{
+    inputTitle.innerText="Durasi";
+    unitLabel.innerText="Durasi (Jam)";
+    unitValue.placeholder="Contoh: 2";
+    if(selected.dataset.multi){
+      peopleWrap.classList.remove('hidden');
+    }
+  }
+}
+
+function calculate(){
+  if(!selected) return;
+  const val=Number(unitValue.value);
+  if(!val || val<=0){result.innerText="Rp –";return;}
+
+  let total=0;
+  const type=selected.dataset.type;
+
+  if(type==="km"){
+    const flat=Number(selected.dataset.flat);
+    const rate=Number(selected.dataset.rate);
+    total = val<=5 ? flat : val*rate;
+    if(selected.dataset.addon){
+      total+=Number(selected.dataset.addon);
+    }
+  }else{
+    const rate=Number(selected.dataset.rate);
+    const ppl=selected.dataset.multi ? Number(people.value) : 1;
+    total = rate * ppl * val;
+  }
+
+  result.innerText="Rp "+total.toLocaleString("id-ID");
+}
+
+function chatAdmin(){
+  if(!selected||!unitValue.value){
+    alert("Lengkapi data terlebih dahulu");
+    return;
+  }
+  const msg=`Halo Admin, saya mau order ${selected.innerText} dengan ${unitLabel.innerText} ${unitValue.value}.`;
+  window.open("https://wa.me/62XXXXXXXXXX?text="+encodeURIComponent(msg),"_blank");
+}
+</script>
+
+</body>
+</html>
