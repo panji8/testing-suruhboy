@@ -1643,44 +1643,6 @@ const swiper = new Swiper('.swiper-container', {
             });
         });
         
-        // Service app item interaction
-        document.querySelectorAll('.service-app-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const serviceName = this.querySelector('.service-app-name').textContent;
-                
-                // Add click effect
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-                
-                // For simplicity, just scroll to services section
-                document.querySelector('#services').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                
-                // Show toast notification
-                showToast(`Membuka: ${serviceName}`);
-            });
-        });
-        
-        // Adhoc card interaction
-        document.querySelectorAll('.adhoc-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const title = this.querySelector('.adhoc-title').textContent;
-                
-                // Add click effect
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-                
-                // Show toast notification
-                showToast(`Membuka detail: ${title}`);
-            });
-        });
-        
         // Show toast notification
         function showToast(message) {
             const toast = document.createElement('div');
