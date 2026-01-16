@@ -1,0 +1,162 @@
+/* 
+   mobile-optimize.css
+   Copy file ini, save di folder yang sama dengan file HTML
+*/
+
+/* ===== FIX UTAMA UNTUK SEMUA MOBILE ===== */
+@media (max-width: 768px) {
+    /* 1. PERKECIL CONTAINER PADDING */
+    .container {
+        padding: 0 15px !important;
+    }
+    
+    /* 2. HERO SECTION LEBIH RINGKAS */
+    .service-hero {
+        padding: 40px 20px !important;
+        margin-bottom: 30px !important;
+        border-radius: 0 0 20px 20px !important;
+    }
+    
+    .service-title {
+        font-size: 26px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .service-subtitle {
+        font-size: 15px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* 3. KALKULATOR & DETAILS LEBIH COMPACT */
+    .details-section,
+    .calculator-section,
+    .testimonials-section,
+    .faq-section {
+        padding: 25px !important;
+        margin-bottom: 25px !important;
+        border-radius: 20px !important;
+    }
+    
+    /* 4. ANGKA HARGA LEBIH KECIL */
+    .price-amount {
+        font-size: 36px !important;
+        margin: 10px 0 !important;
+    }
+    
+    /* 5. JUDUL SECTION LEBIH KECIL */
+    .section-title,
+    .testimonials-title,
+    .faq-title {
+        font-size: 22px !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 10px !important;
+    }
+    
+    /* 6. KURANGI SPACING ANTAR ELEMENT */
+    .content-layout {
+        gap: 25px !important;
+        margin-bottom: 40px !important;
+    }
+    
+    .feature-item {
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .types-grid,
+    .testimonials-grid {
+        gap: 15px !important;
+        margin-top: 15px !important;
+    }
+    
+    /* 7. TOMBOL LEBIH KECIL */
+    .action-button {
+        padding: 16px !important;
+        font-size: 15px !important;
+        min-height: 50px !important;
+    }
+    
+    .action-buttons {
+        gap: 12px !important;
+    }
+    
+    /* 8. INPUT FORM LEBIH KECIL */
+    input[type="number"],
+    select {
+        padding: 14px !important;
+        font-size: 16px !important;
+    }
+    
+    /* 9. FOOTER LEBIH RINGKAS */
+    .footer {
+        padding: 30px 15px !important;
+        margin-top: 40px !important;
+    }
+    
+    .footer-links {
+        gap: 15px !important;
+        margin: 20px 0 !important;
+    }
+    
+    /* 10. BREAKDOWN LEBIH KECIL */
+    .price-breakdown {
+        padding: 20px !important;
+        margin-top: 15px !important;
+    }
+}
+
+/* ===== FIX KHUSUS UNTUK MOBILE KECIL (iPhone SE dll) ===== */
+@media (max-width: 480px) {
+    .service-hero {
+        padding: 30px 15px !important;
+    }
+    
+    .service-title {
+        font-size: 22px !important;
+    }
+    
+    .service-icon-large {
+        font-size: 60px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .details-section,
+    .calculator-section {
+        padding: 20px !important;
+    }
+    
+    .price-amount {
+        font-size: 32px !important;
+    }
+    
+    .feature-item {
+        padding: 15px !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .feature-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 20px !important;
+    }
+    
+    .type-card {
+        padding: 20px !important;
+    }
+    
+    .testimonial-card {
+        padding: 20px !important;
+    }
+    
+    .faq-question,
+    .faq-answer {
+        padding: 20px !important;
+    }
+    
+    /* TOMBOL STACK VERTICAL DI MOBILE KECIL */
+    .action-buttons {
+        grid-template-columns: 1fr !important;
+    }
+}

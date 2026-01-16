@@ -1,0 +1,43 @@
+/* mobile-calc-fix.css - khusus untuk kalkulator multi-layanan */
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .service-item {
+        padding: 12px 6px !important;
+        font-size: 12px !important;
+        min-height: 60px !important;
+    }
+    
+    .calculator-container {
+        margin-bottom: 15px !important;
+    }
+    
+    .info-panel {
+        margin-top: 20px !important;
+        padding: 20px !important;
+    }
+    
+    .estimation-amount {
+        font-size: 28px !important;
+    }
+    
+    .chat-button {
+        padding: 16px !important;
+        font-size: 15px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .services-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .service-item {
+        font-size: 14px !important;
+        padding: 15px 10px !important;
+    }
+}
