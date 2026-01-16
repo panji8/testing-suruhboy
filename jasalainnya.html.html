@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuruhBoy - Jasa Lainnya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2269;
+            --secondary: #fe7f2d;
+            --light: #e4eef0;
+            --dark: #0a1a4d;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Header Navigation */
+        .header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(10, 34, 105, 0.2);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+        }
+        
+        .back-button {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #ff6a00;
+            transform: translateY(-2px);
+        }
+        
+        /* Service Card Hero */
+        .service-hero {
+            background: linear-gradient(135deg, #6c757d 0%, #8a9197 100%);
+            color: var(--white);
+            padding: 60px 40px;
+            border-radius: 0 0 30px 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .service-badge {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(254, 127, 45, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-icon-large {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: var(--white);
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Content Layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        /* Service Details Section */
+        .details-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(10, 34, 105, 0.1);
+            border: 2px solid var(--light);
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6c757d;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--light);
+            position: relative;
+            text-align: center;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .description {
+            font-size: 18px;
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .service-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: 0 15px 35px rgba(254, 127, 45, 0.1);
+        }
+        
+        .service-icon {
+            font-size: 50px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .service-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .service-card p {
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        /* Consultation Section */
+        .consultation-section {
+            background: linear-gradient(135deg, var(--light) 0%, #e8f4f7 100%);
+            border-radius: 25px;
+            padding: 50px;
+            text-align: center;
+            margin: 40px 0;
+            border: 2px dashed var(--secondary);
+        }
+        
+        .consultation-icon {
+            font-size: 60px;
+            color: var(--secondary);
+            margin-bottom: 25px;
+        }
+        
+        .consultation-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .consultation-text {
+            font-size: 18px;
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* WhatsApp Button */
+        .whatsapp-button {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 15px;
+            padding: 22px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+            margin-top: 20px;
+        }
+        
+        .whatsapp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+        }
+        
+        /* Process Section */
+        .process-section {
+            margin-top: 60px;
+        }
+        
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .process-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--light);
+            transition: all 0.3s;
+        }
+        
+        .process-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-5px);
+        }
+        
+        .process-number {
+            background: var(--secondary);
+            color: var(--white);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+        
+        .process-card h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .process-card p {
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* Testimonials */
+        .testimonials-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 60px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonials-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #6c757d;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .testimonials-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .testimonial-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .testimonial-card:hover {
+            border-color: #6c757d;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(108, 117, 125, 0.1);
+        }
+        
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6c757d, #8a9197);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .testimonial-info h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .testimonial-rating {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .faq-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #6c757d;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .faq-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 25px;
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+        
+        .faq-answer {
+            padding: 25px;
+            color: var(--gray);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-item.active .faq-question {
+            background: #6c757d;
+            color: var(--white);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 60px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .footer-logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--secondary);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .service-hero {
+                padding: 40px 20px;
+            }
+            
+            .service-title {
+                font-size: 28px;
+            }
+            
+            .details-section,
+            .consultation-section,
+            .testimonials-section,
+            .faq-section {
+                padding: 30px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .whatsapp-button {
+                padding: 18px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-running"></i>
+                <span>SuruhBoy</span>
+            </div>
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Beranda
+            </a>
+        </div>
+    </header>
+
+    <!-- Service Card Hero -->
+    <section class="service-hero">
+        <div class="service-badge">
+            <i class="fas fa-ellipsis-h"></i> LAYANAN KHUSUS
+        </div>
+        <div class="service-icon-large">
+            <i class="fas fa-ellipsis-h"></i>
+        </div>
+        <h1 class="service-title">Jasa Lainnya</h1>
+        <p class="service-subtitle">Konsultasi kebutuhan khusus Anda - kami siap membantu dengan berbagai layanan tambahan</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="content-layout">
+            <!-- Service Details Section -->
+            <div class="details-section">
+                <h2 class="section-title">Layanan Khusus Sesuai Kebutuhan Anda</h2>
+                
+                <p class="description">
+                    Tidak menemukan layanan yang Anda butuhkan dalam kategori standar? SuruhBoy menyediakan 
+                    layanan khusus yang dapat disesuaikan dengan kebutuhan unik Anda. Konsultasikan kebutuhan 
+                    Anda dengan kami, dan kami akan carikan solusi terbaik.
+                </p>
+                
+                <!-- Services Grid -->
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>Asisten Pribadi</h3>
+                        <p>
+                            Bantuan administrasi pribadi, pengaturan jadwal, manajemen dokumen, 
+                            dan tugas-tugas personal lainnya sesuai kebutuhan.
+                        </p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Pembantu Rumah Tangga</h3>
+                        <p>
+                            Layanan pembantu rumah tangga harian, mingguan, atau bulanan dengan 
+                            sistem yang fleksibel sesuai kebutuhan keluarga.
+                        </p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <h3>Jasa Reparasi Khusus</h3>
+                        <p>
+                            Perbaikan peralatan elektronik, furniture, atau barang-barang khusus 
+                            yang membutuhkan keahlian spesifik.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Consultation Section -->
+                <div class="consultation-section">
+                    <div class="consultation-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h2 class="consultation-title">Konsultasi Gratis</h2>
+                    <p class="consultation-text">
+                        Diskusikan kebutuhan khusus Anda dengan tim kami. Kami akan mendengarkan dengan seksama, 
+                        memberikan saran, dan menawarkan solusi yang paling sesuai dengan budget dan kebutuhan Anda.
+                    </p>
+                    
+                    <button class="whatsapp-button" id="whatsappButton">
+                        <i class="fab fa-whatsapp"></i>
+                        Konsultasi via WhatsApp Sekarang
+                    </button>
+                </div>
+                
+                <!-- Process Section -->
+                <div class="process-section">
+                    <h2 class="section-title">Cara Kerja Layanan Khusus</h2>
+                    <div class="process-grid">
+                        <div class="process-card">
+                            <div class="process-number">1</div>
+                            <h4>Konsultasi</h4>
+                            <p>
+                                Diskusikan kebutuhan spesifik Anda dengan tim kami via WhatsApp 
+                                atau telepon
+                            </p>
+                        </div>
+                        
+                        <div class="process-card">
+                            <div class="process-number">2</div>
+                            <h4>Analisis Kebutuhan</h4>
+                            <p>
+                                Kami analisis kebutuhan dan carikan solusi terbaik dengan 
+                                estimasi biaya yang transparan
+                            </p>
+                        </div>
+                        
+                        <div class="process-card">
+                            <div class="process-number">3</div>
+                            <h4>Penyesuaian Layanan</h4>
+                            <p>
+                                Kami sesuaikan layanan dengan kebutuhan Anda dan tentukan 
+                                pekerja/tukang yang tepat
+                            </p>
+                        </div>
+                        
+                        <div class="process-card">
+                            <div class="process-number">4</div>
+                            <h4>Eksekusi</h4>
+                            <p>
+                                Tim kami eksekusi layanan dengan standar kualitas SuruhBoy 
+                                dan pantau sampai selesai
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Testimonials -->
+        <section class="testimonials-section">
+            <h2 class="testimonials-title">Testimoni Layanan Khusus</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">RS</div>
+                        <div class="testimonial-info">
+                            <h4>Rizki Saputra</h4>
+                            <p>Pebisnis Online</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Butuh asisten untuk bantu packing dan pengiriman produk setiap hari. 
+                        SuruhBoy carikan orang yang tepat, training sesuai kebutuhan bisnis saya. 
+                        Sekarang operasional bisnis jauh lebih lancar."
+                    </p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">DA</div>
+                        <div class="testimonial-info">
+                            <h4>Dewi Anggraini</h4>
+                            <p>Ibu Rumah Tangga</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Punya kebutuhan khusus untuk perawatan kolam ikan koi. Tidak termasuk 
+                        di layanan standar, tapi SuruhBoy bisa carikan tukang spesialis ikan. 
+                        Sekarang kolam ikan saya terawat dengan baik."
+                    </p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">MS</div>
+                        <div class="testimonial-info">
+                            <h4>Maya Sari</h4>
+                            <p>Pemilik Cafe</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Butuh jasa dekorasi khusus untuk event anniversary cafe. SuruhBoy 
+                        koordinasi dengan tim dekorator dan hasilnya luar biasa! Pelanggan 
+                        puas dan event sukses besar."
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Layanan apa saja yang termasuk dalam "Jasa Lainnya"?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        "Jasa Lainnya" mencakup berbagai layanan yang tidak termasuk dalam kategori standar kami, seperti: 
+                        asisten pribadi, pembantu rumah tangga, jasa reparasi khusus, dekorasi event, perawatan hewan peliharaan, 
+                        jasa dokumentasi, dan berbagai kebutuhan khusus lainnya. Konsultasikan kebutuhan Anda untuk solusi terbaik.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Bagaimana cara mengetahui estimasi biaya untuk layanan khusus?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Karena sifatnya yang khusus, estimasi biaya akan ditentukan setelah konsultasi mendalam tentang kebutuhan Anda. 
+                        Kami akan analisis kompleksitas, durasi, keahlian yang dibutuhkan, dan bahan/peralatan yang diperlukan. 
+                        Setelah itu, kami berikan estimasi biaya yang transparan sebelum Anda memutuskan.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Apakah ada jaminan untuk layanan khusus?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Ya, semua layanan kami termasuk layanan khusus memiliki jaminan kualitas. Untuk layanan khusus, 
+                        kami akan buatkan perjanjian kerja yang jelas mencakup scope of work, timeline, dan standar kualitas. 
+                        Jika ada ketidaksesuaian dengan kesepakatan, kami akan perbaiki atau cari solusi terbaik.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Berapa lama proses dari konsultasi sampai eksekusi?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Untuk layanan khusus, biasanya membutuhkan waktu 1-3 hari dari konsultasi sampai eksekusi, tergantung 
+                        kompleksitas kebutuhan dan ketersediaan pekerja/tukang spesialis. Untuk kebutuhan mendesak, kami usahakan 
+                        lebih cepat dengan komunikasi intensif.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Apakah bisa request pekerja dengan keahlian spesifik?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Tentu bisa! Itulah keunggulan layanan khusus kami. Berikan detail keahlian yang dibutuhkan, pengalaman, 
+                        atau sertifikasi yang diinginkan. Kami akan carikan dari jaringan pekerja kami atau carikan spesialis 
+                        eksternal yang sesuai dengan kebutuhan Anda.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <i class="fas fa-running"></i>
+            <span>SuruhBoy</span>
+        </div>
+        <div class="footer-links">
+            <a href="index.html">Beranda</a>
+            <a href="makanan.html">Antar Makanan</a>
+            <a href="barang.html">Deliv Barang</a>
+            <a href="orang.html">Antar Jemput</a>
+            <a href="belanja.html">Titip Belanja</a>
+            <a href="nemenin.html">Jasa Nemenin</a>
+            <a href="bersihbersih.html">Bersih-bersih</a>
+            <a href="tukang.html">Jasa Tukang</a>
+            <a href="caregiver.html">Jaga Pasien</a>
+            <a href="survei.html">Jasa Survei</a>
+            <a href="#">Bantuan</a>
+        </div>
+        <div class="copyright">
+            &copy; 2024 SuruhBoy - Layanan Jasa Lainnya. Hubungi: 0812-3456-7890
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const whatsappButton = document.getElementById('whatsappButton');
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        // Open WhatsApp for Consultation
+        function openWhatsApp() {
+            const phoneNumber = "6281234567890";
+            const message = `Halo Admin SuruhBoy! 👋\n\n` +
+                           `Saya ingin berkonsultasi tentang: *JASA LAINNYA*\n\n` +
+                           `Bisa tanya-tanya dulu mengenai layanan khusus yang saya butuhkan?`;
+            
+            const userConfirmed = confirm(`Mengarahkan ke WhatsApp...\n\n${message}\n\nLanjutkan?`);
+            
+            if (userConfirmed) {
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            }
+        }
+        
+        // FAQ Toggle
+        function initFAQ() {
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    // Close other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+        }
+        
+        // Initialize Event Listeners
+        function initEventListeners() {
+            whatsappButton.addEventListener('click', openWhatsApp);
+            initFAQ();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventListeners();
+            
+            // Add animation to process cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe process cards
+            document.querySelectorAll('.process-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+            
+            // Observe service cards
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease 0.1s';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

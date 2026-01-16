@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuruhBoy - Jasa Nemenin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2269;
+            --secondary: #fe7f2d;
+            --light: #e4eef0;
+            --dark: #0a1a4d;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Header Navigation */
+        .header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(10, 34, 105, 0.2);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+        }
+        
+        .back-button {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #ff6a00;
+            transform: translateY(-2px);
+        }
+        
+        /* Service Card Hero */
+        .service-hero {
+            background: linear-gradient(135deg, #118ab2 0%, #1aa8d4 100%);
+            color: var(--white);
+            padding: 60px 40px;
+            border-radius: 0 0 30px 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .service-badge {
+            background: var(--secondary);
+            color: var(--white);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(254, 127, 45, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-icon-large {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: var(--white);
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-price-tag {
+            background: var(--white);
+            color: #118ab2;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: 700;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Content Layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        @media (max-width: 900px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Service Details Section */
+        .details-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(10, 34, 105, 0.1);
+            border: 2px solid var(--light);
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--light);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        /* Features List */
+        .features-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-item {
+            margin-bottom: 25px;
+            padding: 25px;
+            background: var(--light);
+            border-radius: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: transform 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .feature-item:hover {
+            transform: translateX(10px);
+            border-left-color: #118ab2;
+            background: #e8f4f7;
+        }
+        
+        .feature-icon {
+            background: #118ab2;
+            color: var(--white);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        
+        .feature-content h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        .feature-content p {
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* Companion Scenarios */
+        .scenarios-section {
+            margin-top: 40px;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .scenario-card {
+            background: linear-gradient(135deg, #e8f4f7, #d4e4e7);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .scenario-card:hover {
+            border-color: #118ab2;
+            transform: translateY(-5px);
+        }
+        
+        .scenario-icon {
+            font-size: 40px;
+            color: #118ab2;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-name {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .scenario-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        /* Agent Profile */
+        .agent-profile {
+            background: linear-gradient(135deg, #e8f4f7, #d4e4e7);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #118ab2;
+        }
+        
+        .agent-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .agent-qualities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .quality-item {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .quality-icon {
+            font-size: 30px;
+            color: #118ab2;
+            margin-bottom: 10px;
+        }
+        
+        .quality-text {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            margin-top: 40px;
+        }
+        
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .step-number {
+            background: #118ab2;
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-content h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .step-content p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+        
+        /* Calculator Section */
+        .calculator-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(10, 34, 105, 0.1);
+            border: 2px solid var(--light);
+            position: sticky;
+            top: 100px;
+        }
+        
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .calculator-header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .calculator-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 10px;
+        }
+        
+        .calculator-subtitle {
+            color: var(--gray);
+            font-size: 16px;
+        }
+        
+        /* Input Group */
+        .input-group {
+            margin-bottom: 30px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #118ab2;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-label i {
+            color: var(--secondary);
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid var(--light);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #118ab2;
+            box-shadow: 0 0 0 3px rgba(17, 138, 178, 0.1);
+        }
+        
+        .input-hint {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Price Display */
+        .price-display {
+            background: linear-gradient(135deg, var(--light) 0%, #e8f4f7 100%);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px solid rgba(17, 138, 178, 0.1);
+        }
+        
+        .price-label {
+            font-size: 16px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .price-amount {
+            font-size: 48px;
+            font-weight: 800;
+            color: #118ab2;
+            margin: 15px 0;
+        }
+        
+        .price-amount span {
+            color: var(--secondary);
+        }
+        
+        .price-breakdown {
+            margin-top: 25px;
+            text-align: left;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .breakdown-title {
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--light);
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .breakdown-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #118ab2;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .action-button {
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #ff6a00 100%);
+            color: var(--white);
+            box-shadow: 0 10px 25px rgba(254, 127, 45, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(254, 127, 45, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: #118ab2;
+            border: 2px solid #118ab2;
+        }
+        
+        .btn-secondary:hover {
+            background: #e8f4f7;
+        }
+        
+        /* Testimonials */
+        .testimonials-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 60px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonials-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .testimonials-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .testimonial-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .testimonial-card:hover {
+            border-color: #118ab2;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(17, 138, 178, 0.1);
+        }
+        
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #118ab2, #1aa8d4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .testimonial-info h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .testimonial-rating {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .faq-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #118ab2;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .faq-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 25px;
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+        
+        .faq-answer {
+            padding: 25px;
+            color: var(--gray);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-item.active .faq-question {
+            background: #118ab2;
+            color: var(--white);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 60px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .footer-logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--secondary);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .service-hero {
+                padding: 40px 20px;
+            }
+            
+            .service-title {
+                font-size: 28px;
+            }
+            
+            .details-section,
+            .calculator-section,
+            .testimonials-section,
+            .faq-section {
+                padding: 30px;
+            }
+            
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-running"></i>
+                <span>SuruhBoy</span>
+            </div>
+            <a href="index.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Beranda
+            </a>
+        </div>
+    </header>
+
+    <!-- Service Card Hero -->
+    <section class="service-hero">
+        <div class="service-badge">
+            <i class="fas fa-user-friends"></i> TEMAN AKTIVITAS
+        </div>
+        <div class="service-icon-large">
+            <i class="fas fa-user-friends"></i>
+        </div>
+        <h1 class="service-title">Jasa Nemenin</h1>
+        <p class="service-subtitle">Teman untuk berbagai aktivitas dengan agent ramah dan profesional</p>
+        <div class="service-price-tag">
+            <i class="fas fa-tag"></i> Rp 15.000 per jam
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="content-layout">
+            <!-- Left: Service Details -->
+            <div class="details-section">
+                <h2 class="section-title">Detail Layanan</h2>
+                
+                <p style="font-size: 16px; margin-bottom: 30px; color: var(--gray); line-height: 1.8;">
+                    Butuh teman untuk kegiatan tertentu? Jasa Nemenin SuruhBoy menyediakan companion profesional 
+                    untuk berbagai aktivitas, dari jalan-jalan, meeting, hingga pendampingan dalam situasi khusus. 
+                    Agent kami ramah, komunikatif, dan dapat disesuaikan dengan kebutuhan Anda.
+                </p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Flexible Itinerary</h4>
+                            <p>Jadwal dan aktivitas bisa disesuaikan dengan keinginan dan kebutuhan Anda.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Agent Terpilih</h4>
+                            <p>Agent dengan seleksi ketat, ramah, komunikatif, dan memahami kebutuhan klien.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Komunikasi Lancar</h4>
+                            <p>Agent mampu menjadi teman bicara yang baik untuk berbagai topik.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Profesional & Aman</h4>
+                            <p>Semua agent terverifikasi dengan identitas jelas dan track record baik.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Companion Scenarios -->
+                <div class="scenarios-section">
+                    <h3 class="section-title" style="margin-top: 40px;">Kebutuhan yang Cocok</h3>
+                    <div class="scenarios-grid">
+                        <div class="scenario-card">
+                            <div class="scenario-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="scenario-name">Teman Belanja</div>
+                            <div class="scenario-desc">
+                                Temani belanja ke mall atau pasar, bantu pilih barang, dan berikan saran
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-card">
+                            <div class="scenario-icon">
+                                <i class="fas fa-coffee"></i>
+                            </div>
+                            <div class="scenario-name">Teman Ngobrol</div>
+                            <div class="scenario-desc">
+                                Butuh teman ngobrol di kafe atau tempat nongkrong untuk curhat atau diskusi
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-card">
+                            <div class="scenario-icon">
+                                <i class="fas fa-hiking"></i>
+                            </div>
+                            <div class="scenario-name">Teman Wisata</div>
+                            <div class="scenario-desc">
+                                Temani jalan-jalan, foto-foto, atau explore tempat baru di kota
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-card">
+                            <div class="scenario-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="scenario-name">Teman Event</div>
+                            <div class="scenario-desc">
+                                Pendamping untuk acara sosial, pesta, atau gathering yang butuh pasangan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Agent Profile -->
+                <div class="agent-profile">
+                    <h3 class="agent-title">Profil Agent Kami</h3>
+                    <div class="agent-qualities">
+                        <div class="quality-item">
+                            <div class="quality-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="quality-text">Minimal D3/S1</div>
+                        </div>
+                        <div class="quality-item">
+                            <div class="quality-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="quality-text">Komunikatif</div>
+                        </div>
+                        <div class="quality-item">
+                            <div class="quality-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="quality-text">Ramah & Helpful</div>
+                        </div>
+                        <div class="quality-item">
+                            <div class="quality-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="quality-text">Terverifikasi</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="how-it-works">
+                    <h3 class="section-title" style="margin-top: 40px;">Cara Pesan</h3>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Estimasi Biaya</h4>
+                                <p>Hitung estimasi biaya dengan kalkulator berdasarkan durasi</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Chat Admin</h4>
+                                <p>Kirim detail kebutuhan via WhatsApp dengan aktivitas yang diinginkan</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Match Agent</h4>
+                                <p>Admin akan carikan agent yang cocok dengan profil dan kebutuhan Anda</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Mulai Aktivitas</h4>
+                                <p>Agent akan menemani Anda sesuai jadwal dan aktivitas yang disepakati</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right: Calculator -->
+            <div class="calculator-section">
+                <div class="calculator-header">
+                    <h3 class="calculator-title">Cek Estimasi Biaya</h3>
+                    <p class="calculator-subtitle">Hitung estimasi biaya berdasarkan durasi pendampingan</p>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-clock"></i>
+                        Durasi Pendampingan (Jam)
+                    </label>
+                    <input type="number" id="durationInput" placeholder="Contoh: 3" min="0.5" max="24" step="0.5" value="3">
+                    <div class="input-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Minimal 0.5 jam, maksimal 24 jam. Biaya: Rp 15.000 per jam
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="price-label">Estimasi Biaya</div>
+                    <div class="price-amount" id="estimatedAmount">Rp <span>45.000</span></div>
+                    
+                    <div class="price-breakdown" id="breakdown">
+                        <div class="breakdown-title">Rincian Perhitungan</div>
+                        <div class="breakdown-item">
+                            <span>3 jam @ Rp 15.000/jam</span>
+                            <span>Rp 45.000</span>
+                        </div>
+                        <div class="breakdown-item breakdown-total">
+                            <span>TOTAL BIAYA</span>
+                            <span>Rp 45.000</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="font-size: 14px; color: var(--gray); text-align: center; margin-bottom: 25px;">
+                    <i class="fas fa-info-circle"></i> *Biaya transport agent ditanggung terpisah sesuai lokasi dan kesepakatan.
+                </p>
+                
+                <div class="action-buttons">
+                    <button class="action-button btn-primary" id="whatsappButton">
+                        <i class="fab fa-whatsapp"></i>
+                        Pesan via WhatsApp
+                    </button>
+                    <button class="action-button btn-secondary" id="resetButton">
+                        <i class="fas fa-redo"></i>
+                        Hitung Ulang
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Testimonials -->
+        <section class="testimonials-section">
+            <h2 class="testimonials-title">Testimoni Pelanggan</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">DA</div>
+                        <div class="testimonial-info">
+                            <h4>Dian Anggraini</h4>
+                            <p>Fresh Graduate</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Baru pindah ke kota ini, masih belum punya teman. Pakai jasa nemenin untuk diajak jalan-jalan 
+                        keliling kota. Agentnya ramah banget dan jadi guide yang baik. Sekarang udah kenal banyak tempat."
+                    </p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">RS</div>
+                        <div class="testimonial-info">
+                            <h4>Rizki Saputra</h4>
+                            <p>Freelancer</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Butuh teman untuk meeting bisnis dengan klien dari luar kota. Agent SuruhBoy profesional, 
+                        komunikatif, dan membantu banget dalam diskusi. Klien pun impressed dengan pendampingan ini."
+                    </p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">LS</div>
+                        <div class="testimonial-info">
+                            <h4>Lisa Sari</h4>
+                            <p>Ibu Rumah Tangga</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Suami sering dinas, jadi kadang butuh teman belanja atau ngobrol. Agentnya sangat memahami 
+                        kebutuhan, tidak canggung, dan jadi teman ngobrol yang asyik. Highly recommended!"
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="faq-title">Pertanyaan yang Sering Ditanyakan</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Apa perbedaan dengan teman biasa?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Agent kami adalah profesional yang terlatih untuk menjadi companion yang baik. Mereka memiliki 
+                        kemampuan komunikasi yang baik, bisa menyesuaikan dengan berbagai karakter orang, dan menjaga 
+                        profesionalisme selama pendampingan.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Bisa request gender agent?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Ya, bisa request agent pria atau wanita sesuai preferensi dan kenyamanan Anda. Admin akan 
+                        carikan agent yang sesuai dengan permintaan.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Apa saja yang tidak termasuk dalam layanan?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Layanan ini murni sebagai teman/pendamping untuk aktivitas positif. Tidak termasuk layanan 
+                        romantis, fisik, atau yang melanggar norma dan hukum. Semua aktivitas harus sesuai kesepakatan 
+                        awal.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Bagaimana jika tidak cocok dengan agent?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Jika dalam 30 menit pertama merasa tidak cocok, Anda bisa request ganti agent dengan alasan 
+                        yang jelas. Admin akan carikan agent lain yang lebih sesuai.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Apakah biaya transport agent termasuk?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Biaya transport agent ke lokasi pendampingan ditanggung terpisah sesuai jarak dan kesepakatan. 
+                        Akan dibahas lebih detail dengan admin saat booking.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <i class="fas fa-running"></i>
+            <span>SuruhBoy</span>
+        </div>
+        <div class="footer-links">
+            <a href="index.html">Beranda</a>
+            <a href="makanan.html">Antar Makanan</a>
+            <a href="barang.html">Deliv Barang</a>
+            <a href="orang.html">Antar Jemput</a>
+            <a href="belanja.html">Titip Belanja</a>
+            <a href="#">Bantuan</a>
+        </div>
+        <div class="copyright">
+            &copy; 2024 SuruhBoy - Layanan Jasa Nemenin. Hubungi: 0812-3456-7890
+        </div>
+    </footer>
+
+    <script>
+        // Price Configuration (kategori perjam_15rb)
+        const priceConfig = {
+            perjam_15rb: 15000  // Rp 15.000 per jam
+        };
+        
+        // DOM Elements
+        const durationInput = document.getElementById('durationInput');
+        const estimatedAmount = document.getElementById('estimatedAmount');
+        const breakdown = document.getElementById('breakdown');
+        const whatsappButton = document.getElementById('whatsappButton');
+        const resetButton = document.getElementById('resetButton');
+        
+        // FAQ Functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        // Calculate Companion Price
+        function calculateCompanionPrice(duration) {
+            if (duration <= 0) return { total: 0, details: [] };
+            
+            let total = 0;
+            let details = [];
+            
+            // Calculate hours (rounded up to nearest 0.5)
+            const hours = Math.ceil(duration * 2) / 2; // Round to nearest 0.5
+            total = hours * priceConfig.perjam_15rb;
+            
+            details.push({
+                label: `${hours} jam @ Rp 15.000/jam`,
+                amount: total
+            });
+            
+            return { total, details };
+        }
+        
+        // Update Estimation
+        function updateEstimation() {
+            const duration = parseFloat(durationInput.value) || 0;
+            
+            if (duration <= 0) {
+                estimatedAmount.innerHTML = 'Rp <span>–</span>';
+                breakdown.innerHTML = `
+                    <div class="breakdown-title">Rincian Perhitungan</div>
+                    <div class="breakdown-item">
+                        <span>Masukkan durasi untuk melihat rincian</span>
+                        <span>–</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            const calculation = calculateCompanionPrice(duration);
+            const total = calculation.total;
+            
+            // Update amount display
+            const formatted = formatCurrency(total);
+            estimatedAmount.innerHTML = `Rp <span>${formatted.replace('Rp', '').trim()}</span>`;
+            
+            // Update breakdown
+            if (calculation.details.length > 0) {
+                let breakdownHTML = '<div class="breakdown-title">Rincian Perhitungan</div>';
+                
+                calculation.details.forEach(detail => {
+                    breakdownHTML += `
+                        <div class="breakdown-item">
+                            <span>${detail.label}</span>
+                            <span>${formatCurrency(detail.amount)}</span>
+                        </div>
+                    `;
+                });
+                
+                breakdownHTML += `
+                    <div class="breakdown-item breakdown-total">
+                        <span>TOTAL BIAYA</span>
+                        <span>${formatCurrency(total)}</span>
+                    </div>
+                `;
+                
+                breakdown.innerHTML = breakdownHTML;
+            }
+        }
+        
+        // Format Currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        // Open WhatsApp
+        function openWhatsApp() {
+            const duration = parseFloat(durationInput.value) || 0;
+            
+            if (duration <= 0) {
+                alert('Silakan masukkan durasi terlebih dahulu untuk mendapatkan estimasi biaya.');
+                durationInput.focus();
+                return;
+            }
+            
+            const calculation = calculateCompanionPrice(duration);
+            const total = calculation.total;
+            
+            const phoneNumber = "6281234567890";
+            const message = `Halo Admin SuruhBoy! 👋\n\n` +
+                           `Saya ingin menggunakan layanan: *JASA NEMENIN*\n` +
+                           `Durasi: *${duration} jam*\n` +
+                           `Estimasi biaya: *${formatCurrency(total)}*\n\n` +
+                           `Bisa carikan agent yang cocok?`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+        
+        // Reset Calculator
+        function resetCalculator() {
+            durationInput.value = '3';
+            updateEstimation();
+        }
+        
+        // FAQ Toggle
+        function initFAQ() {
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    // Close other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+        }
+        
+        // Initialize Event Listeners
+        function initEventListeners() {
+            durationInput.addEventListener('input', updateEstimation);
+            whatsappButton.addEventListener('click', openWhatsApp);
+            resetButton.addEventListener('click', resetCalculator);
+            initFAQ();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventListeners();
+            updateEstimation(); // Initial calculation with example value
+        });
+    </script>
+</body>
+</html>
