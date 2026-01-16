@@ -1379,5 +1379,107 @@
             updateEstimation(); // Initial calculation with example value
         });
     </script>
+    <!-- ========================================= -->
+<!-- FAB UNTUK CALCULATOR SECTION -->
+<!-- ========================================= -->
+<a href="#calculator-section" class="fab-calculator">
+    <i class="fas fa-calculator"></i>
+    <span class="fab-text">Cek Ongkir</span>
+</a>
+
+<style>
+    /* FAB STYLE - ORANGE CALCULATOR */
+    .fab-calculator {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #fe7f2d, #ff9a3d);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 6px 20px rgba(254, 127, 45, 0.4);
+        z-index: 9999;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .fab-calculator:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(254, 127, 45, 0.6);
+        gap: 15px;
+        background: linear-gradient(135deg, #ff6a00, #ff8c42);
+    }
+    
+    .fab-calculator i {
+        font-size: 22px;
+    }
+    
+    .fab-text {
+        font-size: 16px;
+        font-weight: 700;
+    }
+    
+    /* Responsif untuk mobile */
+    @media (max-width: 768px) {
+        .fab-calculator {
+            bottom: 20px;
+            right: 20px;
+            padding: 14px 20px;
+        }
+        
+        .fab-text {
+            display: none; /* Sembunyikan teks di mobile */
+        }
+        
+        .fab-calculator i {
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        .fab-calculator:hover {
+            gap: 0; /* Reset gap di mobile */
+        }
+    }
+</style>
+
+<script>
+    // Cek jika section belum punya ID, tambahkan ID
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculatorSection = document.querySelector('.calculator-section');
+        if (calculatorSection && !calculatorSection.id) {
+            calculatorSection.id = 'calculator-section';
+        }
+        
+        // Smooth scroll ke calculator section
+        document.querySelector('.fab-calculator').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetSection = document.querySelector('#calculator-section');
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Animasi muncul saat scroll
+    window.addEventListener('scroll', function() {
+        const fab = document.querySelector('.fab-calculator');
+        if (window.scrollY > 300) {
+            fab.style.opacity = '1';
+            fab.style.transform = 'translateY(0)';
+        } else {
+            fab.style.opacity = '0.9';
+        }
+    });
+</script>
 </body>
 </html>
