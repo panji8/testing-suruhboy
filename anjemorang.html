@@ -1380,16 +1380,16 @@
         });
     </script>
     <!-- ========================================= -->
-<!-- FAB UNTUK CALCULATOR SECTION -->
+<!-- FAB UNTUK MOBILE & DESKTOP (ADA TEKS) -->
 <!-- ========================================= -->
-<a href="#calculator-section" class="fab-calculator">
-    <i class="fas fa-calculator"></i>
-    <span class="fab-text">Cek Ongkir</span>
+<a href="#calculator-section" class="fab-ongkir-mobile">
+    <i class="fas fa-shipping-fast"></i>
+    <span class="fab-text-mobile">Cek Ongkir</span>
 </a>
 
 <style>
-    /* FAB STYLE - ORANGE CALCULATOR */
-    .fab-calculator {
+    /* FAB STYLE - UNTUK SEMUA DEVICE */
+    .fab-ongkir-mobile {
         position: fixed;
         bottom: 30px;
         right: 30px;
@@ -1408,49 +1408,87 @@
         transition: all 0.3s ease;
         border: none;
         cursor: pointer;
+        /* Pastikan teks tidak patah */
+        white-space: nowrap;
     }
     
-    .fab-calculator:hover {
+    .fab-ongkir-mobile:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(254, 127, 45, 0.6);
         gap: 15px;
         background: linear-gradient(135deg, #ff6a00, #ff8c42);
     }
     
-    .fab-calculator i {
-        font-size: 22px;
+    .fab-ongkir-mobile i {
+        font-size: 20px;
     }
     
-    .fab-text {
+    .fab-text-mobile {
         font-size: 16px;
         font-weight: 700;
     }
     
-    /* Responsif untuk mobile */
+    /* RESPONSIVE - TAMPILKAN TEKS DI MOBILE JUGA */
     @media (max-width: 768px) {
-        .fab-calculator {
+        .fab-ongkir-mobile {
             bottom: 20px;
             right: 20px;
-            padding: 14px 20px;
+            padding: 12px 20px;
+            /* Mobile: tetap tampilkan teks */
+            width: auto;
+            min-width: 140px;
         }
         
-        .fab-text {
-            display: none; /* Sembunyikan teks di mobile */
+        .fab-text-mobile {
+            display: inline-block !important; /* PAKSA TAMPIL */
+            font-size: 14px;
         }
         
-        .fab-calculator i {
-            font-size: 24px;
-            margin: 0;
+        .fab-ongkir-mobile i {
+            font-size: 18px;
         }
         
-        .fab-calculator:hover {
-            gap: 0; /* Reset gap di mobile */
+        /* Efek hover mobile */
+        .fab-ongkir-mobile:active {
+            transform: scale(0.95);
         }
+    }
+    
+    /* Untuk layar sangat kecil (iPhone SE dll) */
+    @media (max-width: 375px) {
+        .fab-ongkir-mobile {
+            padding: 10px 16px;
+            min-width: 130px;
+        }
+        
+        .fab-text-mobile {
+            font-size: 13px;
+        }
+        
+        .fab-ongkir-mobile i {
+            font-size: 16px;
+        }
+    }
+    
+    /* Animasi muncul */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fab-ongkir-mobile {
+        animation: fadeInUp 0.5s ease forwards;
     }
 </style>
 
 <script>
-    // Cek jika section belum punya ID, tambahkan ID
+    // Pastikan section calculator punya ID
     document.addEventListener('DOMContentLoaded', function() {
         const calculatorSection = document.querySelector('.calculator-section');
         if (calculatorSection && !calculatorSection.id) {
@@ -1458,26 +1496,56 @@
         }
         
         // Smooth scroll ke calculator section
-        document.querySelector('.fab-calculator').addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetSection = document.querySelector('#calculator-section');
-            if (targetSection) {
-                targetSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+        const fab = document.querySelector('.fab-ongkir-mobile');
+        if (fab) {
+            fab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = document.querySelector('#calculator-section');
+                if (targetSection) {
+                    // Scroll dengan offset untuk header
+                    const headerHeight = document.querySelector('header') ? 
+                        document.querySelector('header').offsetHeight : 80;
+                    
+                    const targetPosition = targetSection.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        }
+        
+        // Cek device dan sesuaikan FAB
+        function updateFabForDevice() {
+            const fab = document.querySelector('.fab-ongkir-mobile');
+            if (!fab) return;
+            
+            // Jika layar sangat kecil, perpendek teks
+            if (window.innerWidth < 350) {
+                fab.querySelector('.fab-text-mobile').textContent = 'Ongkir';
+                fab.style.minWidth = '110px';
+            } else {
+                fab.querySelector('.fab-text-mobile').textContent = 'Cek Ongkir';
+                fab.style.minWidth = '140px';
             }
-        });
+        }
+        
+        // Jalankan saat load dan resize
+        updateFabForDevice();
+        window.addEventListener('resize', updateFabForDevice);
     });
     
     // Animasi muncul saat scroll
     window.addEventListener('scroll', function() {
-        const fab = document.querySelector('.fab-calculator');
-        if (window.scrollY > 300) {
-            fab.style.opacity = '1';
-            fab.style.transform = 'translateY(0)';
-        } else {
-            fab.style.opacity = '0.9';
+        const fab = document.querySelector('.fab-ongkir-mobile');
+        if (fab) {
+            if (window.scrollY > 500) {
+                fab.style.opacity = '1';
+                fab.style.transform = 'translateY(0) scale(1)';
+            } else {
+                fab.style.opacity = '0.9';
+            }
         }
     });
 </script>
