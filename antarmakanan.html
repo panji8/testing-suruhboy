@@ -1217,5 +1217,175 @@
             updateEstimation(); // Initial calculation with example value
         });
     </script>
+    <!-- ========================================= -->
+<!-- FAB UNTUK MOBILE & DESKTOP (ADA TEKS) -->
+<!-- ========================================= -->
+<a href="#calculator-section" class="fab-ongkir-mobile">
+    <i class="fas fa-shipping-fast"></i>
+    <span class="fab-text-mobile">Cek Ongkir</span>
+</a>
+
+<style>
+    /* FAB STYLE - UNTUK SEMUA DEVICE */
+    .fab-ongkir-mobile {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #fe7f2d, #ff9a3d);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 6px 20px rgba(254, 127, 45, 0.4);
+        z-index: 9999;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        /* Pastikan teks tidak patah */
+        white-space: nowrap;
+    }
+    
+    .fab-ongkir-mobile:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(254, 127, 45, 0.6);
+        gap: 15px;
+        background: linear-gradient(135deg, #ff6a00, #ff8c42);
+    }
+    
+    .fab-ongkir-mobile i {
+        font-size: 20px;
+    }
+    
+    .fab-text-mobile {
+        font-size: 16px;
+        font-weight: 700;
+    }
+    
+    /* RESPONSIVE - TAMPILKAN TEKS DI MOBILE JUGA */
+    @media (max-width: 768px) {
+        .fab-ongkir-mobile {
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            /* Mobile: tetap tampilkan teks */
+            width: auto;
+            min-width: 140px;
+        }
+        
+        .fab-text-mobile {
+            display: inline-block !important; /* PAKSA TAMPIL */
+            font-size: 14px;
+        }
+        
+        .fab-ongkir-mobile i {
+            font-size: 18px;
+        }
+        
+        /* Efek hover mobile */
+        .fab-ongkir-mobile:active {
+            transform: scale(0.95);
+        }
+    }
+    
+    /* Untuk layar sangat kecil (iPhone SE dll) */
+    @media (max-width: 375px) {
+        .fab-ongkir-mobile {
+            padding: 10px 16px;
+            min-width: 130px;
+        }
+        
+        .fab-text-mobile {
+            font-size: 13px;
+        }
+        
+        .fab-ongkir-mobile i {
+            font-size: 16px;
+        }
+    }
+    
+    /* Animasi muncul */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fab-ongkir-mobile {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+</style>
+
+<script>
+    // Pastikan section calculator punya ID
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculatorSection = document.querySelector('.calculator-section');
+        if (calculatorSection && !calculatorSection.id) {
+            calculatorSection.id = 'calculator-section';
+        }
+        
+        // Smooth scroll ke calculator section
+        const fab = document.querySelector('.fab-ongkir-mobile');
+        if (fab) {
+            fab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = document.querySelector('#calculator-section');
+                if (targetSection) {
+                    // Scroll dengan offset untuk header
+                    const headerHeight = document.querySelector('header') ? 
+                        document.querySelector('header').offsetHeight : 80;
+                    
+                    const targetPosition = targetSection.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        }
+        
+        // Cek device dan sesuaikan FAB
+        function updateFabForDevice() {
+            const fab = document.querySelector('.fab-ongkir-mobile');
+            if (!fab) return;
+            
+            // Jika layar sangat kecil, perpendek teks
+            if (window.innerWidth < 350) {
+                fab.querySelector('.fab-text-mobile').textContent = 'Ongkir';
+                fab.style.minWidth = '110px';
+            } else {
+                fab.querySelector('.fab-text-mobile').textContent = 'Cek Ongkir';
+                fab.style.minWidth = '140px';
+            }
+        }
+        
+        // Jalankan saat load dan resize
+        updateFabForDevice();
+        window.addEventListener('resize', updateFabForDevice);
+    });
+    
+    // Animasi muncul saat scroll
+    window.addEventListener('scroll', function() {
+        const fab = document.querySelector('.fab-ongkir-mobile');
+        if (fab) {
+            if (window.scrollY > 500) {
+                fab.style.opacity = '1';
+                fab.style.transform = 'translateY(0) scale(1)';
+            } else {
+                fab.style.opacity = '0.9';
+            }
+        }
+    });
+</script>
 </body>
 </html>
