@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Order Agent - Week Dropdown</title>
+    <title>Dashboard Order Agent - WhatsApp & Payment Status</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -21,7 +22,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -101,6 +102,19 @@
             text-decoration: none;
         }
         
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         .control-panel {
             background-color: white;
             padding: 20px;
@@ -174,6 +188,24 @@
             background-color: #0da271;
         }
         
+        .export-btn {
+            padding: 10px 20px;
+            background-color: #3a56e6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .export-btn:hover {
+            background-color: #2a46d6;
+        }
+        
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -212,37 +244,12 @@
             font-weight: 500;
         }
         
-        .dashboard-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        
-        @media (max-width: 1024px) {
-            .dashboard-content {
-                grid-template-columns: 1fr;
-            }
-            .control-panel {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .control-left {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .week-filter-group {
-                width: 100%;
-            }
-            .week-dropdown {
-                width: 100%;
-            }
-        }
-        
         .panel {
             background-color: white;
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            height: fit-content;
         }
         
         .panel-header {
@@ -443,6 +450,332 @@
             background-color: #f5f5f5;
             color: #999;
         }
+        
+        /* WHATSAPP SECTION STYLES */
+        .whatsapp-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+        
+        .whatsapp-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .whatsapp-icon {
+            color: #25D366;
+            font-size: 24px;
+        }
+        
+        .whatsapp-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .agent-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .agent-select-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .agent-select-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+        }
+        
+        .agent-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .agent-select:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+        
+        .agent-info-card {
+            background-color: #f8f9fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #25D366;
+        }
+        
+        .agent-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .agent-info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .agent-info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .whatsapp-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .whatsapp-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .whatsapp-btn:hover {
+            background-color: #1da851;
+        }
+        
+        .whatsapp-btn.secondary {
+            background-color: #3a56e6;
+        }
+        
+        .whatsapp-btn.secondary:hover {
+            background-color: #2a46d6;
+        }
+        
+        /* PAYMENT SECTION STYLES */
+        .payment-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-icon {
+            color: #10b981;
+            font-size: 24px;
+        }
+        
+        .payment-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .payment-form {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .payment-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .status-paid {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-unpaid {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-partial {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .submit-btn {
+            padding: 12px 20px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0da271;
+        }
+        
+        .payment-history {
+            margin-top: 25px;
+        }
+        
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-date {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .history-amount {
+            font-weight: 600;
+            color: #10b981;
+        }
+        
+        /* TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .toast.info {
+            border-left: 4px solid #3a56e6;
+        }
+        
+        .toast-icon {
+            font-size: 18px;
+        }
+        
+        .toast.success .toast-icon {
+            color: #10b981;
+        }
+        
+        .toast.error .toast-icon {
+            color: #ef4444;
+        }
+        
+        .toast.info .toast-icon {
+            color: #3a56e6;
+        }
+        
+        .toast-message {
+            flex: 1;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -461,7 +794,7 @@
                 <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">
                     Google Sheets Order Agent
                 </a>
-                | Sheet: "To Dashboard" | Filter: Week Dropdown
+                | Sheets: "To Dashboard" & "Database Agent"
             </div>
         </header>
         
@@ -496,9 +829,14 @@
                     </div>
                 </div>
                 
-                <button class="refresh-btn" id="refresh-btn">
-                    🔄 Refresh Data
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="refresh-btn" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                    <button class="export-btn" id="export-excel">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                </div>
             </div>
             
             <!-- CURRENT WEEK DISPLAY -->
@@ -506,100 +844,223 @@
                 Loading...
             </div>
             
-            <!-- SUMMARY CARDS -->
-            <div class="summary-cards">
-                <div class="card">
-                    <div class="card-title">Total Agent Minggu Ini</div>
-                    <div class="card-value" id="card-total-agents">0</div>
+            <!-- WHATSAPP SECTION -->
+            <div class="whatsapp-section">
+                <div class="whatsapp-header">
+                    <i class="fab fa-whatsapp whatsapp-icon"></i>
+                    <h2 class="whatsapp-title">Hubungi Agent via WhatsApp</h2>
                 </div>
-                <div class="card">
-                    <div class="card-title">Total Biaya Admin</div>
-                    <div class="card-value"><span id="card-total-admin">0</span> <span class="card-currency">Rp</span></div>
+                
+                <div class="agent-selector">
+                    <div class="agent-select-group">
+                        <label class="agent-select-label">Pilih Agent:</label>
+                        <select class="agent-select" id="agent-select">
+                            <option value="">Pilih agent...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="agent-select-group">
+                        <label class="agent-select-label">Pilih Week:</label>
+                        <select class="agent-select" id="whatsapp-week-select">
+                            <option value="">Pilih week...</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Total Orderan</div>
-                    <div class="card-value"><span id="card-total-orders">0</span> <span class="card-currency">Rp</span></div>
+                
+                <!-- AGENT INFO CARD -->
+                <div class="agent-info-card" id="agent-info-card" style="display: none;">
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Nama Agent:</span>
+                        <span class="agent-info-value" id="agent-name">-</span>
+                    </div>
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Nomor WhatsApp:</span>
+                        <span class="agent-info-value" id="agent-whatsapp">-</span>
+                    </div>
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Biaya Admin Minggu Ini:</span>
+                        <span class="agent-info-value" id="agent-admin-fee">Rp0</span>
+                    </div>
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Total Orderan:</span>
+                        <span class="agent-info-value" id="agent-total-order">Rp0</span>
+                    </div>
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Status Pembayaran:</span>
+                        <span class="agent-info-value" id="agent-payment-status">Belum diinput</span>
+                    </div>
+                    <div class="agent-info-row">
+                        <span class="agent-info-label">Sisa yang Harus Dibayar:</span>
+                        <span class="agent-info-value" id="agent-remaining-payment">Rp0</span>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-title">Agent dengan Order Tertinggi</div>
-                    <div class="card-value" id="card-top-agent">-</div>
+                
+                <!-- WHATSAPP BUTTONS -->
+                <div class="whatsapp-buttons">
+                    <button class="whatsapp-btn" id="whatsapp-reminder-btn" disabled>
+                        <i class="fab fa-whatsapp"></i> Kirim Pengingat Pembayaran
+                    </button>
+                    <button class="whatsapp-btn secondary" id="whatsapp-contact-btn" disabled>
+                        <i class="fas fa-comment"></i> Hubungi Agent
+                    </button>
                 </div>
             </div>
             
-            <!-- DASHBOARD CONTENT -->
-            <div class="dashboard-content">
-                <!-- LEFT PANEL: TABLE -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">Total per Agent (Minggu Ini)</h2>
-                        <div id="table-subtitle">0 agent</div>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Agent</th>
-                                    <th>Total Biaya Admin (10%)</th>
-                                    <th>Total Orderan</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="agent-table">
-                                <!-- Data will be populated by JavaScript -->
-                            </tbody>
-                            <tfoot>
-                                <tr class="total-row">
-                                    <td colspan="2">TOTAL MINGGU INI</td>
-                                    <td class="currency" id="table-total-admin">Rp0</td>
-                                    <td class="currency" id="table-total-orders">Rp0</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+            <!-- MAIN DASHBOARD CONTENT -->
+            <div class="main-dashboard">
+                <!-- LEFT PANEL: ORDER SUMMARY -->
+                <div>
+                    <!-- SUMMARY CARDS -->
+                    <div class="summary-cards">
+                        <div class="card">
+                            <div class="card-title">Total Agent Minggu Ini</div>
+                            <div class="card-value" id="card-total-agents">0</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Total Biaya Admin</div>
+                            <div class="card-value"><span id="card-total-admin">0</span> <span class="card-currency">Rp</span></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Total Orderan</div>
+                            <div class="card-value"><span id="card-total-orders">0</span> <span class="card-currency">Rp</span></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Agent dengan Order Tertinggi</div>
+                            <div class="card-value" id="card-top-agent">-</div>
+                        </div>
                     </div>
                     
-                    <!-- WEEK STATS -->
-                    <div class="week-stats">
-                        <div class="stat-box">
-                            <div class="stat-label">Agent dengan Admin Fee Tertinggi</div>
-                            <div class="stat-value" id="stat-top-admin">-</div>
+                    <!-- ORDER TABLE PANEL -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Total per Agent (Minggu Ini)</h2>
+                            <div id="table-subtitle">0 agent</div>
                         </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Rata-rata Order per Agent</div>
-                            <div class="stat-value" id="stat-avg-order">Rp0</div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Agent</th>
+                                        <th>Total Biaya Admin (10%)</th>
+                                        <th>Total Orderan</th>
+                                        <th>Status Pembayaran</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agent-table">
+                                    <!-- Data will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="2">TOTAL MINGGU INI</td>
+                                        <td class="currency" id="table-total-admin">Rp0</td>
+                                        <td class="currency" id="table-total-orders">Rp0</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        <!-- WEEK STATS -->
+                        <div class="week-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Agent dengan Admin Fee Tertinggi</div>
+                                <div class="stat-value" id="stat-top-admin">-</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Rata-rata Order per Agent</div>
+                                <div class="stat-value" id="stat-avg-order">Rp0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- RIGHT PANEL: CHART & INFO -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">Distribusi Orderan</h2>
-                        <div id="chart-title">Top 5 Agent</div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="ordersChart"></canvas>
+                <!-- RIGHT PANEL: CHART & PAYMENT -->
+                <div>
+                    <!-- CHART PANEL -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Distribusi Orderan</h2>
+                            <div id="chart-title">Top 5 Agent</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                        
+                        <!-- INFO BOX -->
+                        <div class="info-box">
+                            <div class="info-title">📊 Informasi Dashboard</div>
+                            <p><strong>Mode Aggregated:</strong> Data dikelompokkan per agent per minggu</p>
+                            <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
+                            <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" & "Database Agent"</p>
+                        </div>
                     </div>
                     
-                    <!-- INFO BOX -->
-                    <div class="info-box">
-                        <div class="info-title">📊 Cara Menggunakan Dashboard</div>
-                        <p><strong>1. Pilih Week:</strong> Gunakan dropdown untuk memilih periode mingguan</p>
-                        <p><strong>2. Navigation:</strong> Gunakan tombol ← → untuk berpindah minggu</p>
-                        <p><strong>3. Refresh:</strong> Klik tombol refresh untuk update data terbaru</p>
-                        <p><strong>Mode Aggregated:</strong> Data dijumlahkan per agent per minggu</p>
-                        <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
-                        <p style="margin-top: 10px; font-size: 13px; color: #666;">
-                            💡 Update data di Google Sheets, lalu klik "Refresh Data"
-                        </p>
+                    <!-- PAYMENT SECTION -->
+                    <div class="payment-section">
+                        <div class="payment-header">
+                            <i class="fas fa-money-bill-wave payment-icon"></i>
+                            <h2 class="payment-title">Input Status Pembayaran</h2>
+                        </div>
+                        
+                        <form class="payment-form" id="payment-form">
+                            <div class="form-group">
+                                <label class="form-label">Pilih Agent:</label>
+                                <select class="form-input" id="payment-agent-select" required>
+                                    <option value="">Pilih agent...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Pilih Week:</label>
+                                <select class="form-input" id="payment-week-select" required>
+                                    <option value="">Pilih week...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Total Biaya Admin:</label>
+                                    <input type="text" class="form-input" id="payment-total-admin" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Jumlah yang Sudah Dibayar:</label>
+                                    <input type="number" class="form-input" id="payment-paid-amount" 
+                                           placeholder="Masukkan jumlah" min="0" required>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-status" id="payment-status-display" style="display: none;">
+                                <span id="payment-status-text">Status: </span>
+                                <span id="payment-amount-text">Rp0</span>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-save"></i> Simpan Status Pembayaran
+                            </button>
+                        </form>
+                        
+                        <!-- PAYMENT HISTORY -->
+                        <div class="payment-history">
+                            <h3 class="history-title">Riwayat Pembayaran</h3>
+                            <div id="payment-history-list">
+                                <!-- History will be populated here -->
+                                <div style="text-align: center; color: #888; padding: 20px;">
+                                    Belum ada riwayat pembayaran
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- TOAST NOTIFICATION CONTAINER -->
+        <div class="toast-container" id="toast-container"></div>
+        
         <footer>
-            <p>Dashboard Order Agent &copy; 2025 | Dengan Filter Week Dropdown</p>
+            <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Status Pembayaran</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 Terakhir diupdate: <span id="last-update">-</span>
             </p>
@@ -609,13 +1070,19 @@
     <script>
         // Google Sheets Configuration
         const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
-        const SHEET_NAME = 'To Dashboard';
-        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+        const ORDER_SHEET_NAME = 'To Dashboard';
+        const AGENT_SHEET_NAME = 'Database Agent';
+        const PAYMENT_SHEET_NAME = 'Payment History';
+        
+        const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
+        const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
         
         // Application State
         let rawData = [];
         let aggregatedData = {};
         let availableWeeks = [];
+        let agentDatabase = {};
+        let paymentHistory = {};
         let currentWeekIndex = 0;
         let ordersChart = null;
         
@@ -631,6 +1098,7 @@
             refreshBtn: document.getElementById('refresh-btn'),
             prevWeekBtn: document.getElementById('prev-week'),
             nextWeekBtn: document.getElementById('next-week'),
+            exportExcelBtn: document.getElementById('export-excel'),
             tableSubtitle: document.getElementById('table-subtitle'),
             
             // Summary Cards
@@ -652,13 +1120,85 @@
             chartTitle: document.getElementById('chart-title'),
             
             // Footer
-            lastUpdate: document.getElementById('last-update')
+            lastUpdate: document.getElementById('last-update'),
+            
+            // WhatsApp Section
+            agentSelect: document.getElementById('agent-select'),
+            whatsappWeekSelect: document.getElementById('whatsapp-week-select'),
+            agentInfoCard: document.getElementById('agent-info-card'),
+            agentName: document.getElementById('agent-name'),
+            agentWhatsapp: document.getElementById('agent-whatsapp'),
+            agentAdminFee: document.getElementById('agent-admin-fee'),
+            agentTotalOrder: document.getElementById('agent-total-order'),
+            agentPaymentStatus: document.getElementById('agent-payment-status'),
+            agentRemainingPayment: document.getElementById('agent-remaining-payment'),
+            whatsappReminderBtn: document.getElementById('whatsapp-reminder-btn'),
+            whatsappContactBtn: document.getElementById('whatsapp-contact-btn'),
+            
+            // Payment Section
+            paymentAgentSelect: document.getElementById('payment-agent-select'),
+            paymentWeekSelect: document.getElementById('payment-week-select'),
+            paymentTotalAdmin: document.getElementById('payment-total-admin'),
+            paymentPaidAmount: document.getElementById('payment-paid-amount'),
+            paymentForm: document.getElementById('payment-form'),
+            paymentStatusDisplay: document.getElementById('payment-status-display'),
+            paymentStatusText: document.getElementById('payment-status-text'),
+            paymentAmountText: document.getElementById('payment-amount-text'),
+            paymentHistoryList: document.getElementById('payment-history-list')
         };
+        
+        // Toast Notification System
+        function showToast(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toast-container');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close">&times;</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Show animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            });
+            
+            // Auto remove
+            if (duration > 0) {
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.classList.remove('show');
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, duration);
+            }
+        }
         
         // Format Currency
         function formatCurrency(amount) {
             if (amount === 0 || amount === '0') return 'Rp0';
             return 'Rp' + amount.toLocaleString('id-ID');
+        }
+        
+        // Format WhatsApp number
+        function formatWhatsappNumber(number) {
+            if (!number) return '-';
+            // Remove non-numeric characters
+            const cleanNumber = number.toString().replace(/\D/g, '');
+            // Format: +62 812-3456-7890
+            if (cleanNumber.length >= 10) {
+                return `+${cleanNumber}`;
+            }
+            return cleanNumber;
         }
         
         // Calculate Total Order
@@ -673,7 +1213,7 @@
         }
         
         // Parse CSV Data
-        function parseCSV(csvText) {
+        function parseCSV(csvText, sheetType = 'order') {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const data = [];
             
@@ -694,7 +1234,7 @@
                         columns = lines[i].split(',').map(col => col.trim());
                     }
                     
-                    if (columns.length >= 3) {
+                    if (sheetType === 'order' && columns.length >= 3) {
                         const agent = columns[0];
                         const adminFee = parseInt(columns[1].replace(/[^0-9]/g, '')) || 0;
                         const week = columns[2].trim();
@@ -705,6 +1245,16 @@
                                 agent: agent,
                                 adminFee: adminFee,
                                 week: week
+                            });
+                        }
+                    } else if (sheetType === 'agent' && columns.length >= 2) {
+                        const agent = columns[0];
+                        const whatsapp = columns[1] || '';
+                        
+                        if (agent && agent.trim() !== '') {
+                            data.push({
+                                agent: agent,
+                                whatsapp: whatsapp
                             });
                         }
                     }
@@ -795,34 +1345,120 @@
             
             const weekData = Object.entries(aggregatedData[week]).map(([agent, adminFee]) => {
                 const totalOrder = calculateTotalOrder(adminFee);
+                const paymentInfo = getPaymentInfo(agent, week);
+                const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
+                const remaining = adminFee - paidAmount;
+                
                 return {
                     agent: agent,
                     adminFee: adminFee,
                     totalOrder: totalOrder,
-                    isActive: adminFee > 0
+                    isActive: adminFee > 0,
+                    paidAmount: paidAmount,
+                    remaining: remaining,
+                    paymentStatus: getPaymentStatus(adminFee, paidAmount)
                 };
             });
             
             return weekData;
         }
         
+        // Get payment info for agent in specific week
+        function getPaymentInfo(agent, week) {
+            const key = `${agent}_${week}`;
+            return paymentHistory[key] || null;
+        }
+        
+        // Calculate payment status
+        function getPaymentStatus(totalAdmin, paidAmount) {
+            if (totalAdmin === 0) return 'tidak_ada';
+            if (paidAmount === 0) return 'belum_bayar';
+            if (paidAmount >= totalAdmin) return 'lunas';
+            return 'sebagian';
+        }
+        
+        // Get payment status text
+        function getPaymentStatusText(status, remaining = 0) {
+            switch(status) {
+                case 'tidak_ada':
+                    return 'Tidak ada biaya admin';
+                case 'belum_bayar':
+                    return 'Belum bayar';
+                case 'lunas':
+                    return 'Lunas';
+                case 'sebagian':
+                    return `Sebagian (kurang ${formatCurrency(remaining)})`;
+                default:
+                    return 'Belum diinput';
+            }
+        }
+        
+        // Get payment status class
+        function getPaymentStatusClass(status) {
+            switch(status) {
+                case 'lunas':
+                    return 'status-paid';
+                case 'belum_bayar':
+                    return 'status-unpaid';
+                case 'sebagian':
+                    return 'status-partial';
+                default:
+                    return '';
+            }
+        }
+        
         // Populate week dropdown
         function populateWeekDropdown() {
-            const select = elements.weekDropdown;
-            select.innerHTML = '';
+            const selects = [
+                elements.weekDropdown,
+                elements.whatsappWeekSelect,
+                elements.paymentWeekSelect
+            ];
             
-            availableWeeks.forEach((week, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = week;
-                if (index === currentWeekIndex) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
+            selects.forEach(select => {
+                select.innerHTML = '';
+                
+                availableWeeks.forEach((week, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = week;
+                    if (select === elements.weekDropdown && index === currentWeekIndex) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
             });
             
-            // Enable/disable navigation buttons
             updateNavigationButtons();
+        }
+        
+        // Populate agent dropdowns
+        function populateAgentDropdowns() {
+            const agentSelects = [
+                elements.agentSelect,
+                elements.paymentAgentSelect
+            ];
+            
+            // Get unique agents from order data
+            const agents = new Set();
+            rawData.forEach(item => {
+                if (item.agent && item.agent.trim() !== '') {
+                    agents.add(item.agent);
+                }
+            });
+            
+            const sortedAgents = Array.from(agents).sort();
+            
+            agentSelects.forEach(select => {
+                select.innerHTML = '<option value="">Pilih agent...</option>';
+                
+                sortedAgents.forEach(agent => {
+                    const option = document.createElement('option');
+                    option.value = agent;
+                    option.textContent = agent;
+                    select.appendChild(option);
+                });
+            });
         }
         
         // Update navigation buttons state
@@ -838,22 +1474,25 @@
                 elements.dashboard.style.display = 'none';
                 updateStatus('Mengambil data dari Google Sheets...', 'loading');
                 
-                const response = await fetch(CSV_URL);
+                // Load order data
+                const orderResponse = await fetch(ORDER_CSV_URL);
+                if (!orderResponse.ok) throw new Error(`Order data: HTTP ${orderResponse.status}`);
+                const orderCsv = await orderResponse.text();
+                rawData = parseCSV(orderCsv, 'order');
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                if (rawData.length === 0) throw new Error('Tidak ada data order yang valid');
                 
-                const csvText = await response.text();
-                
-                if (!csvText || csvText.trim().length === 0) {
-                    throw new Error('Data kosong dari Google Sheets');
-                }
-                
-                rawData = parseCSV(csvText);
-                
-                if (rawData.length === 0) {
-                    throw new Error('Tidak ada data yang valid ditemukan');
+                // Load agent database
+                const agentResponse = await fetch(AGENT_CSV_URL);
+                if (agentResponse.ok) {
+                    const agentCsv = await agentResponse.text();
+                    const agentData = parseCSV(agentCsv, 'agent');
+                    
+                    // Convert to object for easy lookup
+                    agentDatabase = {};
+                    agentData.forEach(item => {
+                        agentDatabase[item.agent] = item.whatsapp;
+                    });
                 }
                 
                 // Aggregate data
@@ -861,18 +1500,19 @@
                 
                 // Extract and sort weeks
                 availableWeeks = extractAndSortWeeks(aggregatedData);
-                
-                if (availableWeeks.length === 0) {
-                    throw new Error('Tidak ada week yang ditemukan dalam data');
-                }
+                if (availableWeeks.length === 0) throw new Error('Tidak ada week yang ditemukan');
                 
                 // Set current week to the latest one
                 currentWeekIndex = availableWeeks.length - 1;
                 
-                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu`, '');
+                // Load payment history from localStorage
+                loadPaymentHistory();
                 
-                // Populate week dropdown
+                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu, ${Object.keys(agentDatabase).length} agents`, '');
+                
+                // Populate dropdowns
                 populateWeekDropdown();
+                populateAgentDropdowns();
                 
                 elements.loading.style.display = 'none';
                 elements.dashboard.style.display = 'block';
@@ -880,6 +1520,8 @@
                 elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
                 
                 renderWeekData(currentWeekIndex);
+                
+                showToast('Data berhasil dimuat dari Google Sheets', 'success');
                 
             } catch (error) {
                 console.error('Error loading data:', error);
@@ -891,10 +1533,81 @@
                 elements.dashboard.style.display = 'block';
                 renderWeekData(currentWeekIndex);
                 
-                setTimeout(() => {
-                    alert(`Tidak dapat mengakses Google Sheets. Menggunakan data sample.\n\nError: ${error.message}`);
-                }, 500);
+                showToast(`Menggunakan data sample: ${error.message}`, 'error');
             }
+        }
+        
+        // Load payment history from localStorage
+        function loadPaymentHistory() {
+            const saved = localStorage.getItem('agent_payment_history');
+            if (saved) {
+                try {
+                    paymentHistory = JSON.parse(saved);
+                } catch (e) {
+                    paymentHistory = {};
+                }
+            } else {
+                paymentHistory = {};
+            }
+        }
+        
+        // Save payment history to localStorage
+        function savePaymentHistory() {
+            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+        }
+        
+        // Save payment record
+        function savePayment(agent, week, paidAmount, date) {
+            const key = `${agent}_${week}`;
+            paymentHistory[key] = {
+                agent: agent,
+                week: week,
+                paidAmount: parseInt(paidAmount),
+                date: date || new Date().toISOString()
+            };
+            
+            savePaymentHistory();
+            updatePaymentHistoryDisplay(agent, week);
+        }
+        
+        // Update payment history display
+        function updatePaymentHistoryDisplay(agent, week) {
+            const history = getPaymentHistory(agent, week);
+            
+            if (history.length === 0) {
+                elements.paymentHistoryList.innerHTML = `
+                    <div style="text-align: center; color: #888; padding: 20px;">
+                        Belum ada riwayat pembayaran
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            history.forEach((record, index) => {
+                const date = new Date(record.date).toLocaleDateString('id-ID');
+                html += `
+                    <div class="history-item">
+                        <span class="history-date">${date}</span>
+                        <span class="history-amount">${formatCurrency(record.paidAmount)}</span>
+                    </div>
+                `;
+            });
+            
+            elements.paymentHistoryList.innerHTML = html;
+        }
+        
+        // Get payment history for agent and week
+        function getPaymentHistory(agent, week) {
+            const key = `${agent}_${week}`;
+            const records = [];
+            
+            // Check for specific record
+            if (paymentHistory[key]) {
+                records.push(paymentHistory[key]);
+            }
+            
+            return records;
         }
         
         // Load Sample Data (Fallback)
@@ -944,17 +1657,45 @@
                 
                 { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan" },
                 { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan" },
-                { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" },
-                
-                // Tambah data untuk minggu lain
-                { agent: "Diar", adminFee: 40000, week: "4-10 Jan" },
-                { agent: "Restu", adminFee: 9000, week: "4-10 Jan" },
-                { agent: "Fajar", adminFee: 18000, week: "4-10 Jan" }
+                { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
             ];
+            
+            // Sample agent database
+            agentDatabase = {
+                "Diar": "6281234567890",
+                "Agung": "6282345678901",
+                "Lutfi Majid": "6283456789012",
+                "Restu": "6284567890123",
+                "Bagus": "6285678901234",
+                "Aryo": "6286789012345",
+                "Akhmad Rifki": "6287890123456",
+                "Agus": "6288901234567",
+                "Yosi": "6289012345678",
+                "Mukhlis": "6280123456789",
+                "Andi": "6281123456789",
+                "Panji": "6282123456789",
+                "Awa": "6283123456789",
+                "Mbak Yuni": "6284123456789",
+                "Malek": "6285123456789",
+                "Naily": "6286123456789",
+                "Barkah": "6287123456789",
+                "Ilham": "6288123456789",
+                "Ardi": "6289123456789",
+                "Kharisma": "6280223456789",
+                "PUTRI UTAMI": "6281223456789",
+                "Nia": "6282223456789",
+                "Defita": "6283223456789",
+                "Fajar": "6284223456789",
+                "Angga": "6285223456789",
+                "Acil": "6286223456789"
+            };
             
             aggregatedData = aggregateData(rawData);
             availableWeeks = extractAndSortWeeks(aggregatedData);
             currentWeekIndex = availableWeeks.length - 1;
+            
+            // Load payment history
+            loadPaymentHistory();
         }
         
         // Render Week Data
@@ -1011,14 +1752,14 @@
             updateNavigationButtons();
             
             // Render Table
-            renderTable(weekData);
+            renderTable(weekData, currentWeek);
             
             // Render Chart
             renderChart(weekData, currentWeek);
         }
         
         // Render Table
-        function renderTable(data) {
+        function renderTable(data, week) {
             const tbody = elements.agentTable;
             tbody.innerHTML = '';
             
@@ -1028,15 +1769,16 @@
                 const row = document.createElement('tr');
                 if (item.isActive) row.classList.add('highlight');
                 
+                const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
+                const statusClass = getPaymentStatusClass(item.paymentStatus);
+                
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${item.agent}</td>
                     <td class="currency">${formatCurrency(item.adminFee)}</td>
                     <td class="currency">${formatCurrency(item.totalOrder)}</td>
                     <td>
-                        <span class="${item.isActive ? 'agent-active' : 'agent-inactive'}">
-                            ${item.isActive ? 'Aktif' : 'Tidak Aktif'}
-                        </span>
+                        <span class="${statusClass}">${statusText}</span>
                     </td>
                 `;
                 
@@ -1132,6 +1874,185 @@
             });
         }
         
+        // Update agent info in WhatsApp section
+        function updateAgentInfo() {
+            const agentName = elements.agentSelect.value;
+            const weekIndex = parseInt(elements.whatsappWeekSelect.value);
+            
+            if (!agentName || isNaN(weekIndex)) {
+                elements.agentInfoCard.style.display = 'none';
+                elements.whatsappReminderBtn.disabled = true;
+                elements.whatsappContactBtn.disabled = true;
+                return;
+            }
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) {
+                elements.agentInfoCard.style.display = 'none';
+                elements.whatsappReminderBtn.disabled = true;
+                elements.whatsappContactBtn.disabled = true;
+                return;
+            }
+            
+            // Update agent info
+            elements.agentName.textContent = agentData.agent;
+            elements.agentWhatsapp.textContent = formatWhatsappNumber(agentDatabase[agentData.agent] || '-');
+            elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
+            elements.agentTotalOrder.textContent = formatCurrency(agentData.totalOrder);
+            
+            const statusText = getPaymentStatusText(agentData.paymentStatus, agentData.remaining);
+            elements.agentPaymentStatus.textContent = statusText;
+            elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
+            
+            // Enable/disable buttons
+            const hasWhatsapp = agentDatabase[agentData.agent] && agentDatabase[agentData.agent].trim() !== '';
+            elements.agentInfoCard.style.display = 'block';
+            elements.whatsappContactBtn.disabled = !hasWhatsapp;
+            elements.whatsappReminderBtn.disabled = !hasWhatsapp || agentData.adminFee === 0;
+            
+            // Update payment form
+            updatePaymentForm(agentName, weekIndex);
+        }
+        
+        // Update payment form
+        function updatePaymentForm(agentName, weekIndex) {
+            if (!agentName || isNaN(weekIndex)) return;
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) return;
+            
+            // Update form values
+            elements.paymentAgentSelect.value = agentName;
+            elements.paymentWeekSelect.value = weekIndex;
+            elements.paymentTotalAdmin.value = formatCurrency(agentData.adminFee);
+            elements.paymentPaidAmount.value = agentData.paidAmount || '';
+            
+            // Calculate and display payment status
+            calculatePaymentStatus(agentData.adminFee, agentData.paidAmount || 0);
+            
+            // Update payment history
+            updatePaymentHistoryDisplay(agentName, week);
+        }
+        
+        // Calculate and display payment status
+        function calculatePaymentStatus(totalAdmin, paidAmount) {
+            if (totalAdmin === 0) {
+                elements.paymentStatusDisplay.style.display = 'none';
+                return;
+            }
+            
+            const remaining = totalAdmin - paidAmount;
+            let statusText = '';
+            let statusClass = '';
+            
+            if (paidAmount === 0) {
+                statusText = 'Belum bayar';
+                statusClass = 'status-unpaid';
+            } else if (paidAmount >= totalAdmin) {
+                statusText = 'Lunas';
+                statusClass = 'status-paid';
+            } else {
+                statusText = `Sebagian (kurang ${formatCurrency(remaining)})`;
+                statusClass = 'status-partial';
+            }
+            
+            elements.paymentStatusText.textContent = `Status: ${statusText}`;
+            elements.paymentAmountText.textContent = formatCurrency(paidAmount);
+            elements.paymentStatusDisplay.className = `payment-status ${statusClass}`;
+            elements.paymentStatusDisplay.style.display = 'flex';
+        }
+        
+        // Send WhatsApp message
+        function sendWhatsAppMessage(phoneNumber, message) {
+            if (!phoneNumber) {
+                showToast('Nomor WhatsApp tidak tersedia', 'error');
+                return;
+            }
+            
+            const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+            if (cleanNumber.length < 10) {
+                showToast('Nomor WhatsApp tidak valid', 'error');
+                return;
+            }
+            
+            const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+        
+        // Generate reminder message
+        function generateReminderMessage(agentName, week, adminFee, paidAmount, remaining) {
+            const formattedWeek = week;
+            const formattedAdminFee = formatCurrency(adminFee);
+            const formattedPaid = formatCurrency(paidAmount);
+            const formattedRemaining = formatCurrency(remaining);
+            
+            let message = `Halo ${agentName}!\n\n`;
+            message += `Ini pengingat untuk pembayaran biaya admin periode *${formattedWeek}*.\n\n`;
+            message += `📊 *Detail Tagihan:*\n`;
+            message += `• Total Biaya Admin: ${formattedAdminFee}\n`;
+            message += `• Sudah dibayar: ${formattedPaid}\n`;
+            
+            if (remaining > 0) {
+                message += `• *Sisa yang harus dibayar: ${formattedRemaining}*\n\n`;
+                message += `Silakan lunasi pembayaran segera ya. Terima kasih! 😊`;
+            } else if (paidAmount >= adminFee) {
+                message += `• *Status: LUNAS* ✅\n\n`;
+                message += `Terima kasih telah melunasi pembayaran!`;
+            } else {
+                message += `\nSilakan bayar biaya admin sebesar ${formattedAdminFee}. Terima kasih!`;
+            }
+            
+            return message;
+        }
+        
+        // Export to Excel
+        function exportToExcel() {
+            try {
+                const currentWeek = availableWeeks[currentWeekIndex];
+                const weekData = getAggregatedWeekData(currentWeek);
+                
+                if (weekData.length === 0) {
+                    showToast('Tidak ada data untuk diexport!', 'error');
+                    return;
+                }
+                
+                // Create CSV content
+                let csvContent = "No,Nama Agent,Biaya Admin (10%),Total Orderan,Status Pembayaran,WhatsApp\n";
+                
+                weekData.forEach((item, index) => {
+                    const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
+                    const whatsapp = agentDatabase[item.agent] || '-';
+                    
+                    csvContent += `${index + 1},"${item.agent}",${item.adminFee},${item.totalOrder},"${statusText}","${whatsapp}"\n`;
+                });
+                
+                // Create blob and download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `Order_Agent_${currentWeek.replace(/\s+/g, '_')}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast(`Data berhasil diexport: ${weekData.length} records`, 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Error saat export data', 'error');
+            }
+        }
+        
         // Navigate to previous week
         function goToPreviousWeek() {
             if (currentWeekIndex > 0) {
@@ -1148,7 +2069,7 @@
             }
         }
         
-        // Handle dropdown change
+        // Handle week dropdown change
         function handleWeekDropdownChange() {
             const selectedIndex = parseInt(elements.weekDropdown.value);
             if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < availableWeeks.length) {
@@ -1157,16 +2078,132 @@
             }
         }
         
+        // Handle WhatsApp agent select change
+        function handleWhatsappAgentChange() {
+            updateAgentInfo();
+        }
+        
+        // Handle WhatsApp week select change
+        function handleWhatsappWeekChange() {
+            updateAgentInfo();
+        }
+        
+        // Handle payment form submission
+        function handlePaymentFormSubmit(e) {
+            e.preventDefault();
+            
+            const agentName = elements.paymentAgentSelect.value;
+            const weekIndex = parseInt(elements.paymentWeekSelect.value);
+            const paidAmount = parseInt(elements.paymentPaidAmount.value);
+            
+            if (!agentName || isNaN(weekIndex) || isNaN(paidAmount) || paidAmount < 0) {
+                showToast('Harap isi semua field dengan benar', 'error');
+                return;
+            }
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) {
+                showToast('Data agent tidak ditemukan', 'error');
+                return;
+            }
+            
+            if (paidAmount > agentData.adminFee) {
+                showToast('Jumlah pembayaran tidak boleh melebihi biaya admin', 'error');
+                return;
+            }
+            
+            // Save payment
+            savePayment(agentName, week, paidAmount);
+            
+            // Update UI
+            updateAgentInfo();
+            
+            // Show success message
+            const remaining = agentData.adminFee - paidAmount;
+            if (remaining === 0) {
+                showToast(`Pembayaran lunas untuk ${agentName}`, 'success');
+            } else if (paidAmount === 0) {
+                showToast(`Status pembayaran direset untuk ${agentName}`, 'info');
+            } else {
+                showToast(`Pembayaran sebagian ${formatCurrency(paidAmount)} untuk ${agentName}`, 'success');
+            }
+            
+            // Reset form
+            elements.paymentPaidAmount.value = '';
+        }
+        
+        // Handle WhatsApp reminder button click
+        function handleWhatsappReminderClick() {
+            const agentName = elements.agentSelect.value;
+            const weekIndex = parseInt(elements.whatsappWeekSelect.value);
+            
+            if (!agentName || isNaN(weekIndex)) return;
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) return;
+            
+            const phoneNumber = agentDatabase[agentName];
+            const message = generateReminderMessage(
+                agentName, 
+                week, 
+                agentData.adminFee, 
+                agentData.paidAmount || 0, 
+                agentData.remaining
+            );
+            
+            sendWhatsAppMessage(phoneNumber, message);
+        }
+        
+        // Handle WhatsApp contact button click
+        function handleWhatsappContactClick() {
+            const agentName = elements.agentSelect.value;
+            
+            if (!agentName) return;
+            
+            const phoneNumber = agentDatabase[agentName];
+            const message = `Halo ${agentName}! Ada yang bisa saya bantu?`;
+            
+            sendWhatsAppMessage(phoneNumber, message);
+        }
+        
         // Initialize Dashboard
         document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners
             elements.refreshBtn.addEventListener('click', loadData);
+            elements.exportExcelBtn.addEventListener('click', exportToExcel);
             elements.prevWeekBtn.addEventListener('click', goToPreviousWeek);
             elements.nextWeekBtn.addEventListener('click', goToNextWeek);
             elements.weekDropdown.addEventListener('change', handleWeekDropdownChange);
             
+            // WhatsApp section
+            elements.agentSelect.addEventListener('change', handleWhatsappAgentChange);
+            elements.whatsappWeekSelect.addEventListener('change', handleWhatsappWeekChange);
+            elements.whatsappReminderBtn.addEventListener('click', handleWhatsappReminderClick);
+            elements.whatsappContactBtn.addEventListener('click', handleWhatsappContactClick);
+            
+            // Payment section
+            elements.paymentForm.addEventListener('submit', handlePaymentFormSubmit);
+            elements.paymentAgentSelect.addEventListener('change', function() {
+                updatePaymentForm(this.value, parseInt(elements.paymentWeekSelect.value));
+            });
+            elements.paymentWeekSelect.addEventListener('change', function() {
+                updatePaymentForm(elements.paymentAgentSelect.value, parseInt(this.value));
+            });
+            elements.paymentPaidAmount.addEventListener('input', function() {
+                const totalAdmin = parseInt(elements.paymentTotalAdmin.value.replace(/\D/g, '') || 0);
+                const paidAmount = parseInt(this.value || 0);
+                calculatePaymentStatus(totalAdmin, paidAmount);
+            });
+            
             // Load data initially
-            loadData();;
+            loadData();
+
         });
     </script>
 </body>
