@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Order Agent</title>
+    <title>Dashboard Order Agent - Week Dropdown</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -17,6 +17,7 @@
             background-color: #f5f7fa;
             color: #333;
             padding: 20px;
+            min-height: 100vh;
         }
         
         .container {
@@ -41,16 +42,136 @@
         .period-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 5px;
+            flex-wrap: wrap;
         }
         
         .period-badge {
             background-color: rgba(255, 255, 255, 0.2);
-            padding: 6px 12px;
+            padding: 8px 15px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: 600;
+        }
+        
+        .data-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+        
+        .status-dot.loading {
+            background-color: #f59e0b;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-dot.error {
+            background-color: #ef4444;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .sheet-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .sheet-info a {
+            color: white;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        
+        .sheet-info a:hover {
+            text-decoration: none;
+        }
+        
+        .control-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .control-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .control-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .week-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .week-dropdown {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+        
+        .week-dropdown:focus {
+            outline: none;
+            border-color: #3a56e6;
+            box-shadow: 0 0 0 3px rgba(58, 86, 230, 0.1);
+        }
+        
+        .refresh-btn {
+            padding: 10px 25px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #0da271;
         }
         
         .summary-cards {
@@ -77,9 +198,6 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
         .card-value {
@@ -94,17 +212,6 @@
             font-weight: 500;
         }
         
-        .card.active {
-            background: linear-gradient(135deg, #4f6ef7, #3a56e6);
-            color: white;
-        }
-        
-        .card.active .card-title,
-        .card.active .card-value,
-        .card.active .card-currency {
-            color: white;
-        }
-        
         .dashboard-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -114,6 +221,20 @@
         @media (max-width: 1024px) {
             .dashboard-content {
                 grid-template-columns: 1fr;
+            }
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .control-left {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .week-filter-group {
+                width: 100%;
+            }
+            .week-dropdown {
+                width: 100%;
             }
         }
         
@@ -143,6 +264,8 @@
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #eee;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         table {
@@ -174,24 +297,6 @@
             background-color: #f8f9fd;
         }
         
-        .status-active {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #10b981;
-            border: 2px solid #d1fae5;
-        }
-        
-        .status-inactive {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #efefef;
-            border: 2px solid #e5e7eb;
-        }
-        
         .currency {
             font-family: 'Courier New', monospace;
             font-weight: 600;
@@ -199,7 +304,6 @@
         
         .highlight {
             background-color: #f0f4ff;
-            font-weight: 600;
         }
         
         .total-row {
@@ -222,280 +326,763 @@
             border-top: 1px solid #eee;
         }
         
-        .filter-controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .filter-btn {
-            padding: 8px 16px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .filter-btn:hover {
-            background-color: #f0f4ff;
-        }
-        
-        .filter-btn.active {
-            background-color: #3a56e6;
-            color: white;
-            border-color: #3a56e6;
-        }
-        
-        .no-data {
+        .loading {
             text-align: center;
             padding: 40px;
-            color: #888;
-            font-style: italic;
+            color: #3a56e6;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3a56e6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background-color: #f8f9fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #3a56e6;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #3a56e6;
+        }
+        
+        .week-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background-color: #f8f9fd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3a56e6;
+        }
+        
+        .agent-active {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .agent-inactive {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .current-week-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3a56e6;
+            padding: 10px 15px;
+            background-color: #f0f4ff;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .nav-btn {
+            padding: 8px 15px;
+            background-color: #f0f4ff;
+            border: 1px solid #3a56e6;
+            color: #3a56e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .nav-btn:hover {
+            background-color: #3a56e6;
+            color: white;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+            border-color: #ddd;
+            color: #999;
+        }
+        
+        .nav-btn:disabled:hover {
+            background-color: #f5f5f5;
+            color: #999;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Dashboard Ringkasan Order Agent</h1>
+            <h1>Dashboard Order Agent</h1>
             <div class="period-info">
-                <div class="period-badge">Periode: 11 Jan - 17 Jan</div>
-                <div>Data diperbarui: 18 Jan 2025</div>
+                <div class="period-badge" id="current-week">Minggu: Loading...</div>
+                <div class="data-status">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="data-status">Memuat data dari Google Sheets...</span>
+                </div>
             </div>
-            <p>Data nominal yang ditampilkan adalah biaya admin (10%) dari total orderan</p>
+            <div class="sheet-info">
+                🔗 Terhubung ke: 
+                <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">
+                    Google Sheets Order Agent
+                </a>
+                | Sheet: "To Dashboard" | Filter: Week Dropdown
+            </div>
         </header>
         
-        <div class="summary-cards">
-            <div class="card active">
-                <div class="card-title">Total Agent</div>
-                <div class="card-value" id="total-agents">0</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Total Orderan (Keseluruhan)</div>
-                <div class="card-value"><span id="total-orders">0</span> <span class="card-currency">Rp</span></div>
-            </div>
-            <div class="card">
-                <div class="card-title">Total Biaya Admin</div>
-                <div class="card-value"><span id="total-admin-fee">0</span> <span class="card-currency">Rp</span></div>
-            </div>
-            <div class="card">
-                <div class="card-title">Agent dengan Order Tertinggi</div>
-                <div class="card-value" id="top-agent">-</div>
-            </div>
+        <!-- LOADING INDICATOR -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Mengambil data dari Google Sheets...</p>
         </div>
         
-        <div class="filter-controls">
-            <button class="filter-btn active" data-filter="all">Semua Agent</button>
-            <button class="filter-btn" data-filter="active">Aktif (☑)</button>
-            <button class="filter-btn" data-filter="inactive">Tidak Aktif (☐)</button>
-            <button class="filter-btn" data-filter="top10">Top 10 Agent</button>
-        </div>
-        
-        <div class="dashboard-content">
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Detail Order per Agent</h2>
-                    <div>Total: <span id="table-count">27</span> agent</div>
+        <!-- DASHBOARD CONTENT -->
+        <div id="dashboard" style="display: none;">
+            <!-- CONTROL PANEL -->
+            <div class="control-panel">
+                <div class="control-left">
+                    <div class="control-title">Pilih Periode Mingguan</div>
+                    
+                    <div class="week-filter-group">
+                        <span class="filter-label">Pilih Week:</span>
+                        <select class="week-dropdown" id="week-dropdown">
+                            <option value="">Loading weeks...</option>
+                        </select>
+                    </div>
+                    
+                    <!-- NAVIGATION BUTTONS -->
+                    <div class="nav-buttons">
+                        <button class="nav-btn" id="prev-week" disabled>
+                            ← Minggu Sebelumnya
+                        </button>
+                        <button class="nav-btn" id="next-week" disabled>
+                            Minggu Berikutnya →
+                        </button>
+                    </div>
                 </div>
-                <div class="table-container">
-                    <table id="agent-table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Agent</th>
-                                <th>Status</th>
-                                <th>Biaya Admin (10%)</th>
-                                <th>Total Orderan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="agent-table-body">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td colspan="3">TOTAL</td>
-                                <td class="currency" id="total-admin-footer">Rp0</td>
-                                <td class="currency" id="total-orders-footer">Rp0</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                
+                <button class="refresh-btn" id="refresh-btn">
+                    🔄 Refresh Data
+                </button>
+            </div>
+            
+            <!-- CURRENT WEEK DISPLAY -->
+            <div class="current-week-display" id="week-display">
+                Loading...
+            </div>
+            
+            <!-- SUMMARY CARDS -->
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-title">Total Agent Minggu Ini</div>
+                    <div class="card-value" id="card-total-agents">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Biaya Admin</div>
+                    <div class="card-value"><span id="card-total-admin">0</span> <span class="card-currency">Rp</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Orderan</div>
+                    <div class="card-value"><span id="card-total-orders">0</span> <span class="card-currency">Rp</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Agent dengan Order Tertinggi</div>
+                    <div class="card-value" id="card-top-agent">-</div>
                 </div>
             </div>
             
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Distribusi Orderan</h2>
-                    <div>Perbandingan 5 Agent Teratas</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="ordersChart"></canvas>
+            <!-- DASHBOARD CONTENT -->
+            <div class="dashboard-content">
+                <!-- LEFT PANEL: TABLE -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Total per Agent (Minggu Ini)</h2>
+                        <div id="table-subtitle">0 agent</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Agent</th>
+                                    <th>Total Biaya Admin (10%)</th>
+                                    <th>Total Orderan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agent-table">
+                                <!-- Data will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="2">TOTAL MINGGU INI</td>
+                                    <td class="currency" id="table-total-admin">Rp0</td>
+                                    <td class="currency" id="table-total-orders">Rp0</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <!-- WEEK STATS -->
+                    <div class="week-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Agent dengan Admin Fee Tertinggi</div>
+                            <div class="stat-value" id="stat-top-admin">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Rata-rata Order per Agent</div>
+                            <div class="stat-value" id="stat-avg-order">Rp0</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div style="margin-top: 30px;">
+                <!-- RIGHT PANEL: CHART & INFO -->
+                <div class="panel">
                     <div class="panel-header">
-                        <h3 class="panel-title">Rincian Perhitungan</h3>
+                        <h2 class="panel-title">Distribusi Orderan</h2>
+                        <div id="chart-title">Top 5 Agent</div>
                     </div>
-                    <div style="background-color: #f8f9fd; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                        <p><strong>Rumus perhitungan:</strong></p>
-                        <p>Biaya Admin = 10% × Total Orderan</p>
-                        <p>Total Orderan = Biaya Admin × 10</p>
-                        <p><strong>Contoh (Agent Diar):</strong></p>
-                        <p>Biaya Admin = Rp66.000 → Total Orderan = Rp66.000 × 10 = <strong>Rp660.000</strong></p>
+                    <div class="chart-container">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                    
+                    <!-- INFO BOX -->
+                    <div class="info-box">
+                        <div class="info-title">📊 Cara Menggunakan Dashboard</div>
+                        <p><strong>1. Pilih Week:</strong> Gunakan dropdown untuk memilih periode mingguan</p>
+                        <p><strong>2. Navigation:</strong> Gunakan tombol ← → untuk berpindah minggu</p>
+                        <p><strong>3. Refresh:</strong> Klik tombol refresh untuk update data terbaru</p>
+                        <p><strong>Mode Aggregated:</strong> Data dijumlahkan per agent per minggu</p>
+                        <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
+                        <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                            💡 Update data di Google Sheets, lalu klik "Refresh Data"
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>Dashboard Order Agent &copy; 2025 | Data diambil dari laporan periode 11-17 Januari</p>
+            <p>Dashboard Order Agent &copy; 2025 | Dengan Filter Week Dropdown</p>
+            <p style="font-size: 12px; margin-top: 5px;">
+                Terakhir diupdate: <span id="last-update">-</span>
+            </p>
         </footer>
     </div>
 
     <script>
-        // Data dari gambar
-        const agentData = [
-            { name: "Diar", status: true, adminFee: 66000 },
-            { name: "Agung", status: false, adminFee: 0 },
-            { name: "Lutfi Majid", status: false, adminFee: 15500 },
-            { name: "Restu", status: false, adminFee: 3000 },
-            { name: "Bagus", status: false, adminFee: 1600 },
-            { name: "Aryo", status: false, adminFee: 2000 },
-            { name: "Akhmad Rifki", status: false, adminFee: 15200 },
-            { name: "Agus", status: false, adminFee: 0 },
-            { name: "Yosi", status: false, adminFee: 4900 },
-            { name: "Mukhlis", status: false, adminFee: 0 },
-            { name: "Andi", status: false, adminFee: 6700 },
-            { name: "Panji", status: false, adminFee: 0 },
-            { name: "Awa", status: false, adminFee: 1500 },
-            { name: "Mbak Yuni", status: false, adminFee: 0 },
-            { name: "Malek", status: false, adminFee: 0 },
-            { name: "Naily", status: false, adminFee: 0 },
-            { name: "Barkah", status: false, adminFee: 0 },
-            { name: "Ilham", status: false, adminFee: 0 },
-            { name: "Ardi", status: false, adminFee: 7500 },
-            { name: "Kharisma", status: false, adminFee: 25600 },
-            { name: "PUTRI UTAMI", status: false, adminFee: 10000 },
-            { name: "Nia", status: false, adminFee: 0 },
-            { name: "Defita", status: false, adminFee: 31200 },
-            { name: "Fajar", status: false, adminFee: 31300 },
-            { name: "Angga", status: false, adminFee: 1200 },
-            { name: "Acil", status: false, adminFee: 0 }
-        ];
-
-        // Format angka ke format mata uang Rupiah
+        // Google Sheets Configuration
+        const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
+        const SHEET_NAME = 'To Dashboard';
+        const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+        
+        // Application State
+        let rawData = [];
+        let aggregatedData = {};
+        let availableWeeks = [];
+        let currentWeekIndex = 0;
+        let ordersChart = null;
+        
+        // DOM Elements
+        const elements = {
+            loading: document.getElementById('loading'),
+            dashboard: document.getElementById('dashboard'),
+            statusDot: document.getElementById('status-dot'),
+            dataStatus: document.getElementById('data-status'),
+            currentWeek: document.getElementById('current-week'),
+            weekDisplay: document.getElementById('week-display'),
+            weekDropdown: document.getElementById('week-dropdown'),
+            refreshBtn: document.getElementById('refresh-btn'),
+            prevWeekBtn: document.getElementById('prev-week'),
+            nextWeekBtn: document.getElementById('next-week'),
+            tableSubtitle: document.getElementById('table-subtitle'),
+            
+            // Summary Cards
+            cardTotalAgents: document.getElementById('card-total-agents'),
+            cardTotalAdmin: document.getElementById('card-total-admin'),
+            cardTotalOrders: document.getElementById('card-total-orders'),
+            cardTopAgent: document.getElementById('card-top-agent'),
+            
+            // Table Elements
+            agentTable: document.getElementById('agent-table'),
+            tableTotalAdmin: document.getElementById('table-total-admin'),
+            tableTotalOrders: document.getElementById('table-total-orders'),
+            
+            // Stats
+            statTopAdmin: document.getElementById('stat-top-admin'),
+            statAvgOrder: document.getElementById('stat-avg-order'),
+            
+            // Chart
+            chartTitle: document.getElementById('chart-title'),
+            
+            // Footer
+            lastUpdate: document.getElementById('last-update')
+        };
+        
+        // Format Currency
         function formatCurrency(amount) {
-            return new Intl.NumberFormat('id-ID', { 
-                style: 'currency', 
-                currency: 'IDR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount);
+            if (amount === 0 || amount === '0') return 'Rp0';
+            return 'Rp' + amount.toLocaleString('id-ID');
         }
-
-        // Hitung total orderan dari biaya admin (adminFee * 10)
+        
+        // Calculate Total Order
         function calculateTotalOrder(adminFee) {
-            return adminFee * 10;
+            return parseInt(adminFee) * 10;
         }
-
-        // Render data ke tabel
-        function renderTable(data) {
-            const tableBody = document.getElementById('agent-table-body');
-            tableBody.innerHTML = '';
+        
+        // Update Status Indicator
+        function updateStatus(text, type = 'loading') {
+            elements.dataStatus.textContent = text;
+            elements.statusDot.className = 'status-dot ' + type;
+        }
+        
+        // Parse CSV Data
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const data = [];
             
-            let totalAdminFee = 0;
-            let totalOrders = 0;
+            let startIndex = 0;
+            if (lines[0].toLowerCase().includes('agent') || lines[0].toLowerCase().includes('nama')) {
+                startIndex = 1;
+            }
             
-            data.forEach((agent, index) => {
-                const totalOrder = calculateTotalOrder(agent.adminFee);
-                totalAdminFee += agent.adminFee;
-                totalOrders += totalOrder;
+            for (let i = startIndex; i < lines.length; i++) {
+                try {
+                    let columns;
+                    
+                    const matches = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                    
+                    if (matches) {
+                        columns = matches.map(col => col.replace(/^"|"$/g, '').trim());
+                    } else {
+                        columns = lines[i].split(',').map(col => col.trim());
+                    }
+                    
+                    if (columns.length >= 3) {
+                        const agent = columns[0];
+                        const adminFee = parseInt(columns[1].replace(/[^0-9]/g, '')) || 0;
+                        const week = columns[2].trim();
+                        
+                        if (agent && agent !== 'Agent' && agent !== 'Nama Agent' && 
+                            agent !== '' && week !== '') {
+                            data.push({
+                                agent: agent,
+                                adminFee: adminFee,
+                                week: week
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Error parsing line:', lines[i], error);
+                }
+            }
+            
+            return data;
+        }
+        
+        // Aggregate data per agent per week
+        function aggregateData(data) {
+            const aggregated = {};
+            
+            data.forEach(item => {
+                const { agent, adminFee, week } = item;
                 
+                if (!aggregated[week]) {
+                    aggregated[week] = {};
+                }
+                
+                if (!aggregated[week][agent]) {
+                    aggregated[week][agent] = 0;
+                }
+                
+                aggregated[week][agent] += adminFee;
+            });
+            
+            return aggregated;
+        }
+        
+        // Extract unique weeks from aggregated data
+        function extractAndSortWeeks(aggregatedData) {
+            const weeks = Object.keys(aggregatedData);
+            
+            function parseWeekToDate(weekStr) {
+                try {
+                    const parts = weekStr.split('-');
+                    if (parts.length >= 1) {
+                        const startPart = parts[0].trim();
+                        const dateMatch = startPart.match(/(\d+)\s*(\w+)/);
+                        
+                        if (dateMatch) {
+                            const day = parseInt(dateMatch[1]);
+                            const monthStr = dateMatch[2].toLowerCase();
+                            
+                            const monthMap = {
+                                'jan': 0, 'januari': 0,
+                                'feb': 1, 'februari': 1,
+                                'mar': 2, 'maret': 2,
+                                'apr': 3, 'april': 3,
+                                'mei': 4, 'may': 4,
+                                'jun': 5, 'juni': 5,
+                                'jul': 6, 'juli': 6,
+                                'agu': 7, 'agustus': 7, 'aug': 7,
+                                'sep': 8, 'september': 8,
+                                'okt': 9, 'oktober': 9, 'oct': 9,
+                                'nov': 10, 'november': 10,
+                                'des': 11, 'desember': 11, 'dec': 11
+                            };
+                            
+                            const month = monthMap[monthStr];
+                            if (month !== undefined) {
+                                return new Date(2024, month, day);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error parsing week:', weekStr, e);
+                }
+                
+                return new Date(2000, 0, 1);
+            }
+            
+            return weeks.sort((a, b) => {
+                const dateA = parseWeekToDate(a);
+                const dateB = parseWeekToDate(b);
+                return dateA - dateB;
+            });
+        }
+        
+        // Get aggregated data for a specific week
+        function getAggregatedWeekData(week) {
+            if (!aggregatedData[week]) {
+                return [];
+            }
+            
+            const weekData = Object.entries(aggregatedData[week]).map(([agent, adminFee]) => {
+                const totalOrder = calculateTotalOrder(adminFee);
+                return {
+                    agent: agent,
+                    adminFee: adminFee,
+                    totalOrder: totalOrder,
+                    isActive: adminFee > 0
+                };
+            });
+            
+            return weekData;
+        }
+        
+        // Populate week dropdown
+        function populateWeekDropdown() {
+            const select = elements.weekDropdown;
+            select.innerHTML = '';
+            
+            availableWeeks.forEach((week, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = week;
+                if (index === currentWeekIndex) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            // Enable/disable navigation buttons
+            updateNavigationButtons();
+        }
+        
+        // Update navigation buttons state
+        function updateNavigationButtons() {
+            elements.prevWeekBtn.disabled = currentWeekIndex === 0;
+            elements.nextWeekBtn.disabled = currentWeekIndex === availableWeeks.length - 1;
+        }
+        
+        // Load Data from Google Sheets
+        async function loadData() {
+            try {
+                elements.loading.style.display = 'block';
+                elements.dashboard.style.display = 'none';
+                updateStatus('Mengambil data dari Google Sheets...', 'loading');
+                
+                const response = await fetch(CSV_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const csvText = await response.text();
+                
+                if (!csvText || csvText.trim().length === 0) {
+                    throw new Error('Data kosong dari Google Sheets');
+                }
+                
+                rawData = parseCSV(csvText);
+                
+                if (rawData.length === 0) {
+                    throw new Error('Tidak ada data yang valid ditemukan');
+                }
+                
+                // Aggregate data
+                aggregatedData = aggregateData(rawData);
+                
+                // Extract and sort weeks
+                availableWeeks = extractAndSortWeeks(aggregatedData);
+                
+                if (availableWeeks.length === 0) {
+                    throw new Error('Tidak ada week yang ditemukan dalam data');
+                }
+                
+                // Set current week to the latest one
+                currentWeekIndex = availableWeeks.length - 1;
+                
+                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu`, '');
+                
+                // Populate week dropdown
+                populateWeekDropdown();
+                
+                elements.loading.style.display = 'none';
+                elements.dashboard.style.display = 'block';
+                
+                elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
+                
+                renderWeekData(currentWeekIndex);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                updateStatus(`Error: ${error.message}`, 'error');
+                
+                loadSampleData();
+                
+                elements.loading.style.display = 'none';
+                elements.dashboard.style.display = 'block';
+                renderWeekData(currentWeekIndex);
+                
+                setTimeout(() => {
+                    alert(`Tidak dapat mengakses Google Sheets. Menggunakan data sample.\n\nError: ${error.message}`);
+                }, 500);
+            }
+        }
+        
+        // Load Sample Data (Fallback)
+        function loadSampleData() {
+            rawData = [
+                { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 30000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 10000, week: "14-20 Des" },
+                { agent: "Agung", adminFee: 0, week: "14-20 Des" },
+                { agent: "Lutfi Majid", adminFee: 15500, week: "14-20 Des" },
+                { agent: "Restu", adminFee: 3000, week: "14-20 Des" },
+                { agent: "Restu", adminFee: 2000, week: "14-20 Des" },
+                { agent: "Bagus", adminFee: 1600, week: "14-20 Des" },
+                { agent: "Aryo", adminFee: 2000, week: "14-20 Des" },
+                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des" },
+                { agent: "Agus", adminFee: 0, week: "14-20 Des" },
+                { agent: "Yosi", adminFee: 4900, week: "14-20 Des" },
+                { agent: "Yosi", adminFee: 3100, week: "14-20 Des" },
+                { agent: "Mukhlis", adminFee: 0, week: "14-20 Des" },
+                { agent: "Andi", adminFee: 6700, week: "14-20 Des" },
+                { agent: "Panji", adminFee: 0, week: "14-20 Des" },
+                { agent: "Awa", adminFee: 1500, week: "14-20 Des" },
+                { agent: "Mbak Yuni", adminFee: 0, week: "14-20 Des" },
+                { agent: "Malek", adminFee: 0, week: "14-20 Des" },
+                { agent: "Naily", adminFee: 0, week: "14-20 Des" },
+                { agent: "Barkah", adminFee: 0, week: "14-20 Des" },
+                { agent: "Ilham", adminFee: 0, week: "14-20 Des" },
+                { agent: "Ardi", adminFee: 7500, week: "14-20 Des" },
+                { agent: "Kharisma", adminFee: 25600, week: "14-20 Des" },
+                { agent: "PUTRI UTAMI", adminFee: 10000, week: "14-20 Des" },
+                { agent: "Nia", adminFee: 0, week: "14-20 Des" },
+                { agent: "Defita", adminFee: 31200, week: "14-20 Des" },
+                { agent: "Fajar", adminFee: 31300, week: "14-20 Des" },
+                { agent: "Angga", adminFee: 1200, week: "14-20 Des" },
+                { agent: "Acil", adminFee: 0, week: "14-20 Des" },
+                
+                { agent: "Diar", adminFee: 25000, week: "21-27 Des" },
+                { agent: "Diar", adminFee: 35000, week: "21-27 Des" },
+                { agent: "Restu", adminFee: 8000, week: "21-27 Des" },
+                { agent: "Restu", adminFee: 7000, week: "21-27 Des" },
+                { agent: "Fajar", adminFee: 28500, week: "21-27 Des" },
+                { agent: "Kharisma", adminFee: 32000, week: "21-27 Des" },
+                { agent: "Agung", adminFee: 12000, week: "21-27 Des" },
+                { agent: "Defita", adminFee: 41500, week: "21-27 Des" },
+                { agent: "Lutfi Majid", adminFee: 22500, week: "21-27 Des" },
+                { agent: "Akhmad Rifki", adminFee: 18500, week: "21-27 Des" },
+                
+                { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan" },
+                { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan" },
+                { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" },
+                
+                // Tambah data untuk minggu lain
+                { agent: "Diar", adminFee: 40000, week: "4-10 Jan" },
+                { agent: "Restu", adminFee: 9000, week: "4-10 Jan" },
+                { agent: "Fajar", adminFee: 18000, week: "4-10 Jan" }
+            ];
+            
+            aggregatedData = aggregateData(rawData);
+            availableWeeks = extractAndSortWeeks(aggregatedData);
+            currentWeekIndex = availableWeeks.length - 1;
+        }
+        
+        // Render Week Data
+        function renderWeekData(weekIndex) {
+            const currentWeek = availableWeeks[weekIndex];
+            
+            // Update dropdown selection
+            elements.weekDropdown.value = weekIndex;
+            
+            // Get aggregated data untuk week yang dipilih
+            const weekData = getAggregatedWeekData(currentWeek);
+            
+            // Update UI
+            elements.currentWeek.textContent = `Minggu: ${currentWeek}`;
+            elements.weekDisplay.textContent = currentWeek;
+            elements.tableSubtitle.textContent = `${currentWeek}: ${weekData.length} agent`;
+            elements.chartTitle.textContent = `Top 5 Agent ${currentWeek}`;
+            
+            // Calculate totals
+            const totalAdmin = weekData.reduce((sum, item) => sum + item.adminFee, 0);
+            const totalOrders = weekData.reduce((sum, item) => sum + item.totalOrder, 0);
+            const activeAgents = weekData.filter(item => item.isActive).length;
+            
+            // Find top agent
+            const topAgent = weekData.reduce((top, item) => 
+                item.totalOrder > top.totalOrder ? item : top, 
+                { agent: '-', totalOrder: 0 }
+            );
+            
+            // Find agent with highest admin fee
+            const topAdminAgent = weekData.reduce((top, item) => 
+                item.adminFee > top.adminFee ? item : top, 
+                { agent: '-', adminFee: 0 }
+            );
+            
+            // Calculate average
+            const avgOrder = activeAgents > 0 ? Math.round(totalOrders / activeAgents) : 0;
+            
+            // Update Summary Cards
+            elements.cardTotalAgents.textContent = weekData.length;
+            elements.cardTotalAdmin.textContent = formatCurrency(totalAdmin);
+            elements.cardTotalOrders.textContent = formatCurrency(totalOrders);
+            elements.cardTopAgent.textContent = topAgent.agent;
+            
+            // Update Table Footer
+            elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
+            elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
+            
+            // Update Stats
+            elements.statTopAdmin.textContent = `${topAdminAgent.agent} (${formatCurrency(topAdminAgent.adminFee)})`;
+            elements.statAvgOrder.textContent = formatCurrency(avgOrder);
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+            
+            // Render Table
+            renderTable(weekData);
+            
+            // Render Chart
+            renderChart(weekData, currentWeek);
+        }
+        
+        // Render Table
+        function renderTable(data) {
+            const tbody = elements.agentTable;
+            tbody.innerHTML = '';
+            
+            const sortedData = [...data].sort((a, b) => b.totalOrder - a.totalOrder);
+            
+            sortedData.forEach((item, index) => {
                 const row = document.createElement('tr');
-                if (agent.adminFee > 0) row.classList.add('highlight');
+                if (item.isActive) row.classList.add('highlight');
                 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${agent.name}</td>
+                    <td>${item.agent}</td>
+                    <td class="currency">${formatCurrency(item.adminFee)}</td>
+                    <td class="currency">${formatCurrency(item.totalOrder)}</td>
                     <td>
-                        <span class="${agent.status ? 'status-active' : 'status-inactive'}" 
-                              title="${agent.status ? 'Aktif (☑)' : 'Tidak Aktif (☐)'}">
+                        <span class="${item.isActive ? 'agent-active' : 'agent-inactive'}">
+                            ${item.isActive ? 'Aktif' : 'Tidak Aktif'}
                         </span>
                     </td>
-                    <td class="currency">${formatCurrency(agent.adminFee)}</td>
-                    <td class="currency">${formatCurrency(totalOrder)}</td>
                 `;
                 
-                tableBody.appendChild(row);
+                tbody.appendChild(row);
             });
-            
-            // Update footer total
-            document.getElementById('total-admin-footer').textContent = formatCurrency(totalAdminFee);
-            document.getElementById('total-orders-footer').textContent = formatCurrency(totalOrders);
-            document.getElementById('table-count').textContent = data.length;
-            
-            // Update summary cards
-            updateSummaryCards(data, totalAdminFee, totalOrders);
-            
-            // Update chart
-            updateChart(data);
         }
-
-        // Update kartu ringkasan
-        function updateSummaryCards(data, totalAdminFee, totalOrders) {
-            document.getElementById('total-agents').textContent = data.length;
-            document.getElementById('total-admin-fee').textContent = formatCurrency(totalAdminFee).replace('Rp', '').trim();
-            document.getElementById('total-orders').textContent = formatCurrency(totalOrders).replace('Rp', '').trim();
-            
-            // Cari agent dengan order tertinggi
-            let topAgent = { name: "-", totalOrder: 0 };
-            data.forEach(agent => {
-                const totalOrder = calculateTotalOrder(agent.adminFee);
-                if (totalOrder > topAgent.totalOrder) {
-                    topAgent = { name: agent.name, totalOrder: totalOrder };
-                }
-            });
-            
-            document.getElementById('top-agent').textContent = topAgent.name;
-        }
-
-        // Update chart
-        let ordersChart = null;
         
-        function updateChart(data) {
-            // Ambil 5 agent dengan total orderan tertinggi
-            const sortedData = [...data]
-                .map(agent => ({
-                    name: agent.name,
-                    totalOrder: calculateTotalOrder(agent.adminFee),
-                    adminFee: agent.adminFee
-                }))
+        // Render Chart
+        function renderChart(data, weekLabel) {
+            const topAgents = [...data]
+                .filter(item => item.isActive)
                 .sort((a, b) => b.totalOrder - a.totalOrder)
                 .slice(0, 5);
             
             const ctx = document.getElementById('ordersChart').getContext('2d');
             
-            // Hancurkan chart sebelumnya jika ada
             if (ordersChart) {
                 ordersChart.destroy();
+            }
+            
+            if (topAgents.length === 0) {
+                const canvas = document.getElementById('ordersChart');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Tidak ada data aktif untuk periode ini', canvas.width/2, canvas.height/2);
+                return;
             }
             
             ordersChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: sortedData.map(agent => agent.name),
+                    labels: topAgents.map(item => item.agent),
                     datasets: [
                         {
                             label: 'Total Orderan (Rp)',
-                            data: sortedData.map(agent => agent.totalOrder),
+                            data: topAgents.map(item => item.totalOrder),
                             backgroundColor: 'rgba(58, 86, 230, 0.7)',
                             borderColor: 'rgba(58, 86, 230, 1)',
                             borderWidth: 1
                         },
                         {
-                            label: 'Biaya Admin (Rp)',
-                            data: sortedData.map(agent => agent.adminFee),
+                            label: 'Total Biaya Admin (Rp)',
+                            data: topAgents.map(item => item.adminFee),
                             backgroundColor: 'rgba(255, 99, 132, 0.7)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1
@@ -532,56 +1119,57 @@
                                     return label;
                                 }
                             }
+                        },
+                        title: {
+                            display: true,
+                            text: `Periode: ${weekLabel}`,
+                            font: {
+                                size: 14
+                            }
                         }
                     }
                 }
             });
         }
-
-        // Filter data berdasarkan kriteria
-        function filterData(filterType) {
-            let filteredData = [...agentData];
-            
-            switch(filterType) {
-                case 'active':
-                    filteredData = agentData.filter(agent => agent.status);
-                    break;
-                case 'inactive':
-                    filteredData = agentData.filter(agent => !agent.status);
-                    break;
-                case 'top10':
-                    // Ambil 10 agent dengan total orderan tertinggi
-                    filteredData = [...agentData]
-                        .sort((a, b) => calculateTotalOrder(b.adminFee) - calculateTotalOrder(a.adminFee))
-                        .slice(0, 10);
-                    break;
-                case 'all':
-                default:
-                    // Tidak perlu filter
-                    break;
+        
+        // Navigate to previous week
+        function goToPreviousWeek() {
+            if (currentWeekIndex > 0) {
+                currentWeekIndex--;
+                renderWeekData(currentWeekIndex);
             }
-            
-            renderTable(filteredData);
-            
-            // Update tombol filter aktif
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
         }
-
-        // Inisialisasi dashboard
+        
+        // Navigate to next week
+        function goToNextWeek() {
+            if (currentWeekIndex < availableWeeks.length - 1) {
+                currentWeekIndex++;
+                renderWeekData(currentWeekIndex);
+            }
+        }
+        
+        // Handle dropdown change
+        function handleWeekDropdownChange() {
+            const selectedIndex = parseInt(elements.weekDropdown.value);
+            if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < availableWeeks.length) {
+                currentWeekIndex = selectedIndex;
+                renderWeekData(currentWeekIndex);
+            }
+        }
+        
+        // Initialize Dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            // Render tabel dengan semua data
-            renderTable(agentData);
+            // Add event listeners
+            elements.refreshBtn.addEventListener('click', loadData);
+            elements.prevWeekBtn.addEventListener('click', goToPreviousWeek);
+            elements.nextWeekBtn.addEventListener('click', goToNextWeek);
+            elements.weekDropdown.addEventListener('change', handleWeekDropdownChange);
             
-            // Tambahkan event listener untuk tombol filter
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const filterType = this.getAttribute('data-filter');
-                    filterData(filterType);
-                });
-            });
+            // Load data initially
+            loadData();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadData, 30000);
         });
     </script>
 </body>
