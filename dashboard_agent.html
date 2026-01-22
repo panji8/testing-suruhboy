@@ -278,6 +278,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
         
         th {
@@ -289,6 +290,7 @@
             border-bottom: 1px solid #eee;
             position: sticky;
             top: 0;
+            z-index: 10;
         }
         
         td {
@@ -317,6 +319,11 @@
             background-color: #f8f9fd;
             font-weight: 700;
             color: #333;
+        }
+        
+        .total-row td {
+            padding-top: 20px;
+            padding-bottom: 20px;
         }
         
         .chart-container {
@@ -431,6 +438,7 @@
             font-weight: 600;
             flex: 1;
             text-align: center;
+            min-width: 150px;
         }
         
         .nav-btn:hover {
@@ -530,14 +538,23 @@
             border-bottom: 1px solid #eee;
         }
         
+        .agent-info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
         .agent-info-label {
             font-weight: 600;
             color: #555;
+            min-width: 180px;
         }
         
         .agent-info-value {
             color: #333;
             font-weight: 500;
+            text-align: right;
+            word-break: break-word;
         }
         
         .whatsapp-buttons {
@@ -560,6 +577,7 @@
             justify-content: center;
             gap: 10px;
             transition: background-color 0.3s;
+            min-height: 50px;
         }
         
         .whatsapp-btn:hover {
@@ -572,6 +590,16 @@
         
         .whatsapp-btn.secondary:hover {
             background-color: #2a46d6;
+        }
+        
+        .whatsapp-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #ccc;
+        }
+        
+        .whatsapp-btn:disabled:hover {
+            background-color: #ccc;
         }
         
         /* PAYMENT SECTION STYLES */
@@ -645,6 +673,7 @@
         .payment-status {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 10px;
             padding: 12px 15px;
             border-radius: 8px;
@@ -677,6 +706,10 @@
             cursor: pointer;
             margin-top: 10px;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .submit-btn:hover {
@@ -699,6 +732,10 @@
             justify-content: space-between;
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
         }
         
         .history-date {
@@ -729,6 +766,7 @@
             align-items: center;
             gap: 10px;
             min-width: 300px;
+            max-width: 400px;
             transform: translateX(400px);
             transition: transform 0.3s ease;
         }
@@ -751,6 +789,7 @@
         
         .toast-icon {
             font-size: 18px;
+            flex-shrink: 0;
         }
         
         .toast.success .toast-icon {
@@ -767,6 +806,7 @@
         
         .toast-message {
             flex: 1;
+            font-size: 14px;
         }
         
         .toast-close {
@@ -775,6 +815,153 @@
             cursor: pointer;
             color: #999;
             font-size: 18px;
+            flex-shrink: 0;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-left {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .week-filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .week-dropdown {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+            }
+            
+            .nav-btn {
+                min-width: 0;
+            }
+            
+            .whatsapp-buttons {
+                flex-direction: column;
+            }
+            
+            .agent-select-group {
+                min-width: 100%;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .week-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .agent-info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .agent-info-label, .agent-info-value {
+                min-width: 100%;
+                text-align: left;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel > div:last-child {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .refresh-btn, .export-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* UTILITY CLASSES */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .mt-10 {
+            margin-top: 10px;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .d-none {
+            display: none !important;
+        }
+        
+        .d-flex {
+            display: flex !important;
+        }
+        
+        .align-center {
+            align-items: center;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
+        
+        .gap-10 {
+            gap: 10px;
+        }
+        
+        .w-100 {
+            width: 100%;
+        }
+        
+        .nowrap {
+            white-space: nowrap;
+        }
+        
+        .whatsapp-number {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #25D366;
+        }
+        
+        .payment-status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -875,7 +1062,7 @@
                     </div>
                     <div class="agent-info-row">
                         <span class="agent-info-label">Nomor WhatsApp:</span>
-                        <span class="agent-info-value" id="agent-whatsapp">-</span>
+                        <span class="agent-info-value whatsapp-number" id="agent-whatsapp">-</span>
                     </div>
                     <div class="agent-info-row">
                         <span class="agent-info-label">Biaya Admin Minggu Ini:</span>
@@ -942,6 +1129,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Agent</th>
+                                        <th>Nomor WhatsApp</th>
                                         <th>Total Biaya Admin (10%)</th>
                                         <th>Total Orderan</th>
                                         <th>Status Pembayaran</th>
@@ -952,7 +1140,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="total-row">
-                                        <td colspan="2">TOTAL MINGGU INI</td>
+                                        <td colspan="3">TOTAL MINGGU INI</td>
                                         <td class="currency" id="table-total-admin">Rp0</td>
                                         <td class="currency" id="table-total-orders">Rp0</td>
                                         <td></td>
@@ -1072,7 +1260,6 @@
         const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'To Dashboard';
         const AGENT_SHEET_NAME = 'Database Agent';
-        const PAYMENT_SHEET_NAME = 'Payment History';
         
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
@@ -1212,49 +1399,61 @@
             elements.statusDot.className = 'status-dot ' + type;
         }
         
-        // Parse CSV Data
+        // Parse CSV Data - DIPERBAIKI untuk menangani format Google Sheets CSV
         function parseCSV(csvText, sheetType = 'order') {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const data = [];
             
-            let startIndex = 0;
-            if (lines[0].toLowerCase().includes('agent') || lines[0].toLowerCase().includes('nama')) {
-                startIndex = 1;
-            }
-            
-            for (let i = startIndex; i < lines.length; i++) {
+            for (let i = 0; i < lines.length; i++) {
                 try {
-                    let columns;
+                    let columns = [];
+                    let currentLine = lines[i];
                     
-                    const matches = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                    // Handle quoted strings with commas inside
+                    let inQuotes = false;
+                    let currentValue = '';
                     
-                    if (matches) {
-                        columns = matches.map(col => col.replace(/^"|"$/g, '').trim());
-                    } else {
-                        columns = lines[i].split(',').map(col => col.trim());
+                    for (let j = 0; j < currentLine.length; j++) {
+                        const char = currentLine[j];
+                        
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            columns.push(currentValue.trim());
+                            currentValue = '';
+                        } else {
+                            currentValue += char;
+                        }
                     }
+                    
+                    // Add the last value
+                    columns.push(currentValue.trim());
+                    
+                    // Remove quotes from each column
+                    columns = columns.map(col => col.replace(/^"|"$/g, ''));
                     
                     if (sheetType === 'order' && columns.length >= 3) {
                         const agent = columns[0];
-                        const adminFee = parseInt(columns[1].replace(/[^0-9]/g, '')) || 0;
-                        const week = columns[2].trim();
+                        const adminFee = parseInt(columns[1].replace(/[^0-9-]/g, '')) || 0;
+                        const week = columns[2] || '';
                         
-                        if (agent && agent !== 'Agent' && agent !== 'Nama Agent' && 
-                            agent !== '' && week !== '') {
+                        if (agent && agent.trim() !== '' && !agent.toLowerCase().includes('agent') && 
+                            !agent.toLowerCase().includes('nama') && week.trim() !== '') {
                             data.push({
-                                agent: agent,
+                                agent: agent.trim(),
                                 adminFee: adminFee,
-                                week: week
+                                week: week.trim()
                             });
                         }
                     } else if (sheetType === 'agent' && columns.length >= 2) {
                         const agent = columns[0];
                         const whatsapp = columns[1] || '';
                         
-                        if (agent && agent.trim() !== '') {
+                        if (agent && agent.trim() !== '' && !agent.toLowerCase().includes('agent') && 
+                            !agent.toLowerCase().includes('nama')) {
                             data.push({
-                                agent: agent,
-                                whatsapp: whatsapp
+                                agent: agent.trim(),
+                                whatsapp: whatsapp.trim()
                             });
                         }
                     }
@@ -1272,6 +1471,8 @@
             
             data.forEach(item => {
                 const { agent, adminFee, week } = item;
+                
+                if (!week || week.trim() === '') return;
                 
                 if (!aggregated[week]) {
                     aggregated[week] = {};
@@ -1293,10 +1494,11 @@
             
             function parseWeekToDate(weekStr) {
                 try {
-                    const parts = weekStr.split('-');
+                    // Try to parse "14-20 Des" or "28 Des - 3 Jan" format
+                    const parts = weekStr.split(/[-–]/);
                     if (parts.length >= 1) {
-                        const startPart = parts[0].trim();
-                        const dateMatch = startPart.match(/(\d+)\s*(\w+)/);
+                        const firstPart = parts[0].trim();
+                        const dateMatch = firstPart.match(/(\d+)\s*(\w+)/);
                         
                         if (dateMatch) {
                             const day = parseInt(dateMatch[1]);
@@ -1351,6 +1553,7 @@
                 
                 return {
                     agent: agent,
+                    whatsapp: agentDatabase[agent] || '',
                     adminFee: adminFee,
                     totalOrder: totalOrder,
                     isActive: adminFee > 0,
@@ -1432,22 +1635,29 @@
             updateNavigationButtons();
         }
         
-        // Populate agent dropdowns
+        // Populate agent dropdowns - DIPERBAIKI
         function populateAgentDropdowns() {
             const agentSelects = [
                 elements.agentSelect,
                 elements.paymentAgentSelect
             ];
             
-            // Get unique agents from order data
-            const agents = new Set();
+            // Get all agents from both order data and agent database
+            const allAgents = new Set();
+            
+            // Add agents from order data
             rawData.forEach(item => {
                 if (item.agent && item.agent.trim() !== '') {
-                    agents.add(item.agent);
+                    allAgents.add(item.agent);
                 }
             });
             
-            const sortedAgents = Array.from(agents).sort();
+            // Add agents from agent database
+            Object.keys(agentDatabase).forEach(agent => {
+                allAgents.add(agent);
+            });
+            
+            const sortedAgents = Array.from(allAgents).sort();
             
             agentSelects.forEach(select => {
                 select.innerHTML = '<option value="">Pilih agent...</option>';
@@ -1467,7 +1677,7 @@
             elements.nextWeekBtn.disabled = currentWeekIndex === availableWeeks.length - 1;
         }
         
-        // Load Data from Google Sheets
+        // Load Data from Google Sheets - DIPERBAIKI untuk parsing agent database
         async function loadData() {
             try {
                 elements.loading.style.display = 'block';
@@ -1482,25 +1692,40 @@
                 
                 if (rawData.length === 0) throw new Error('Tidak ada data order yang valid');
                 
-                // Load agent database
+                console.log('Order data loaded:', rawData.length, 'records');
+                
+                // Load agent database - DIPERBAIKI
                 const agentResponse = await fetch(AGENT_CSV_URL);
                 if (agentResponse.ok) {
                     const agentCsv = await agentResponse.text();
+                    console.log('Agent CSV raw:', agentCsv.substring(0, 500));
+                    
                     const agentData = parseCSV(agentCsv, 'agent');
+                    console.log('Agent data parsed:', agentData);
                     
                     // Convert to object for easy lookup
                     agentDatabase = {};
                     agentData.forEach(item => {
-                        agentDatabase[item.agent] = item.whatsapp;
+                        if (item.agent && item.whatsapp) {
+                            agentDatabase[item.agent] = item.whatsapp;
+                        }
                     });
+                    
+                    console.log('Agent database:', agentDatabase);
+                } else {
+                    console.warn('Failed to load agent database, using empty database');
+                    agentDatabase = {};
                 }
                 
                 // Aggregate data
                 aggregatedData = aggregateData(rawData);
+                console.log('Aggregated data:', aggregatedData);
                 
                 // Extract and sort weeks
                 availableWeeks = extractAndSortWeeks(aggregatedData);
                 if (availableWeeks.length === 0) throw new Error('Tidak ada week yang ditemukan');
+                
+                console.log('Available weeks:', availableWeeks);
                 
                 // Set current week to the latest one
                 currentWeekIndex = availableWeeks.length - 1;
@@ -1527,6 +1752,7 @@
                 console.error('Error loading data:', error);
                 updateStatus(`Error: ${error.message}`, 'error');
                 
+                // Load sample data as fallback
                 loadSampleData();
                 
                 elements.loading.style.display = 'none';
@@ -1610,7 +1836,7 @@
             return records;
         }
         
-        // Load Sample Data (Fallback)
+        // Load Sample Data (Fallback) - DIPERBAIKI dengan data WhatsApp
         function loadSampleData() {
             rawData = [
                 { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
@@ -1660,34 +1886,34 @@
                 { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
             ];
             
-            // Sample agent database
+            // Sample agent database with WhatsApp numbers
             agentDatabase = {
-                "Diar": "6281234567890",
-                "Agung": "6282345678901",
-                "Lutfi Majid": "6283456789012",
-                "Restu": "6284567890123",
-                "Bagus": "6285678901234",
-                "Aryo": "6286789012345",
-                "Akhmad Rifki": "6287890123456",
-                "Agus": "6288901234567",
-                "Yosi": "6289012345678",
-                "Mukhlis": "6280123456789",
-                "Andi": "6281123456789",
-                "Panji": "6282123456789",
-                "Awa": "6283123456789",
-                "Mbak Yuni": "6284123456789",
-                "Malek": "6285123456789",
-                "Naily": "6286123456789",
-                "Barkah": "6287123456789",
-                "Ilham": "6288123456789",
-                "Ardi": "6289123456789",
-                "Kharisma": "6280223456789",
-                "PUTRI UTAMI": "6281223456789",
-                "Nia": "6282223456789",
-                "Defita": "6283223456789",
-                "Fajar": "6284223456789",
-                "Angga": "6285223456789",
-                "Acil": "6286223456789"
+                "Diar": "081234567890",
+                "Agung": "082345678901",
+                "Lutfi Majid": "083456789012",
+                "Restu": "084567890123",
+                "Bagus": "085678901234",
+                "Aryo": "086789012345",
+                "Akhmad Rifki": "087890123456",
+                "Agus": "088901234567",
+                "Yosi": "089012345678",
+                "Mukhlis": "081112345678",
+                "Andi": "082212345678",
+                "Panji": "083312345678",
+                "Awa": "084412345678",
+                "Mbak Yuni": "085512345678",
+                "Malek": "086612345678",
+                "Naily": "087712345678",
+                "Barkah": "088812345678",
+                "Ilham": "089912345678",
+                "Ardi": "081001234567",
+                "Kharisma": "082112345678",
+                "PUTRI UTAMI": "083212345678",
+                "Nia": "084312345678",
+                "Defita": "085412345678",
+                "Fajar": "086512345678",
+                "Angga": "087612345678",
+                "Acil": "088712345678"
             };
             
             aggregatedData = aggregateData(rawData);
@@ -1698,7 +1924,7 @@
             loadPaymentHistory();
         }
         
-        // Render Week Data
+        // Render Week Data - DIPERBAIKI untuk menampilkan nomor WhatsApp di tabel
         function renderWeekData(weekIndex) {
             const currentWeek = availableWeeks[weekIndex];
             
@@ -1758,7 +1984,7 @@
             renderChart(weekData, currentWeek);
         }
         
-        // Render Table
+        // Render Table - DITAMBAHKAN kolom WhatsApp
         function renderTable(data, week) {
             const tbody = elements.agentTable;
             tbody.innerHTML = '';
@@ -1771,14 +1997,16 @@
                 
                 const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
                 const statusClass = getPaymentStatusClass(item.paymentStatus);
+                const whatsappDisplay = item.whatsapp ? formatWhatsappNumber(item.whatsapp) : '-';
                 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${item.agent}</td>
+                    <td><strong>${item.agent}</strong></td>
+                    <td class="whatsapp-number">${whatsappDisplay}</td>
                     <td class="currency">${formatCurrency(item.adminFee)}</td>
                     <td class="currency">${formatCurrency(item.totalOrder)}</td>
                     <td>
-                        <span class="${statusClass}">${statusText}</span>
+                        <span class="${statusClass} payment-status-badge">${statusText}</span>
                     </td>
                 `;
                 
@@ -1874,7 +2102,7 @@
             });
         }
         
-        // Update agent info in WhatsApp section
+        // Update agent info in WhatsApp section - DIPERBAIKI
         function updateAgentInfo() {
             const agentName = elements.agentSelect.value;
             const weekIndex = parseInt(elements.whatsappWeekSelect.value);
@@ -1899,7 +2127,7 @@
             
             // Update agent info
             elements.agentName.textContent = agentData.agent;
-            elements.agentWhatsapp.textContent = formatWhatsappNumber(agentDatabase[agentData.agent] || '-');
+            elements.agentWhatsapp.textContent = formatWhatsappNumber(agentData.whatsapp || '');
             elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
             elements.agentTotalOrder.textContent = formatCurrency(agentData.totalOrder);
             
@@ -1908,7 +2136,7 @@
             elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
             
             // Enable/disable buttons
-            const hasWhatsapp = agentDatabase[agentData.agent] && agentDatabase[agentData.agent].trim() !== '';
+            const hasWhatsapp = agentData.whatsapp && agentData.whatsapp.trim() !== '';
             elements.agentInfoCard.style.display = 'block';
             elements.whatsappContactBtn.disabled = !hasWhatsapp;
             elements.whatsappReminderBtn.disabled = !hasWhatsapp || agentData.adminFee === 0;
@@ -2011,7 +2239,7 @@
             return message;
         }
         
-        // Export to Excel
+        // Export to Excel - DIPERBAIKI untuk menyertakan nomor WhatsApp
         function exportToExcel() {
             try {
                 const currentWeek = availableWeeks[currentWeekIndex];
@@ -2023,13 +2251,13 @@
                 }
                 
                 // Create CSV content
-                let csvContent = "No,Nama Agent,Biaya Admin (10%),Total Orderan,Status Pembayaran,WhatsApp\n";
+                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran\n";
                 
                 weekData.forEach((item, index) => {
                     const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
-                    const whatsapp = agentDatabase[item.agent] || '-';
+                    const whatsapp = item.whatsapp || '-';
                     
-                    csvContent += `${index + 1},"${item.agent}",${item.adminFee},${item.totalOrder},"${statusText}","${whatsapp}"\n`;
+                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}"\n`;
                 });
                 
                 // Create blob and download
@@ -2148,7 +2376,7 @@
             
             if (!agentData) return;
             
-            const phoneNumber = agentDatabase[agentName];
+            const phoneNumber = agentData.whatsapp;
             const message = generateReminderMessage(
                 agentName, 
                 week, 
@@ -2166,7 +2394,14 @@
             
             if (!agentName) return;
             
-            const phoneNumber = agentDatabase[agentName];
+            const weekIndex = parseInt(elements.whatsappWeekSelect.value);
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) return;
+            
+            const phoneNumber = agentData.whatsapp;
             const message = `Halo ${agentName}! Ada yang bisa saya bantu?`;
             
             sendWhatsAppMessage(phoneNumber, message);
@@ -2203,7 +2438,6 @@
             
             // Load data initially
             loadData();
-
         });
     </script>
 </body>
