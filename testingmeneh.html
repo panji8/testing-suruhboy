@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Pembayaran Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Input Pembayaran Agent</h1>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="agent">Nama Agent:</label>
+                <input type="text" id="agent" name="agent" required 
+                       placeholder="Contoh: Diar, Restu, Fajar">
+            </div>
+            
+            <div class="form-group">
+                <label for="week">Periode Minggu:</label>
+                <input type="text" id="week" name="week" required 
+                       placeholder="Contoh: 14-20 Des, 21-27 Des">
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Jumlah Dibayar (Rp):</label>
+                <input type="number" id="amount" name="amount" required 
+                       placeholder="Contoh: 50000" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Keterangan (Opsional):</label>
+                <input type="text" id="notes" name="notes" 
+                       placeholder="Contoh: Transfer via BCA">
+            </div>
+            
+            <div class="loading" id="loading">
+                Mengirim data...
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                💾 Simpan ke Google Sheets
+            </button>
+        </form>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+            <h3>📋 Data yang Disimpan:</h3>
+            <div id="localData">
+                Belum ada data tersimpan
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GANTI URL_INI dengan URL Apps Script Anda
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM0tcjYDw8Ai_2R4NMS7MzcwA4dzpSaaoq9n89op-_eLsa_RcY146Q4hL_eqThXykxag/exec';
+        
+        // Tampilkan status
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto hide setelah 5 detik
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return 'Rp' + parseInt(amount).toLocaleString('id-ID');
+        }
+        
+        // Simpan data ke localStorage
+        function saveToLocalStorage(data) {
+            try {
+                const payments = JSON.parse(localStorage.getItem('payments') || '[]');
+                payments.push({
+                    ...data,
+                    id: Date.now(),
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('payments', JSON.stringify(payments));
+                return true;
+            } catch (e) {
+                console.error('Gagal simpan lokal:', e);
+                return false;
+            }
+        }
+        
+        // Tampilkan data lokal
+        function showLocalData() {
+            try {
+                const payments = JSON.parse(localStorage.getItem('payments') || '[]');
+                const container = document.getElementById('localData');
+                
+                if (payments.length === 0) {
+                    container.innerHTML = '<p>Belum ada data tersimpan</p>';
+                    return;
+                }
+                
+                let html = '<ul style="list-style: none; padding: 0;">';
+                payments.slice(-5).reverse().forEach(payment => {
+                    const date = new Date(payment.timestamp).toLocaleString('id-ID');
+                    html += `
+                        <li style="padding: 8px; border-bottom: 1px solid #ddd;">
+                            <strong>${payment.agent}</strong> - ${payment.week}<br>
+                            <small>${formatCurrency(payment.amount)} • ${date}</small>
+                            ${payment.notes ? `<br><small>📝 ${payment.notes}</small>` : ''}
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                
+                if (payments.length > 5) {
+                    html += `<p><small>+ ${payments.length - 5} data lainnya</small></p>`;
+                }
+                
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Error tampilkan data:', e);
+            }
+        }
+        
+        // Kirim data ke Google Sheets
+        async function sendToGoogleSheets(data) {
+            try {
+                // Buat URL dengan parameter GET
+                const params = new URLSearchParams({
+                    agent: data.agent,
+                    week: data.week,
+                    amount: data.amount,
+                    notes: data.notes || '',
+                    timestamp: new Date().toISOString(),
+                    source: 'Payment Form'
+                });
+                
+                const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
+                
+                console.log('Mengirim ke:', url);
+                
+                // Kirim request
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                return result;
+                
+            } catch (error) {
+                console.error('Error kirim ke Sheets:', error);
+                throw error;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Ambil data form
+            const formData = {
+                agent: document.getElementById('agent').value.trim(),
+                week: document.getElementById('week').value.trim(),
+                amount: document.getElementById('amount').value,
+                notes: document.getElementById('notes').value.trim()
+            };
+            
+            // Validasi
+            if (!formData.agent || !formData.week || !formData.amount) {
+                showStatus('Harap isi semua field yang wajib!', 'error');
+                return;
+            }
+            
+            // Tampilkan loading
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+            
+            try {
+                // Coba kirim ke Google Sheets
+                const result = await sendToGoogleSheets(formData);
+                
+                if (result.success) {
+                    // Simpan ke localStorage juga
+                    saveToLocalStorage(formData);
+                    
+                    // Tampilkan success
+                    showStatus(`✅ ${result.message}`, 'success');
+                    
+                    // Reset form
+                    document.getElementById('paymentForm').reset();
+                    
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan');
+                }
+                
+            } catch (error) {
+                // Fallback: simpan ke localStorage saja
+                const saved = saveToLocalStorage(formData);
+                
+                if (saved) {
+                    showStatus(`⚠️ Disimpan lokal: ${error.message}`, 'info');
+                } else {
+                    showStatus(`❌ Gagal: ${error.message}`, 'error');
+                }
+                
+            } finally {
+                // Sembunyikan loading
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💾 Simpan ke Google Sheets';
+                
+                // Refresh tampilan data lokal
+                showLocalData();
+            }
+        });
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            showLocalData();
+            
+            // Test koneksi
+            fetch(APPS_SCRIPT_URL + '?test=1')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ Koneksi Apps Script OK');
+                    }
+                })
+                .catch(error => {
+                    console.warn('⚠️ Apps Script mungkin belum deploy:', error);
+                });
+        });
+    </script>
+</body>
+</html>
