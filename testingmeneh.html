@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Tagihan Agent</title>
+    <title>Dashboard Tagihan Agent - Real Data</title>
     <style>
+        /* CSS sama seperti sebelumnya, tetap dipertahankan */
         * {
             margin: 0;
             padding: 0;
@@ -327,6 +328,12 @@
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
+        
+        .data-loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -334,299 +341,543 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-chart-line"></i> Dashboard Tagihan Agent</h1>
-            <div class="subtitle">Monitoring pembayaran biaya admin per minggu</div>
+            <div class="subtitle">Data real dari Google Sheets - Tab "To Dashboard"</div>
+            <div style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                <i class="fas fa-database"></i> Sheet: <strong>To Dashboard</strong> | Kolom: A (Agent), B (Admin Fee), C (Week)
+            </div>
         </header>
         
         <!-- NOTIFICATION -->
         <div id="notification" class="notification"></div>
         
-        <!-- WEEK SELECTOR -->
-        <div class="week-selector">
-            <div class="week-label">Pilih Periode:</div>
-            <select id="weekSelect">
-                <option value="18-24 Jan 2025">18-24 Jan 2025</option>
-                <option value="25-31 Jan 2025" selected>25-31 Jan 2025</option>
-                <option value="1-7 Feb 2025">1-7 Feb 2025</option>
-                <option value="8-14 Feb 2025">8-14 Feb 2025</option>
-                <option value="15-21 Feb 2025">15-21 Feb 2025</option>
-                <option value="22-28 Feb 2025">22-28 Feb 2025</option>
-                <option value="1-7 Mar 2025">1-7 Mar 2025</option>
-            </select>
-            <button class="submit-btn" onclick="refreshData()" style="padding: 10px 20px;">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
+        <!-- LOADING DATA -->
+        <div id="dataLoading" class="data-loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Memuat data dari Google Sheets...</p>
         </div>
         
-        <!-- SUMMARY CARDS -->
-        <div class="summary-cards">
-            <div class="card">
-                <div class="card-label">Total Agent</div>
-                <div class="card-value" id="totalAgents">8</div>
+        <!-- DASHBOARD CONTENT -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- WEEK SELECTOR -->
+            <div class="week-selector">
+                <div class="week-label">Pilih Periode:</div>
+                <select id="weekSelect">
+                    <option value="">Loading weeks...</option>
+                </select>
+                <button class="submit-btn" onclick="refreshData()" style="padding: 10px 20px;">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
             </div>
-            <div class="card">
-                <div class="card-label">Total Tagihan</div>
-                <div class="card-value" id="totalInvoice">Rp2.450.000</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Sudah Dibayar</div>
-                <div class="card-value" id="totalPaid">Rp1.850.000</div>
-            </div>
-            <div class="card">
-                <div class="card-label">Tunggakan</div>
-                <div class="card-value" id="totalDue">Rp600.000</div>
-            </div>
-        </div>
-        
-        <!-- DASHBOARD GRID -->
-        <div class="dashboard-grid">
-            <!-- PANEL KIRI: DAFTAR TAGIHAN -->
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-file-invoice-dollar"></i> Daftar Tagihan
-                    <span style="margin-left: auto; font-size: 14px; color: #667eea;" id="selectedWeek">25-31 Jan 2025</span>
+            
+            <!-- SUMMARY CARDS -->
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-label">Total Agent</div>
+                    <div class="card-value" id="totalAgents">0</div>
                 </div>
-                
-                <div class="table-container">
-                    <table class="invoice-table">
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>WhatsApp</th>
-                                <th>Biaya Admin</th>
-                                <th>Status</th>
-                                <th>Sisa</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoiceTable">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td colspan="2">TOTAL</td>
-                                <td class="currency" id="totalAdmin">Rp245.000</td>
-                                <td></td>
-                                <td class="currency" id="totalRemaining">Rp60.000</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="card">
+                    <div class="card-label">Total Biaya Admin</div>
+                    <div class="card-value" id="totalAdmin">Rp0</div>
                 </div>
-                
-                <div style="margin-top: 20px; font-size: 13px; color: #888; text-align: center;">
-                    <i class="fas fa-info-circle"></i> Total Order = Biaya Admin × 10
+                <div class="card">
+                    <div class="card-label">Total Orderan</div>
+                    <div class="card-value" id="totalOrders">Rp0</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Agent Tertinggi</div>
+                    <div class="card-value" id="topAgent">-</div>
                 </div>
             </div>
             
-            <!-- PANEL KANAN: INPUT PEMBAYARAN -->
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-money-bill-wave"></i> Input Pembayaran
+            <!-- DASHBOARD GRID -->
+            <div class="dashboard-grid">
+                <!-- PANEL KIRI: DAFTAR TAGIHAN -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-file-invoice-dollar"></i> Daftar Tagihan
+                        <span style="margin-left: auto; font-size: 14px; color: #667eea;" id="selectedWeek">-</span>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th>Agent</th>
+                                    <th>Total Admin Fee</th>
+                                    <th>Total Orderan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceTable">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td>TOTAL</td>
+                                    <td class="currency" id="tableTotalAdmin">Rp0</td>
+                                    <td class="currency" id="tableTotalOrders">Rp0</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 20px; font-size: 13px; color: #888; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Total Orderan = Biaya Admin × 10
+                    </div>
                 </div>
                 
-                <div class="payment-form">
-                    <div class="form-group">
-                        <label class="form-label">Pilih Agent:</label>
-                        <select class="form-input" id="agentSelect">
-                            <option value="">Pilih agent...</option>
-                            <!-- Agent options akan diisi oleh JavaScript -->
-                        </select>
+                <!-- PANEL KANAN: INPUT PEMBAYARAN -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <i class="fas fa-money-bill-wave"></i> Input Pembayaran
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Minggu:</label>
-                        <select class="form-input" id="paymentWeekSelect">
-                            <option value="18-24 Jan 2025">18-24 Jan 2025</option>
-                            <option value="25-31 Jan 2025" selected>25-31 Jan 2025</option>
-                            <option value="1-7 Feb 2025">1-7 Feb 2025</option>
-                            <option value="8-14 Feb 2025">8-14 Feb 2025</option>
-                            <option value="15-21 Feb 2025">15-21 Feb 2025</option>
-                            <option value="22-28 Feb 2025">22-28 Feb 2025</option>
-                            <option value="1-7 Mar 2025">1-7 Mar 2025</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-row">
+                    <div class="payment-form">
                         <div class="form-group">
-                            <label class="form-label">Total Tagihan:</label>
-                            <input type="text" class="form-input" id="totalInvoiceInput" readonly value="Rp0">
+                            <label class="form-label">Pilih Agent:</label>
+                            <select class="form-input" id="agentSelect">
+                                <option value="">Loading agents...</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Jumlah Bayar (Rp):</label>
-                            <input type="number" class="form-input" id="paymentAmount" 
-                                   placeholder="Masukkan jumlah" min="0">
+                            <label class="form-label">Minggu:</label>
+                            <select class="form-input" id="paymentWeekSelect">
+                                <option value="">Loading weeks...</option>
+                            </select>
                         </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Total Biaya Admin:</label>
+                                <input type="text" class="form-input" id="totalAdminInput" readonly value="Rp0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Jumlah Bayar (Rp):</label>
+                                <input type="number" class="form-input" id="paymentAmount" 
+                                       placeholder="Masukkan jumlah" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Keterangan (Opsional):</label>
+                            <input type="text" class="form-input" id="paymentNotes" 
+                                   placeholder="Contoh: Transfer BCA, Cash, dll">
+                        </div>
+                        
+                        <div class="loading" id="loading" style="display: none;">
+                            <div class="loading-spinner"></div>
+                            <p>Menyimpan data...</p>
+                        </div>
+                        
+                        <button type="button" class="submit-btn" id="submitPaymentBtn" onclick="submitPayment()">
+                            <i class="fas fa-save"></i> Simpan ke Google Sheets
+                        </button>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Keterangan (Opsional):</label>
-                        <input type="text" class="form-input" id="paymentNotes" 
-                               placeholder="Contoh: Transfer BCA, Cash, dll">
-                    </div>
-                    
-                    <div class="loading" id="loading" style="display: none;">
-                        <div class="loading-spinner"></div>
-                        <p>Menyimpan data...</p>
-                    </div>
-                    
-                    <button type="button" class="submit-btn" id="submitPaymentBtn" onclick="submitPayment()">
-                        <i class="fas fa-save"></i> Simpan Pembayaran
-                    </button>
-                </div>
-                
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-                    <div class="panel-title" style="font-size: 18px; margin-bottom: 15px;">
-                        <i class="fas fa-history"></i> Riwayat Input
-                    </div>
-                    <div id="paymentHistory">
-                        <!-- Riwayat akan diisi oleh JavaScript -->
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <div class="panel-title" style="font-size: 18px; margin-bottom: 15px;">
+                            <i class="fas fa-history"></i> Riwayat Pembayaran
+                        </div>
+                        <div id="paymentHistory">
+                            <div class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <p>Belum ada riwayat pembayaran</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>Dashboard Tagihan Agent &copy; 2025 | Data dummy untuk demonstrasi</p>
+            <p>Dashboard Tagihan Agent &copy; 2025 | Data dari Google Sheets</p>
             <p style="font-size: 12px; margin-top: 5px;">
-                Terakhir update: <span id="lastUpdate">-</span>
+                Terakhir update: <span id="lastUpdate">-</span> |
+                Sheet: <span id="sheetStatus">❌ Belum terhubung</span>
             </p>
         </footer>
     </div>
 
     <script>
-        // DATA DUMMY
-        const dummyData = {
-            agents: [
-                { id: 1, name: "Diar", whatsapp: "081234567890", adminFee: 35000, paid: 35000, status: "paid" },
-                { id: 2, name: "Restu", whatsapp: "082345678901", adminFee: 45000, paid: 30000, status: "partial" },
-                { id: 3, name: "Fajar", whatsapp: "083456789012", adminFee: 52000, paid: 0, status: "unpaid" },
-                { id: 4, name: "Kharisma", whatsapp: "084567890123", adminFee: 28000, paid: 28000, status: "paid" },
-                { id: 5, name: "Agung", whatsapp: "085678901234", adminFee: 38000, paid: 20000, status: "partial" },
-                { id: 6, name: "Defita", whatsapp: "086789012345", adminFee: 42000, paid: 42000, status: "paid" },
-                { id: 7, name: "Lutfi Majid", whatsapp: "087890123456", adminFee: 31000, paid: 0, status: "unpaid" },
-                { id: 8, name: "Akhmad Rifki", whatsapp: "088901234567", adminFee: 24000, paid: 24000, status: "paid" }
-            ],
-            
-            paymentHistory: [
-                { agent: "Diar", week: "25-31 Jan 2025", amount: 35000, notes: "Transfer BCA", date: "2025-01-30 14:30" },
-                { agent: "Restu", week: "25-31 Jan 2025", amount: 30000, notes: "Cash meeting", date: "2025-01-29 11:20" },
-                { agent: "Kharisma", week: "25-31 Jan 2025", amount: 28000, notes: "Transfer BRI", date: "2025-01-28 16:45" },
-                { agent: "Agung", week: "25-31 Jan 2025", amount: 20000, notes: "DP pertama", date: "2025-01-27 09:15" }
-            ]
-        };
-        
-        // APPS SCRIPT URL (GANTI DENGAN URL ANDA)
+        // KONFIGURASI
+        const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
+        const ORDER_SHEET_NAME = 'To Dashboard';
+        const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVR8YonZVMHCqQzfkFUU6sVxnw7nKQ4rG864R-jNoZ80oHklvqM5wPji3xfHbzUCjVVg/exec';
+        
+        // STATE
+        let rawData = [];
+        let aggregatedData = {};
+        let availableWeeks = [];
+        let currentWeek = '';
+        let agentDatabase = {};
+        let paymentHistory = {};
+        
+        // DOM Elements
+        const elements = {
+            dataLoading: document.getElementById('dataLoading'),
+            dashboardContent: document.getElementById('dashboardContent'),
+            notification: document.getElementById('notification'),
+            weekSelect: document.getElementById('weekSelect'),
+            selectedWeek: document.getElementById('selectedWeek'),
+            agentSelect: document.getElementById('agentSelect'),
+            paymentWeekSelect: document.getElementById('paymentWeekSelect'),
+            totalAdminInput: document.getElementById('totalAdminInput'),
+            paymentAmount: document.getElementById('paymentAmount'),
+            paymentNotes: document.getElementById('paymentNotes'),
+            loading: document.getElementById('loading'),
+            submitPaymentBtn: document.getElementById('submitPaymentBtn'),
+            invoiceTable: document.getElementById('invoiceTable'),
+            totalAgents: document.getElementById('totalAgents'),
+            totalAdmin: document.getElementById('totalAdmin'),
+            totalOrders: document.getElementById('totalOrders'),
+            topAgent: document.getElementById('topAgent'),
+            tableTotalAdmin: document.getElementById('tableTotalAdmin'),
+            tableTotalOrders: document.getElementById('tableTotalOrders'),
+            paymentHistory: document.getElementById('paymentHistory'),
+            lastUpdate: document.getElementById('lastUpdate'),
+            sheetStatus: document.getElementById('sheetStatus')
+        };
         
         // Format currency
         function formatCurrency(amount) {
-            if (amount === 0) return 'Rp0';
+            if (amount === 0 || amount === '0') return 'Rp0';
+            if (typeof amount === 'string') {
+                amount = parseFloat(amount.replace(/[^0-9-]/g, '')) || 0;
+            }
             return 'Rp' + amount.toLocaleString('id-ID');
         }
         
-        // Format WhatsApp number
-        function formatWhatsApp(number) {
-            if (!number) return '-';
-            const clean = number.replace(/\D/g, '');
-            return clean.substring(0, 4) + '-' + 
-                   clean.substring(4, 8) + '-' + 
-                   clean.substring(8);
+        // Calculate total order (admin fee × 10)
+        function calculateTotalOrder(adminFee) {
+            return parseInt(adminFee) * 10;
         }
         
         // Show notification
         function showNotification(message, type = 'success') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.className = `notification ${type}`;
+            elements.notification.textContent = message;
+            elements.notification.className = `notification ${type}`;
             
             if (type === 'success') {
                 setTimeout(() => {
-                    notif.style.display = 'none';
+                    elements.notification.style.display = 'none';
                 }, 5000);
             }
         }
         
-        // Calculate summary
-        function calculateSummary(agents) {
-            const totalAgents = agents.length;
-            const totalInvoice = agents.reduce((sum, agent) => sum + agent.adminFee, 0);
-            const totalPaid = agents.reduce((sum, agent) => sum + agent.paid, 0);
-            const totalDue = totalInvoice - totalPaid;
+        // Parse CSV data from Google Sheets
+        async function parseCSVFromSheet() {
+            try {
+                elements.sheetStatus.textContent = '🔄 Memuat data...';
+                elements.sheetStatus.style.color = '#f59e0b';
+                
+                const response = await fetch(ORDER_CSV_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const csvText = await response.text();
+                const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                const data = [];
+                
+                // Parse each line
+                for (let i = 0; i < lines.length; i++) {
+                    try {
+                        let line = lines[i];
+                        let columns = [];
+                        let current = '';
+                        let inQuotes = false;
+                        
+                        for (let char of line) {
+                            if (char === '"') {
+                                inQuotes = !inQuotes;
+                            } else if (char === ',' && !inQuotes) {
+                                columns.push(current);
+                                current = '';
+                            } else {
+                                current += char;
+                            }
+                        }
+                        columns.push(current);
+                        
+                        // Clean columns
+                        columns = columns.map(col => col.replace(/^"|"$/g, '').trim());
+                        
+                        // Check if we have at least 3 columns (Agent, Admin Fee, Week)
+                        if (columns.length >= 3) {
+                            const agent = columns[0];
+                            const adminFee = parseInt(columns[1].replace(/[^0-9-]/g, '')) || 0;
+                            const week = columns[2];
+                            
+                            // Skip headers and empty rows
+                            if (agent && !agent.toLowerCase().includes('agent') && 
+                                !agent.toLowerCase().includes('nama') && 
+                                week && week.trim() !== '') {
+                                
+                                data.push({
+                                    agent: agent,
+                                    adminFee: adminFee,
+                                    week: week
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Error parsing line:', lines[i], e);
+                    }
+                }
+                
+                return data;
+                
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                throw error;
+            }
+        }
+        
+        // Aggregate data per agent per week
+        function aggregateData(data) {
+            const aggregated = {};
             
-            return { totalAgents, totalInvoice, totalPaid, totalDue };
+            data.forEach(item => {
+                const { agent, adminFee, week } = item;
+                
+                if (!week || week.trim() === '') return;
+                
+                if (!aggregated[week]) {
+                    aggregated[week] = {};
+                }
+                
+                if (!aggregated[week][agent]) {
+                    aggregated[week][agent] = 0;
+                }
+                
+                aggregated[week][agent] += adminFee;
+            });
+            
+            return aggregated;
+        }
+        
+        // Get unique weeks and sort them
+        function getSortedWeeks(aggregatedData) {
+            const weeks = Object.keys(aggregatedData);
+            
+            // Simple sort based on week string (assuming format like "14-20 Des")
+            return weeks.sort((a, b) => {
+                // Try to extract dates for proper sorting
+                const getDate = (weekStr) => {
+                    const match = weekStr.match(/(\d+)/);
+                    return match ? parseInt(match[1]) : 0;
+                };
+                return getDate(a) - getDate(b);
+            });
+        }
+        
+        // Get data for specific week
+        function getWeekData(week) {
+            if (!aggregatedData[week]) return [];
+            
+            const weekData = Object.entries(aggregatedData[week]).map(([agent, adminFee]) => {
+                const totalOrder = calculateTotalOrder(adminFee);
+                const paymentInfo = getPaymentInfo(agent, week);
+                const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
+                const remaining = adminFee - paidAmount;
+                
+                // Determine payment status
+                let status = 'unpaid';
+                if (paidAmount >= adminFee) status = 'paid';
+                else if (paidAmount > 0) status = 'partial';
+                
+                return {
+                    agent: agent,
+                    adminFee: adminFee,
+                    totalOrder: totalOrder,
+                    paidAmount: paidAmount,
+                    remaining: remaining,
+                    status: status
+                };
+            });
+            
+            // Sort by admin fee (highest first)
+            return weekData.sort((a, b) => b.adminFee - a.adminFee);
+        }
+        
+        // Get payment info from localStorage
+        function getPaymentInfo(agent, week) {
+            const key = `${agent}_${week}`;
+            return paymentHistory[key] || null;
+        }
+        
+        // Load payment history from localStorage
+        function loadPaymentHistory() {
+            try {
+                const saved = localStorage.getItem('agent_payment_history');
+                if (saved) {
+                    paymentHistory = JSON.parse(saved);
+                }
+            } catch (e) {
+                paymentHistory = {};
+            }
+        }
+        
+        // Save payment to localStorage
+        function savePayment(agent, week, paidAmount) {
+            const key = `${agent}_${week}`;
+            paymentHistory[key] = {
+                agent: agent,
+                week: week,
+                paidAmount: parseInt(paidAmount),
+                date: new Date().toISOString()
+            };
+            
+            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+        }
+        
+        // Populate week dropdowns
+        function populateWeekDropdowns() {
+            elements.weekSelect.innerHTML = '';
+            elements.paymentWeekSelect.innerHTML = '';
+            
+            if (availableWeeks.length === 0) {
+                elements.weekSelect.innerHTML = '<option value="">No weeks available</option>';
+                elements.paymentWeekSelect.innerHTML = '<option value="">No weeks available</option>';
+                return;
+            }
+            
+            // Add options for both dropdowns
+            availableWeeks.forEach((week, index) => {
+                // Main week selector
+                const option1 = document.createElement('option');
+                option1.value = week;
+                option1.textContent = week;
+                if (index === availableWeeks.length - 1) {
+                    option1.selected = true;
+                    currentWeek = week;
+                }
+                elements.weekSelect.appendChild(option1);
+                
+                // Payment week selector
+                const option2 = document.createElement('option');
+                option2.value = week;
+                option2.textContent = week;
+                if (index === availableWeeks.length - 1) {
+                    option2.selected = true;
+                }
+                elements.paymentWeekSelect.appendChild(option2);
+            });
+        }
+        
+        // Populate agent dropdown
+        function populateAgentDropdown() {
+            elements.agentSelect.innerHTML = '<option value="">Pilih agent...</option>';
+            
+            if (!currentWeek || !aggregatedData[currentWeek]) return;
+            
+            const weekAgents = Object.keys(aggregatedData[currentWeek]).sort();
+            
+            weekAgents.forEach(agent => {
+                const option = document.createElement('option');
+                option.value = agent;
+                option.textContent = `${agent} (${formatCurrency(aggregatedData[currentWeek][agent])})`;
+                elements.agentSelect.appendChild(option);
+            });
+            
+            // Add change listener
+            elements.agentSelect.addEventListener('change', function() {
+                const agent = this.value;
+                const week = elements.paymentWeekSelect.value;
+                
+                if (agent && week && aggregatedData[week] && aggregatedData[week][agent]) {
+                    const adminFee = aggregatedData[week][agent];
+                    elements.totalAdminInput.value = formatCurrency(adminFee);
+                } else {
+                    elements.totalAdminInput.value = 'Rp0';
+                }
+            });
+            
+            // Add change listener to payment week select
+            elements.paymentWeekSelect.addEventListener('change', function() {
+                const agent = elements.agentSelect.value;
+                const week = this.value;
+                
+                if (agent && week && aggregatedData[week] && aggregatedData[week][agent]) {
+                    const adminFee = aggregatedData[week][agent];
+                    elements.totalAdminInput.value = formatCurrency(adminFee);
+                } else {
+                    elements.totalAdminInput.value = 'Rp0';
+                }
+            });
         }
         
         // Render invoice table
-        function renderInvoiceTable(agents) {
-            const tbody = document.getElementById('invoiceTable');
+        function renderInvoiceTable(weekData) {
+            const tbody = elements.invoiceTable;
             tbody.innerHTML = '';
             
-            agents.forEach(agent => {
-                const remaining = agent.adminFee - agent.paid;
-                const statusClass = agent.status;
-                const statusText = agent.status === 'paid' ? 'Lunas' : 
-                                  agent.status === 'partial' ? 'Sebagian' : 'Belum Bayar';
+            if (weekData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
+                            <i class="fas fa-inbox"></i><br>
+                            Tidak ada data untuk minggu ini
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let totalAdmin = 0;
+            let totalOrders = 0;
+            
+            weekData.forEach(item => {
+                totalAdmin += item.adminFee;
+                totalOrders += item.totalOrder;
+                
+                const statusText = item.status === 'paid' ? 'Lunas' : 
+                                  item.status === 'partial' ? 'Sebagian' : 'Belum Bayar';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><strong>${agent.name}</strong></td>
-                    <td>${formatWhatsApp(agent.whatsapp)}</td>
-                    <td class="currency">${formatCurrency(agent.adminFee)}</td>
-                    <td><span class="status ${statusClass}">${statusText}</span></td>
-                    <td class="currency">${formatCurrency(remaining)}</td>
+                    <td><strong>${item.agent}</strong></td>
+                    <td class="currency">${formatCurrency(item.adminFee)}</td>
+                    <td class="currency">${formatCurrency(item.totalOrder)}</td>
+                    <td><span class="status ${item.status}">${statusText}</span></td>
                 `;
                 
                 tbody.appendChild(row);
             });
             
             // Update totals
-            const summary = calculateSummary(agents);
-            document.getElementById('totalAdmin').textContent = formatCurrency(summary.totalInvoice);
-            document.getElementById('totalRemaining').textContent = formatCurrency(summary.totalDue);
-        }
-        
-        // Render summary cards
-        function renderSummaryCards(agents) {
-            const summary = calculateSummary(agents);
+            elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
+            elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
             
-            document.getElementById('totalAgents').textContent = summary.totalAgents;
-            document.getElementById('totalInvoice').textContent = formatCurrency(summary.totalInvoice * 10); // Total order
-            document.getElementById('totalPaid').textContent = formatCurrency(summary.totalPaid);
-            document.getElementById('totalDue').textContent = formatCurrency(summary.totalDue);
-        }
-        
-        // Populate agent dropdown
-        function populateAgentDropdown(agents) {
-            const select = document.getElementById('agentSelect');
-            select.innerHTML = '<option value="">Pilih agent...</option>';
+            // Update summary cards
+            elements.totalAgents.textContent = weekData.length;
+            elements.totalAdmin.textContent = formatCurrency(totalAdmin);
+            elements.totalOrders.textContent = formatCurrency(totalOrders);
             
-            agents.forEach(agent => {
-                const option = document.createElement('option');
-                option.value = agent.name;
-                option.textContent = `${agent.name} (${formatCurrency(agent.adminFee)})`;
-                select.appendChild(option);
-            });
-            
-            // Add change listener
-            select.addEventListener('change', function() {
-                const selectedAgent = agents.find(a => a.name === this.value);
-                if (selectedAgent) {
-                    document.getElementById('totalInvoiceInput').value = formatCurrency(selectedAgent.adminFee);
-                    document.getElementById('paymentAmount').max = selectedAgent.adminFee * 2;
-                } else {
-                    document.getElementById('totalInvoiceInput').value = 'Rp0';
-                }
-            });
+            // Find top agent
+            if (weekData.length > 0) {
+                const top = weekData.reduce((max, agent) => 
+                    agent.adminFee > max.adminFee ? agent : max, weekData[0]);
+                elements.topAgent.textContent = top.agent;
+            }
         }
         
         // Render payment history
         function renderPaymentHistory() {
-            const container = document.getElementById('paymentHistory');
+            const container = elements.paymentHistory;
             
-            if (dummyData.paymentHistory.length === 0) {
+            // Get payments for current week
+            const currentPayments = Object.values(paymentHistory)
+                .filter(p => p.week === currentWeek)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (currentPayments.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-history"></i>
-                        <p>Belum ada riwayat pembayaran</p>
+                        <p>Belum ada riwayat pembayaran untuk minggu ini</p>
                     </div>
                 `;
                 return;
@@ -634,20 +885,24 @@
             
             let html = '<div style="max-height: 200px; overflow-y: auto;">';
             
-            dummyData.paymentHistory.forEach(payment => {
+            currentPayments.forEach(payment => {
+                const date = new Date(payment.date).toLocaleString('id-ID');
+                const status = payment.paidAmount >= (aggregatedData[payment.week]?.[payment.agent] || 0) ? 
+                    '<span class="status paid" style="font-size: 11px;">Lunas</span>' : 
+                    '<span class="status partial" style="font-size: 11px;">Sebagian</span>';
+                
                 html += `
                     <div style="padding: 12px; margin-bottom: 10px; background: #f8f9fd; border-radius: 8px;">
-                        <div style="display: flex; justify-content: space-between;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong>${payment.agent}</strong>
-                                <div style="font-size: 12px; color: #666;">${payment.week}</div>
+                                <div style="font-size: 12px; color: #666;">${date}</div>
                             </div>
                             <div style="text-align: right;">
-                                <strong style="color: #10b981;">${formatCurrency(payment.amount)}</strong>
-                                <div style="font-size: 11px; color: #888;">${payment.date}</div>
+                                <strong style="color: #10b981;">${formatCurrency(payment.paidAmount)}</strong>
+                                <div style="font-size: 11px; color: #888;">${status}</div>
                             </div>
                         </div>
-                        ${payment.notes ? `<div style="font-size: 12px; color: #777; margin-top: 5px;">📝 ${payment.notes}</div>` : ''}
                     </div>
                 `;
             });
@@ -656,47 +911,143 @@
             container.innerHTML = html;
         }
         
-        // Refresh data
-        function refreshData() {
-            const selectedWeek = document.getElementById('weekSelect').value;
-            document.getElementById('selectedWeek').textContent = selectedWeek;
-            
-            // For demo, just recalculate with current data
-            renderInvoiceTable(dummyData.agents);
-            renderSummaryCards(dummyData.agents);
-            populateAgentDropdown(dummyData.agents);
-            
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
-            
-            showNotification(`Data untuk periode ${selectedWeek} diperbarui`, 'success');
+        // Load data from Google Sheets
+        async function loadData() {
+            try {
+                elements.dataLoading.style.display = 'block';
+                elements.dashboardContent.style.display = 'none';
+                
+                // Load data from Google Sheets
+                rawData = await parseCSVFromSheet();
+                
+                if (rawData.length === 0) {
+                    throw new Error('Tidak ada data yang ditemukan di sheet');
+                }
+                
+                console.log('Data loaded:', rawData.length, 'records');
+                
+                // Aggregate data
+                aggregatedData = aggregateData(rawData);
+                availableWeeks = getSortedWeeks(aggregatedData);
+                
+                if (availableWeeks.length === 0) {
+                    throw new Error('Tidak ada data mingguan yang valid');
+                }
+                
+                // Set current week to the latest one
+                currentWeek = availableWeeks[availableWeeks.length - 1];
+                
+                // Load payment history
+                loadPaymentHistory();
+                
+                // Update UI
+                populateWeekDropdowns();
+                populateAgentDropdown();
+                renderWeekData(currentWeek);
+                
+                elements.sheetStatus.textContent = '✅ Terhubung';
+                elements.sheetStatus.style.color = '#10b981';
+                elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
+                
+                elements.dataLoading.style.display = 'none';
+                elements.dashboardContent.style.display = 'block';
+                
+                showNotification(`✅ Data berhasil dimuat: ${rawData.length} records, ${availableWeeks.length} minggu`, 'success');
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                
+                elements.sheetStatus.textContent = '❌ Error: ' + error.message;
+                elements.sheetStatus.style.color = '#ef4444';
+                
+                // Load sample data for demo
+                loadSampleData();
+                
+                elements.dataLoading.style.display = 'none';
+                elements.dashboardContent.style.display = 'block';
+                
+                showNotification(`⚠️ Menggunakan data sample: ${error.message}`, 'error');
+            }
         }
         
-        // Submit payment to Google Sheets
+        // Load sample data (fallback)
+        function loadSampleData() {
+            rawData = [
+                { agent: "Diar", adminFee: 35000, week: "18-24 Jan 2025" },
+                { agent: "Restu", adminFee: 45000, week: "18-24 Jan 2025" },
+                { agent: "Fajar", adminFee: 52000, week: "18-24 Jan 2025" },
+                { agent: "Kharisma", adminFee: 28000, week: "18-24 Jan 2025" },
+                { agent: "Agung", adminFee: 38000, week: "18-24 Jan 2025" },
+                { agent: "Defita", adminFee: 42000, week: "18-24 Jan 2025" },
+                { agent: "Diar", adminFee: 40000, week: "25-31 Jan 2025" },
+                { agent: "Restu", adminFee: 50000, week: "25-31 Jan 2025" },
+                { agent: "Fajar", adminFee: 55000, week: "25-31 Jan 2025" },
+                { agent: "Kharisma", adminFee: 32000, week: "25-31 Jan 2025" },
+                { agent: "Agung", adminFee: 42000, week: "25-31 Jan 2025" },
+                { agent: "Defita", adminFee: 48000, week: "25-31 Jan 2025" },
+                { agent: "Lutfi Majid", adminFee: 31000, week: "25-31 Jan 2025" },
+                { agent: "Akhmad Rifki", adminFee: 24000, week: "25-31 Jan 2025" }
+            ];
+            
+            aggregatedData = aggregateData(rawData);
+            availableWeeks = getSortedWeeks(aggregatedData);
+            currentWeek = availableWeeks[availableWeeks.length - 1];
+            
+            loadPaymentHistory();
+            populateWeekDropdowns();
+            populateAgentDropdown();
+            renderWeekData(currentWeek);
+            
+            elements.lastUpdate.textContent = new Date().toLocaleString('id-ID') + ' (Sample Data)';
+        }
+        
+        // Render data for specific week
+        function renderWeekData(week) {
+            currentWeek = week;
+            elements.selectedWeek.textContent = week;
+            
+            const weekData = getWeekData(week);
+            renderInvoiceTable(weekData);
+            renderPaymentHistory();
+            
+            // Update agent dropdown for this week
+            populateAgentDropdown();
+        }
+        
+        // Refresh data
+        function refreshData() {
+            const selectedWeek = elements.weekSelect.value;
+            if (selectedWeek) {
+                renderWeekData(selectedWeek);
+                showNotification(`Data untuk periode ${selectedWeek} diperbarui`, 'success');
+            }
+        }
+        
+        // Submit payment
         async function submitPayment() {
-            const agent = document.getElementById('agentSelect').value;
-            const week = document.getElementById('paymentWeekSelect').value;
-            const amount = document.getElementById('paymentAmount').value;
-            const notes = document.getElementById('paymentNotes').value;
+            const agent = elements.agentSelect.value;
+            const week = elements.paymentWeekSelect.value;
+            const amount = elements.paymentAmount.value;
+            const notes = elements.paymentNotes.value;
             
             // Validation
-            if (!agent || !amount || amount <= 0) {
-                showNotification('Harap pilih agent dan isi jumlah pembayaran!', 'error');
+            if (!agent || !week || !amount || amount <= 0) {
+                showNotification('Harap pilih agent, week, dan isi jumlah pembayaran!', 'error');
                 return;
             }
             
-            // Get admin fee for selected agent
-            const selectedAgent = dummyData.agents.find(a => a.name === agent);
-            if (!selectedAgent) {
-                showNotification('Agent tidak ditemukan!', 'error');
+            // Check if agent exists in selected week
+            if (!aggregatedData[week] || !aggregatedData[week][agent]) {
+                showNotification('Agent tidak ditemukan di minggu yang dipilih!', 'error');
                 return;
             }
+            
+            const totalAdmin = aggregatedData[week][agent];
             
             // Show loading
-            const loading = document.getElementById('loading');
-            const submitBtn = document.getElementById('submitPaymentBtn');
-            loading.style.display = 'block';
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            elements.loading.style.display = 'block';
+            elements.submitPaymentBtn.disabled = true;
+            elements.submitPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             
             try {
                 // Prepare data for Google Sheets
@@ -704,99 +1055,70 @@
                     agent: agent,
                     week: week,
                     amount: parseInt(amount),
-                    notes: notes,
-                    total_admin: selectedAgent.adminFee,
-                    timestamp: new Date().toISOString()
+                    notes: notes || '',
+                    total_admin: totalAdmin,
+                    remaining: totalAdmin - parseInt(amount),
+                    timestamp: new Date().toISOString(),
+                    source: 'Dashboard Payment'
                 };
                 
-                // Send to Google Sheets
+                // Send to Google Sheets via Apps Script
                 const params = new URLSearchParams(paymentData);
                 const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
                 
-                console.log('Sending to:', url);
+                console.log('Sending to Google Sheets:', url);
                 
                 const response = await fetch(url);
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Update dummy data (for demo)
-                    const agentIndex = dummyData.agents.findIndex(a => a.name === agent);
-                    if (agentIndex !== -1) {
-                        const newPaid = dummyData.agents[agentIndex].paid + parseInt(amount);
-                        dummyData.agents[agentIndex].paid = newPaid;
-                        
-                        // Update status
-                        if (newPaid >= dummyData.agents[agentIndex].adminFee) {
-                            dummyData.agents[agentIndex].status = 'paid';
-                        } else if (newPaid > 0) {
-                            dummyData.agents[agentIndex].status = 'partial';
-                        }
-                        
-                        // Add to history
-                        dummyData.paymentHistory.unshift({
-                            agent: agent,
-                            week: week,
-                            amount: parseInt(amount),
-                            notes: notes || '-',
-                            date: new Date().toLocaleString('id-ID')
-                        });
-                    }
+                    // Save to localStorage
+                    savePayment(agent, week, amount);
                     
                     // Update UI
-                    refreshData();
+                    renderWeekData(currentWeek);
                     renderPaymentHistory();
                     
                     // Clear form
-                    document.getElementById('paymentAmount').value = '';
-                    document.getElementById('paymentNotes').value = '';
+                    elements.paymentAmount.value = '';
+                    elements.paymentNotes.value = '';
+                    elements.totalAdminInput.value = 'Rp0';
                     
-                    showNotification(`✅ Pembayaran ${formatCurrency(amount)} berhasil disimpan!`, 'success');
+                    showNotification(`✅ ${result.message}`, 'success');
                     
                 } else {
-                    throw new Error(result.message || 'Gagal menyimpan');
+                    throw new Error(result.message || 'Gagal menyimpan ke Google Sheets');
                 }
                 
             } catch (error) {
-                console.error('Error:', error);
-                showNotification(`⚠️ ${error.message}. Data disimpan secara lokal.`, 'error');
+                console.error('Error saving payment:', error);
                 
-                // Fallback: save locally
-                const localPayments = JSON.parse(localStorage.getItem('localPayments') || '[]');
-                localPayments.push({
-                    agent, week, amount, notes,
-                    savedAt: new Date().toISOString(),
-                    isLocal: true
-                });
-                localStorage.setItem('localPayments', JSON.stringify(localPayments));
+                // Fallback: save to localStorage only
+                savePayment(agent, week, amount);
+                renderWeekData(currentWeek);
+                renderPaymentHistory();
+                
+                showNotification(`⚠️ Disimpan lokal: ${error.message}`, 'info');
                 
             } finally {
                 // Hide loading
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Pembayaran';
+                elements.loading.style.display = 'none';
+                elements.submitPaymentBtn.disabled = false;
+                elements.submitPaymentBtn.innerHTML = '<i class="fas fa-save"></i> Simpan ke Google Sheets';
             }
         }
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Set initial data
-            refreshData();
-            renderPaymentHistory();
+            // Load data on page load
+            loadData();
             
-            // Set last update
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
-            
-            // Test connection to Google Sheets
-            fetch(APPS_SCRIPT_URL + '?test=1')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('✅ Connected to Google Sheets API');
-                    }
-                })
-                .catch(error => {
-                    console.warn('⚠️ Google Sheets connection:', error);
-                });
+            // Add event listener for week change
+            elements.weekSelect.addEventListener('change', function() {
+                if (this.value) {
+                    renderWeekData(this.value);
+                }
+            });
         });
     </script>
 </body>
