@@ -719,6 +719,9 @@
         
         .payment-history {
             margin-top: 25px;
+            background-color: #f8f9fd;
+            border-radius: 10px;
+            padding: 20px;
         }
         
         .history-title {
@@ -726,17 +729,36 @@
             font-weight: 600;
             margin-bottom: 15px;
             color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .history-date-group {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-date-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
         
         .history-item {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             padding: 12px 15px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 8px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #eee;
         }
         
         .history-item:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
         
         .history-date {
@@ -964,6 +986,15 @@
             font-size: 12px;
             font-weight: 600;
         }
+        
+        .payment-success-animation {
+            animation: successPulse 2s ease-in-out;
+        }
+        
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
     </style>
 </head>
 <body>
@@ -982,7 +1013,7 @@
                 <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">
                     Google Sheets Order Agent
                 </a>
-                | Sheets: "To Dashboard" & "Database Agent"
+                | Sheets: "To Dashboard" & "Database Agent" & "Payment History"
             </div>
         </header>
         
@@ -1238,18 +1269,27 @@
                                 <span id="payment-amount-text">Rp0</span>
                             </div>
                             
-                            <button type="submit" class="submit-btn">
-                                <i class="fas fa-save"></i> Simpan Status Pembayaran
+                            <button type="submit" class="submit-btn" id="payment-submit-btn">
+                                <i class="fas fa-save"></i> Simpan ke Google Sheets
                             </button>
                         </form>
                         
                         <!-- PAYMENT HISTORY -->
                         <div class="payment-history">
-                            <h3 class="history-title">Riwayat Pembayaran</h3>
+                            <h3 class="history-title">
+                                <span>Riwayat Pembayaran</span>
+                                <button class="refresh-btn" id="refresh-history-btn" style="padding: 5px 10px; font-size: 12px;">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </h3>
                             <div id="payment-history-list">
                                 <!-- History will be populated here -->
-                                <div style="text-align: center; color: #888; padding: 20px;">
-                                    Belum ada riwayat pembayaran
+                                <div style="text-align: center; color: #888; padding: 30px 20px;">
+                                    <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
+                                    <div>Belum ada riwayat pembayaran</div>
+                                    <div style="font-size: 12px; margin-top: 10px;">
+                                        Input pembayaran pertama untuk agent ini
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1264,32 +1304,36 @@
         <footer>
             <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Status Pembayaran</p>
             <p style="font-size: 12px; margin-top: 5px;">
-                Terakhir diupdate: <span id="last-update">-</span>
+                Terakhir diupdate: <span id="last-update">-</span> | 
+                Payment API Status: <span id="api-status">🔴 Offline</span>
             </p>
         </footer>
     </div>
 
     <script>
-        // Google Sheets Configuration - TAMBAHKAN WEEKLY REPORT
+        // Google Sheets Configuration
         const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'To Dashboard';
         const AGENT_SHEET_NAME = 'Database Agent';
-        const WEEKLY_SHEET_NAME = 'Report Weekly'; // TAB BARU
+        const WEEKLY_SHEET_NAME = 'Report Weekly';
+        
+        // URL Apps Script Anda
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM0tcjYDw8Ai_2R4NMS7MzcwA4dzpSaaoq9n89op-_eLsa_RcY146Q4hL_eqThXykxag/exec';
         
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
-        const WEEKLY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${WEEKLY_SHEET_NAME}`; // URL BARU
+        const WEEKLY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${WEEKLY_SHEET_NAME}`;
         
-        // Application State - TAMBAHKAN VARIABEL WEEKLY
+        // Application State
         let rawData = [];
         let aggregatedData = {};
         let availableWeeks = [];
         let agentDatabase = {};
         let paymentHistory = {};
         let currentWeekIndex = 0;
-        let weeklyData = []; // DATA WEEKLY REPORT
-        let weeklyChart = null; // CHART WEEKLY
-        
+        let weeklyData = [];
+        let weeklyChart = null;
+
         // DOM Elements
         const elements = {
             loading: document.getElementById('loading'),
@@ -1322,6 +1366,7 @@
             
             // Footer
             lastUpdate: document.getElementById('last-update'),
+            apiStatus: document.getElementById('api-status'),
             
             // WhatsApp Section
             agentSelect: document.getElementById('agent-select'),
@@ -1346,6 +1391,8 @@
             paymentStatusText: document.getElementById('payment-status-text'),
             paymentAmountText: document.getElementById('payment-amount-text'),
             paymentHistoryList: document.getElementById('payment-history-list'),
+            refreshHistoryBtn: document.getElementById('refresh-history-btn'),
+            paymentSubmitBtn: document.getElementById('payment-submit-btn'),
             
             // Weekly Chart Elements
             weeklyChartTitle: document.getElementById('weekly-chart-title')
@@ -1387,6 +1434,9 @@
         // Format Currency
         function formatCurrency(amount) {
             if (amount === 0 || amount === '0') return 'Rp0';
+            if (typeof amount === 'string') {
+                amount = parseFloat(amount.replace(/[^0-9-]/g, '')) || 0;
+            }
             return 'Rp' + amount.toLocaleString('id-ID');
         }
         
@@ -1411,7 +1461,7 @@
             elements.statusDot.className = 'status-dot ' + type;
         }
         
-        // Parse CSV Data - DIPERBAIKI untuk menangani format Google Sheets CSV
+        // Parse CSV Data
         function parseCSV(csvText, sheetType = 'order') {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const data = [];
@@ -1421,7 +1471,6 @@
                     let columns = [];
                     let currentLine = lines[i];
                     
-                    // Handle quoted strings with commas inside
                     let inQuotes = false;
                     let currentValue = '';
                     
@@ -1438,10 +1487,7 @@
                         }
                     }
                     
-                    // Add the last value
                     columns.push(currentValue.trim());
-                    
-                    // Remove quotes from each column
                     columns = columns.map(col => col.replace(/^"|"$/g, ''));
                     
                     if (sheetType === 'order' && columns.length >= 3) {
@@ -1469,7 +1515,6 @@
                             });
                         }
                     } else if (sheetType === 'weekly' && columns.length >= 3) {
-                        // Parse data dari Report Weekly
                         const week = columns[0];
                         const totalOrder = parseInt(columns[1].replace(/[^0-9-]/g, '')) || 0;
                         const totalAmount = parseInt(columns[2].replace(/[^0-9-]/g, '')) || 0;
@@ -1480,7 +1525,7 @@
                                 week: week.trim(),
                                 totalOrder: totalOrder,
                                 totalAmount: totalAmount,
-                                originalIndex: i // Simpan index asli untuk sorting
+                                originalIndex: i
                             });
                         }
                     }
@@ -1492,7 +1537,7 @@
             return data;
         }
         
-        // Parse Weekly Data dari Report Weekly - FUNGSI BARU
+        // Parse Weekly Data
         function parseWeeklyData(csvText) {
             const data = parseCSV(csvText, 'weekly');
             
@@ -1501,10 +1546,7 @@
                 return [];
             }
             
-            // Sort berdasarkan index asli (data terbaru biasanya di bawah)
             const sortedData = data.sort((a, b) => a.originalIndex - b.originalIndex);
-            
-            // Ambil 5 data terakhir (paling bawah = paling baru)
             const last5Data = sortedData.slice(-5);
             
             console.log('Weekly data loaded:', last5Data.length, 'weeks');
@@ -1541,7 +1583,6 @@
             
             function parseWeekToDate(weekStr) {
                 try {
-                    // Try to parse "14-20 Des" or "28 Des - 3 Jan" format
                     const parts = weekStr.split(/[-–]/);
                     if (parts.length >= 1) {
                         const firstPart = parts[0].trim();
@@ -1657,6 +1698,433 @@
             }
         }
         
+        // ==============================================
+        // FUNGSI BARU: INTEGRASI GOOGLE SHEETS PAYMENT
+        // ==============================================
+        
+        // Test koneksi ke Apps Script
+        async function testAppsScriptConnection() {
+            try {
+                const testUrl = `${APPS_SCRIPT_URL}?action=test&timestamp=${Date.now()}`;
+                const response = await fetch(testUrl, { method: 'GET' });
+                
+                if (response.ok) {
+                    elements.apiStatus.textContent = '🟢 Online';
+                    elements.apiStatus.style.color = '#10b981';
+                    return true;
+                } else {
+                    elements.apiStatus.textContent = '🟡 Limited';
+                    elements.apiStatus.style.color = '#f59e0b';
+                    return false;
+                }
+            } catch (error) {
+                elements.apiStatus.textContent = '🔴 Offline';
+                elements.apiStatus.style.color = '#ef4444';
+                console.warn('Apps Script connection test failed:', error);
+                return false;
+            }
+        }
+        
+        // Kirim data pembayaran ke Google Sheets
+        async function sendPaymentToGoogleSheets(paymentData) {
+            try {
+                showToast('Mengirim data ke Google Sheets...', 'info');
+                
+                // Cek koneksi dulu
+                const isConnected = await testAppsScriptConnection();
+                if (!isConnected) {
+                    showToast('⚠️ Koneksi terbatas. Mencoba mode alternatif...', 'info');
+                }
+                
+                // Tambah timestamp dan info tambahan
+                const fullPaymentData = {
+                    ...paymentData,
+                    timestamp: new Date().toISOString(),
+                    inputBy: 'Dashboard Admin',
+                    action: 'savePayment'
+                };
+                
+                // Gunakan proxy untuk menghindari CORS (alternatif)
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(APPS_SCRIPT_URL)}`;
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: JSON.stringify(fullPaymentData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Simpan juga ke localStorage sebagai backup
+                    savePaymentToLocalStorage(paymentData);
+                    
+                    // Trigger reload data
+                    loadPaymentHistoryFromGoogleSheets(paymentData.agent, paymentData.week);
+                    
+                    // Animasikan success
+                    elements.paymentSubmitBtn.classList.add('payment-success-animation');
+                    setTimeout(() => {
+                        elements.paymentSubmitBtn.classList.remove('payment-success-animation');
+                    }, 2000);
+                    
+                    return { success: true, data: result };
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan data');
+                }
+                
+            } catch (error) {
+                console.error('Error sending to Google Sheets:', error);
+                
+                // Fallback: simpan ke localStorage saja
+                savePaymentToLocalStorage(paymentData);
+                showToast('⚠️ Disimpan di browser (offline mode)', 'info');
+                
+                return { 
+                    success: false, 
+                    message: `Disimpan lokal: ${error.message}` 
+                };
+            }
+        }
+        
+        // Simpan ke localStorage sebagai backup
+        function savePaymentToLocalStorage(paymentData) {
+            try {
+                const key = `payment_${paymentData.agent}_${paymentData.week}_${Date.now()}`;
+                const offlinePayment = {
+                    ...paymentData,
+                    id: key,
+                    savedAt: new Date().toISOString(),
+                    isOffline: true
+                };
+                
+                const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
+                offlinePayments.push(offlinePayment);
+                localStorage.setItem('offline_payments', JSON.stringify(offlinePayments));
+                
+                // Simpan juga ke payment history lokal
+                savePayment(paymentData.agent, paymentData.week, paymentData.paidAmount);
+                
+                return true;
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                return false;
+            }
+        }
+        
+        // Load payment history dari Google Sheets
+        async function loadPaymentHistoryFromGoogleSheets(agentName, week) {
+            try {
+                elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                elements.refreshHistoryBtn.disabled = true;
+                
+                const url = `${APPS_SCRIPT_URL}?action=getHistory&agent=${encodeURIComponent(agentName || '')}&week=${encodeURIComponent(week || '')}&timestamp=${Date.now()}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Combine dengan data lokal
+                    const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
+                    const allHistory = [...data.history || [], ...offlinePayments];
+                    
+                    // Filter untuk agent/week tertentu
+                    let filteredHistory = allHistory;
+                    if (agentName) {
+                        filteredHistory = filteredHistory.filter(h => h.agent === agentName);
+                    }
+                    if (week) {
+                        filteredHistory = filteredHistory.filter(h => h.week === week);
+                    }
+                    
+                    // Sort by timestamp
+                    filteredHistory.sort((a, b) => {
+                        const timeA = new Date(a.timestamp || a.savedAt || 0);
+                        const timeB = new Date(b.timestamp || b.savedAt || 0);
+                        return timeB - timeA;
+                    });
+                    
+                    renderPaymentHistory(filteredHistory);
+                    
+                } else {
+                    renderPaymentHistory([]);
+                }
+                
+            } catch (error) {
+                console.warn('Error loading payment history:', error);
+                renderPaymentHistory([]);
+                
+                // Tampilkan data dari localStorage saja
+                showToast('⚠️ Menampilkan data lokal (offline)', 'info');
+                
+            } finally {
+                elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                elements.refreshHistoryBtn.disabled = false;
+            }
+        }
+        
+        // Render payment history
+        function renderPaymentHistory(history) {
+            const container = elements.paymentHistoryList;
+            
+            if (!history || history.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #888; padding: 30px 20px;">
+                        <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <div>Belum ada riwayat pembayaran</div>
+                        <div style="font-size: 12px; margin-top: 10px;">
+                            Input pembayaran pertama untuk agent ini
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group by date
+            const groupedByDate = {};
+            history.forEach(record => {
+                let dateStr;
+                if (record.timestamp || record.savedAt) {
+                    const date = new Date(record.timestamp || record.savedAt);
+                    dateStr = date.toLocaleDateString('id-ID', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } else {
+                    dateStr = 'Tanggal tidak diketahui';
+                }
+                
+                if (!groupedByDate[dateStr]) {
+                    groupedByDate[dateStr] = [];
+                }
+                groupedByDate[dateStr].push(record);
+            });
+            
+            // Render
+            let html = '';
+            const dates = Object.keys(groupedByDate).sort((a, b) => {
+                // Sort dates descending
+                return new Date(b.split(', ')[1] || b) - new Date(a.split(', ')[1] || a);
+            });
+            
+            dates.forEach(date => {
+                const records = groupedByDate[date];
+                
+                html += `<div class="history-date-group">`;
+                html += `<div style="font-weight: 600; color: #666; margin-bottom: 10px; font-size: 14px; padding-left: 5px;">${date}</div>`;
+                
+                records.forEach(record => {
+                    const time = record.timestamp || record.savedAt ? 
+                        new Date(record.timestamp || record.savedAt).toLocaleTimeString('id-ID', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '--:--';
+                    
+                    const isOffline = record.isOffline;
+                    const status = record.status || 
+                        (record.paidAmount >= record.totalAdmin ? 'Lunas' : 
+                         record.paidAmount === 0 ? 'Belum Bayar' : 'Sebagian');
+                    
+                    const statusClass = status === 'Lunas' ? 'status-paid' : 
+                                      status === 'Belum Bayar' ? 'status-unpaid' : 'status-partial';
+                    
+                    const offlineBadge = isOffline ? 
+                        `<span style="font-size: 10px; background: #f59e0b; color: white; padding: 1px 5px; border-radius: 3px; margin-left: 5px;">OFFLINE</span>` : '';
+                    
+                    html += `
+                        <div class="history-item" ${isOffline ? 'style="border-left: 3px solid #f59e0b;"' : ''}>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; font-size: 14px; display: flex; align-items: center;">
+                                    ${record.agent} - ${record.week}
+                                    ${offlineBadge}
+                                </div>
+                                <div style="font-size: 12px; color: #999; margin-top: 2px;">
+                                    ${time} • ${record.keterangan || record.inputBy || 'Dashboard'}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: #10b981; font-size: 14px;">
+                                    ${formatCurrency(record.paidAmount)}
+                                </div>
+                                <div style="font-size: 11px; color: #888; margin-top: 2px;">
+                                    <span class="${statusClass}" style="padding: 2px 6px; border-radius: 3px; font-size: 10px;">
+                                        ${status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Handle payment form submission
+        async function handlePaymentFormSubmit(e) {
+            e.preventDefault();
+            
+            const agentName = elements.paymentAgentSelect.value;
+            const weekIndex = parseInt(elements.paymentWeekSelect.value);
+            const paidAmount = parseInt(elements.paymentPaidAmount.value);
+            
+            if (!agentName || isNaN(weekIndex) || isNaN(paidAmount) || paidAmount < 0) {
+                showToast('Harap isi semua field dengan benar', 'error');
+                return;
+            }
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) {
+                showToast('Data agent tidak ditemukan', 'error');
+                return;
+            }
+            
+            if (paidAmount > agentData.adminFee * 1.5) {
+                const confirm = window.confirm(
+                    `Jumlah pembayaran (${formatCurrency(paidAmount)}) lebih besar dari biaya admin (${formatCurrency(agentData.adminFee)}).\nApakah Anda yakin?`
+                );
+                if (!confirm) return;
+            }
+            
+            // Show loading
+            const originalButtonHTML = elements.paymentSubmitBtn.innerHTML;
+            elements.paymentSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            elements.paymentSubmitBtn.disabled = true;
+            
+            try {
+                // Prepare payment data
+                const paymentData = {
+                    agent: agentName,
+                    week: week,
+                    totalAdmin: agentData.adminFee,
+                    paidAmount: paidAmount,
+                    remaining: agentData.adminFee - paidAmount
+                };
+                
+                // Send to Google Sheets
+                const result = await sendPaymentToGoogleSheets(paymentData);
+                
+                if (result.success) {
+                    // Update UI
+                    updateAgentInfo();
+                    
+                    // Show success
+                    if (paidAmount >= agentData.adminFee) {
+                        showToast(`✅ Pembayaran lunas untuk ${agentName}`, 'success');
+                    } else if (paidAmount === 0) {
+                        showToast(`🔄 Status direset untuk ${agentName}`, 'info');
+                    } else {
+                        showToast(`✅ Pembayaran ${formatCurrency(paidAmount)} berhasil disimpan`, 'success');
+                    }
+                    
+                    // Clear form
+                    elements.paymentPaidAmount.value = '';
+                    
+                    // Reload payment history
+                    loadPaymentHistoryFromGoogleSheets(agentName, week);
+                    
+                } else {
+                    showToast(`⚠️ ${result.message}`, 'info');
+                }
+                
+            } catch (error) {
+                console.error('Payment submission error:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                // Restore button
+                elements.paymentSubmitBtn.innerHTML = originalButtonHTML;
+                elements.paymentSubmitBtn.disabled = false;
+            }
+        }
+        
+        // Load payment history from localStorage (existing function)
+        function loadPaymentHistory() {
+            const saved = localStorage.getItem('agent_payment_history');
+            if (saved) {
+                try {
+                    paymentHistory = JSON.parse(saved);
+                } catch (e) {
+                    paymentHistory = {};
+                }
+            } else {
+                paymentHistory = {};
+            }
+        }
+        
+        // Save payment to localStorage (existing function)
+        function savePayment(agent, week, paidAmount, date) {
+            const key = `${agent}_${week}`;
+            paymentHistory[key] = {
+                agent: agent,
+                week: week,
+                paidAmount: parseInt(paidAmount),
+                date: date || new Date().toISOString()
+            };
+            
+            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+        }
+        
+        // Update payment form display
+        function updatePaymentForm(agentName, weekIndex) {
+            if (!agentName || isNaN(weekIndex)) return;
+            
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) return;
+            
+            elements.paymentAgentSelect.value = agentName;
+            elements.paymentWeekSelect.value = weekIndex;
+            elements.paymentTotalAdmin.value = formatCurrency(agentData.adminFee);
+            elements.paymentPaidAmount.value = agentData.paidAmount || '';
+            elements.paymentPaidAmount.min = 0;
+            elements.paymentPaidAmount.max = agentData.adminFee * 2;
+            
+            calculatePaymentStatus(agentData.adminFee, agentData.paidAmount || 0);
+            
+            loadPaymentHistoryFromGoogleSheets(agentName, week);
+        }
+        
+        // Calculate payment status
+        function calculatePaymentStatus(totalAdmin, paidAmount) {
+            if (totalAdmin === 0) {
+                elements.paymentStatusDisplay.style.display = 'none';
+                return;
+            }
+            
+            const remaining = totalAdmin - paidAmount;
+            let statusText = '';
+            let statusClass = '';
+            
+            if (paidAmount === 0) {
+                statusText = 'Belum bayar';
+                statusClass = 'status-unpaid';
+            } else if (paidAmount >= totalAdmin) {
+                statusText = 'Lunas';
+                statusClass = 'status-paid';
+            } else {
+                statusText = `Sebagian (kurang ${formatCurrency(remaining)})`;
+                statusClass = 'status-partial';
+            }
+            
+            elements.paymentStatusText.textContent = `Status: ${statusText}`;
+            elements.paymentAmountText.textContent = formatCurrency(paidAmount);
+            elements.paymentStatusDisplay.className = `payment-status ${statusClass}`;
+            elements.paymentStatusDisplay.style.display = 'flex';
+        }
+        
         // Populate week dropdown
         function populateWeekDropdown() {
             const selects = [
@@ -1682,24 +2150,21 @@
             updateNavigationButtons();
         }
         
-        // Populate agent dropdowns - DIPERBAIKI
+        // Populate agent dropdowns
         function populateAgentDropdowns() {
             const agentSelects = [
                 elements.agentSelect,
                 elements.paymentAgentSelect
             ];
             
-            // Get all agents from both order data and agent database
             const allAgents = new Set();
             
-            // Add agents from order data
             rawData.forEach(item => {
                 if (item.agent && item.agent.trim() !== '') {
                     allAgents.add(item.agent);
                 }
             });
             
-            // Add agents from agent database
             Object.keys(agentDatabase).forEach(agent => {
                 allAgents.add(agent);
             });
@@ -1724,12 +2189,15 @@
             elements.nextWeekBtn.disabled = currentWeekIndex === availableWeeks.length - 1;
         }
         
-        // Load Data from Google Sheets - DIPERBAIKI untuk parsing agent database
+        // Load Data from Google Sheets
         async function loadData() {
             try {
                 elements.loading.style.display = 'block';
                 elements.dashboard.style.display = 'none';
                 updateStatus('Mengambil data dari Google Sheets...', 'loading');
+                
+                // Test Apps Script connection
+                await testAppsScriptConnection();
                 
                 // Load order data
                 const orderResponse = await fetch(ORDER_CSV_URL);
@@ -1741,13 +2209,12 @@
                 
                 console.log('Order data loaded:', rawData.length, 'records');
                 
-                // Load agent database - DIPERBAIKI
+                // Load agent database
                 const agentResponse = await fetch(AGENT_CSV_URL);
                 if (agentResponse.ok) {
                     const agentCsv = await agentResponse.text();
                     const agentData = parseCSV(agentCsv, 'agent');
                     
-                    // Convert to object for easy lookup
                     agentDatabase = {};
                     agentData.forEach(item => {
                         if (item.agent && item.whatsapp) {
@@ -1761,7 +2228,7 @@
                     agentDatabase = {};
                 }
                 
-                // Load weekly report data - TAMBAHAN BARU
+                // Load weekly report data
                 try {
                     const weeklyResponse = await fetch(WEEKLY_CSV_URL);
                     if (weeklyResponse.ok) {
@@ -1770,7 +2237,6 @@
                         console.log('Weekly report data loaded:', weeklyData);
                     } else {
                         console.warn('Failed to load weekly report data');
-                        // Load sample weekly data sebagai fallback
                         loadSampleWeeklyData();
                     }
                 } catch (weeklyError) {
@@ -1794,7 +2260,7 @@
                 // Load payment history from localStorage
                 loadPaymentHistory();
                 
-                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu, ${Object.keys(agentDatabase).length} agents`, '');
+                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu`, '');
                 
                 // Populate dropdowns
                 populateWeekDropdown();
@@ -1807,7 +2273,6 @@
                 
                 renderWeekData(currentWeekIndex);
                 
-                // Render weekly chart jika ada data
                 if (weeklyData.length > 0) {
                     renderWeeklyChart();
                 }
@@ -1818,7 +2283,6 @@
                 console.error('Error loading data:', error);
                 updateStatus(`Error: ${error.message}`, 'error');
                 
-                // Load sample data as fallback
                 loadSampleData();
                 
                 elements.loading.style.display = 'none';
@@ -1829,80 +2293,7 @@
             }
         }
         
-        // Load payment history from localStorage
-        function loadPaymentHistory() {
-            const saved = localStorage.getItem('agent_payment_history');
-            if (saved) {
-                try {
-                    paymentHistory = JSON.parse(saved);
-                } catch (e) {
-                    paymentHistory = {};
-                }
-            } else {
-                paymentHistory = {};
-            }
-        }
-        
-        // Save payment history to localStorage
-        function savePaymentHistory() {
-            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
-        }
-        
-        // Save payment record
-        function savePayment(agent, week, paidAmount, date) {
-            const key = `${agent}_${week}`;
-            paymentHistory[key] = {
-                agent: agent,
-                week: week,
-                paidAmount: parseInt(paidAmount),
-                date: date || new Date().toISOString()
-            };
-            
-            savePaymentHistory();
-            updatePaymentHistoryDisplay(agent, week);
-        }
-        
-        // Update payment history display
-        function updatePaymentHistoryDisplay(agent, week) {
-            const history = getPaymentHistory(agent, week);
-            
-            if (history.length === 0) {
-                elements.paymentHistoryList.innerHTML = `
-                    <div style="text-align: center; color: #888; padding: 20px;">
-                        Belum ada riwayat pembayaran
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            history.forEach((record, index) => {
-                const date = new Date(record.date).toLocaleDateString('id-ID');
-                html += `
-                    <div class="history-item">
-                        <span class="history-date">${date}</span>
-                        <span class="history-amount">${formatCurrency(record.paidAmount)}</span>
-                    </div>
-                `;
-            });
-            
-            elements.paymentHistoryList.innerHTML = html;
-        }
-        
-        // Get payment history for agent and week
-        function getPaymentHistory(agent, week) {
-            const key = `${agent}_${week}`;
-            const records = [];
-            
-            // Check for specific record
-            if (paymentHistory[key]) {
-                records.push(paymentHistory[key]);
-            }
-            
-            return records;
-        }
-        
-        // Sample Weekly Data (Fallback) - FUNGSI BARU
+        // Sample data functions (keep your existing ones)
         function loadSampleWeeklyData() {
             weeklyData = [
                 { week: "13-19 Jan", totalOrder: 156, totalAmount: 13820000 },
@@ -1911,11 +2302,8 @@
                 { week: "3-9 Feb", totalOrder: 205, totalAmount: 18450000 },
                 { week: "10-16 Feb", totalOrder: 220, totalAmount: 19800000 }
             ];
-            
-            console.log('Loaded sample weekly data');
         }
         
-        // Load Sample Data (Fallback) - DIPERBAIKI dengan data WhatsApp
         function loadSampleData() {
             rawData = [
                 { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
@@ -1965,7 +2353,6 @@
                 { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
             ];
             
-            // Sample agent database with WhatsApp numbers
             agentDatabase = {
                 "Diar": "081234567890",
                 "Agung": "082345678901",
@@ -1995,74 +2382,60 @@
                 "Acil": "088712345678"
             };
             
-            // Load sample weekly data juga
             loadSampleWeeklyData();
             
             aggregatedData = aggregateData(rawData);
             availableWeeks = extractAndSortWeeks(aggregatedData);
             currentWeekIndex = availableWeeks.length - 1;
             
-            // Load payment history
             loadPaymentHistory();
         }
         
-        // Render Week Data - DIPERBAIKI untuk menampilkan nomor WhatsApp di tabel
+        // Render Week Data
         function renderWeekData(weekIndex) {
             const currentWeek = availableWeeks[weekIndex];
             
-            // Update dropdown selection
             elements.weekDropdown.value = weekIndex;
             
-            // Get aggregated data untuk week yang dipilih
             const weekData = getAggregatedWeekData(currentWeek);
             
-            // Update UI
             elements.currentWeek.textContent = `Minggu: ${currentWeek}`;
             elements.weekDisplay.textContent = currentWeek;
             elements.tableSubtitle.textContent = `${currentWeek}: ${weekData.length} agent`;
             
-            // Calculate totals
             const totalAdmin = weekData.reduce((sum, item) => sum + item.adminFee, 0);
             const totalOrders = weekData.reduce((sum, item) => sum + item.totalOrder, 0);
             const activeAgents = weekData.filter(item => item.isActive).length;
             
-            // Find top agent
             const topAgent = weekData.reduce((top, item) => 
                 item.totalOrder > top.totalOrder ? item : top, 
                 { agent: '-', totalOrder: 0 }
             );
             
-            // Find agent with highest admin fee
             const topAdminAgent = weekData.reduce((top, item) => 
                 item.adminFee > top.adminFee ? item : top, 
                 { agent: '-', adminFee: 0 }
             );
             
-            // Calculate average
             const avgOrder = activeAgents > 0 ? Math.round(totalOrders / activeAgents) : 0;
             
-            // Update Summary Cards
             elements.cardTotalAgents.textContent = weekData.length;
             elements.cardTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.cardTotalOrders.textContent = formatCurrency(totalOrders);
             elements.cardTopAgent.textContent = topAgent.agent;
             
-            // Update Table Footer
             elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
             
-            // Update Stats
             elements.statTopAdmin.textContent = `${topAdminAgent.agent} (${formatCurrency(topAdminAgent.adminFee)})`;
             elements.statAvgOrder.textContent = formatCurrency(avgOrder);
             
-            // Update navigation buttons
             updateNavigationButtons();
             
-            // Render Table
             renderTable(weekData, currentWeek);
         }
         
-        // Render Table - DITAMBAHKAN kolom WhatsApp
+        // Render Table
         function renderTable(data, week) {
             const tbody = elements.agentTable;
             tbody.innerHTML = '';
@@ -2092,11 +2465,10 @@
             });
         }
         
-        // Render Weekly Trend Chart - FUNGSI BARU
+        // Render Weekly Chart
         function renderWeeklyChart() {
             if (weeklyData.length === 0) {
                 console.warn('No weekly data to display');
-                // Tampilkan pesan di chart container
                 const canvas = document.getElementById('weeklyTrendChart');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2113,12 +2485,10 @@
                 weeklyChart.destroy();
             }
             
-            // Data sudah dalam urutan dari lama ke baru
             const labels = weeklyData.map(item => item.week);
             const orderData = weeklyData.map(item => item.totalOrder);
             const amountData = weeklyData.map(item => item.totalAmount);
             
-            // Update stats
             updateWeeklyStats(weeklyData);
             
             weeklyChart = new Chart(ctx, {
@@ -2156,11 +2526,10 @@
                         x: {
                             grid: { display: true },
                             ticks: {
-                                // Warna berbeda untuk minggu terbaru (paling kanan)
                                 callback: function(value, index) {
                                     const label = this.getLabelForValue(value);
                                     if (index === labels.length - 1) {
-                                        return `📈 ${label}`; // Tambahkan icon untuk minggu terbaru
+                                        return `📈 ${label}`;
                                     }
                                     return label;
                                 }
@@ -2205,7 +2574,6 @@
                                     return label;
                                 },
                                 afterLabel: function(context) {
-                                    // Tunjukkan apakah ini minggu terbaru
                                     if (context.dataIndex === labels.length - 1) {
                                         return '📅 Minggu Terkini';
                                     }
@@ -2223,7 +2591,7 @@
             });
         }
         
-        // Update Weekly Stats - FUNGSI BARU
+        // Update Weekly Stats
         function updateWeeklyStats(data) {
             if (data.length < 2) {
                 document.getElementById('growth-rate').textContent = '-';
@@ -2231,26 +2599,22 @@
                 return;
             }
             
-            // Data sudah urut dari lama ke baru
-            const currentWeekData = data[data.length - 1]; // Paling kanan = terbaru
-            const previousWeekData = data[data.length - 2]; // Sebelumnya
+            const currentWeekData = data[data.length - 1];
+            const previousWeekData = data[data.length - 2];
             
             const currentOrders = currentWeekData.totalOrder;
             const previousOrders = previousWeekData.totalOrder;
             
-            // Hitung pertumbuhan
             let growthRate = 0;
             if (previousOrders > 0) {
                 growthRate = ((currentOrders - previousOrders) / previousOrders) * 100;
             }
             
-            // Cari minggu dengan order tertinggi
             const highestWeek = data.reduce((max, item) => 
                 item.totalOrder > max.totalOrder ? item : max, 
                 { week: '-', totalOrder: 0 }
             );
             
-            // Format growth rate
             const growthFormatted = Math.abs(growthRate).toFixed(1);
             const growthIcon = growthRate >= 0 ? '↗' : '↘';
             const growthText = growthRate >= 0 ? `+${growthFormatted}%` : `-${growthFormatted}%`;
@@ -2262,7 +2626,7 @@
                 `${highestWeek.week} (${highestWeek.totalOrder} order)`;
         }
         
-        // Update agent info in WhatsApp section - DIPERBAIKI
+        // Update agent info in WhatsApp section
         function updateAgentInfo() {
             const agentName = elements.agentSelect.value;
             const weekIndex = parseInt(elements.whatsappWeekSelect.value);
@@ -2285,7 +2649,6 @@
                 return;
             }
             
-            // Update agent info
             elements.agentName.textContent = agentData.agent;
             elements.agentWhatsapp.textContent = formatWhatsappNumber(agentData.whatsapp || '');
             elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
@@ -2295,65 +2658,12 @@
             elements.agentPaymentStatus.textContent = statusText;
             elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
             
-            // Enable/disable buttons
             const hasWhatsapp = agentData.whatsapp && agentData.whatsapp.trim() !== '';
             elements.agentInfoCard.style.display = 'block';
             elements.whatsappContactBtn.disabled = !hasWhatsapp;
             elements.whatsappReminderBtn.disabled = !hasWhatsapp || agentData.adminFee === 0;
             
-            // Update payment form
             updatePaymentForm(agentName, weekIndex);
-        }
-        
-        // Update payment form
-        function updatePaymentForm(agentName, weekIndex) {
-            if (!agentName || isNaN(weekIndex)) return;
-            
-            const week = availableWeeks[weekIndex];
-            const weekData = getAggregatedWeekData(week);
-            const agentData = weekData.find(item => item.agent === agentName);
-            
-            if (!agentData) return;
-            
-            // Update form values
-            elements.paymentAgentSelect.value = agentName;
-            elements.paymentWeekSelect.value = weekIndex;
-            elements.paymentTotalAdmin.value = formatCurrency(agentData.adminFee);
-            elements.paymentPaidAmount.value = agentData.paidAmount || '';
-            
-            // Calculate and display payment status
-            calculatePaymentStatus(agentData.adminFee, agentData.paidAmount || 0);
-            
-            // Update payment history
-            updatePaymentHistoryDisplay(agentName, week);
-        }
-        
-        // Calculate and display payment status
-        function calculatePaymentStatus(totalAdmin, paidAmount) {
-            if (totalAdmin === 0) {
-                elements.paymentStatusDisplay.style.display = 'none';
-                return;
-            }
-            
-            const remaining = totalAdmin - paidAmount;
-            let statusText = '';
-            let statusClass = '';
-            
-            if (paidAmount === 0) {
-                statusText = 'Belum bayar';
-                statusClass = 'status-unpaid';
-            } else if (paidAmount >= totalAdmin) {
-                statusText = 'Lunas';
-                statusClass = 'status-paid';
-            } else {
-                statusText = `Sebagian (kurang ${formatCurrency(remaining)})`;
-                statusClass = 'status-partial';
-            }
-            
-            elements.paymentStatusText.textContent = `Status: ${statusText}`;
-            elements.paymentAmountText.textContent = formatCurrency(paidAmount);
-            elements.paymentStatusDisplay.className = `payment-status ${statusClass}`;
-            elements.paymentStatusDisplay.style.display = 'flex';
         }
         
         // Send WhatsApp message
@@ -2399,7 +2709,7 @@
             return message;
         }
         
-        // Export to Excel - DIPERBAIKI untuk menyertakan nomor WhatsApp
+        // Export to Excel
         function exportToExcel() {
             try {
                 const currentWeek = availableWeeks[currentWeekIndex];
@@ -2410,7 +2720,6 @@
                     return;
                 }
                 
-                // Create CSV content
                 let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran\n";
                 
                 weekData.forEach((item, index) => {
@@ -2420,7 +2729,6 @@
                     csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}"\n`;
                 });
                 
-                // Create blob and download
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -2474,53 +2782,6 @@
         // Handle WhatsApp week select change
         function handleWhatsappWeekChange() {
             updateAgentInfo();
-        }
-        
-        // Handle payment form submission
-        function handlePaymentFormSubmit(e) {
-            e.preventDefault();
-            
-            const agentName = elements.paymentAgentSelect.value;
-            const weekIndex = parseInt(elements.paymentWeekSelect.value);
-            const paidAmount = parseInt(elements.paymentPaidAmount.value);
-            
-            if (!agentName || isNaN(weekIndex) || isNaN(paidAmount) || paidAmount < 0) {
-                showToast('Harap isi semua field dengan benar', 'error');
-                return;
-            }
-            
-            const week = availableWeeks[weekIndex];
-            const weekData = getAggregatedWeekData(week);
-            const agentData = weekData.find(item => item.agent === agentName);
-            
-            if (!agentData) {
-                showToast('Data agent tidak ditemukan', 'error');
-                return;
-            }
-            
-            if (paidAmount > agentData.adminFee) {
-                showToast('Jumlah pembayaran tidak boleh melebihi biaya admin', 'error');
-                return;
-            }
-            
-            // Save payment
-            savePayment(agentName, week, paidAmount);
-            
-            // Update UI
-            updateAgentInfo();
-            
-            // Show success message
-            const remaining = agentData.adminFee - paidAmount;
-            if (remaining === 0) {
-                showToast(`Pembayaran lunas untuk ${agentName}`, 'success');
-            } else if (paidAmount === 0) {
-                showToast(`Status pembayaran direset untuk ${agentName}`, 'info');
-            } else {
-                showToast(`Pembayaran sebagian ${formatCurrency(paidAmount)} untuk ${agentName}`, 'success');
-            }
-            
-            // Reset form
-            elements.paymentPaidAmount.value = '';
         }
         
         // Handle WhatsApp reminder button click
@@ -2594,6 +2855,14 @@
                 const totalAdmin = parseInt(elements.paymentTotalAdmin.value.replace(/\D/g, '') || 0);
                 const paidAmount = parseInt(this.value || 0);
                 calculatePaymentStatus(totalAdmin, paidAmount);
+            });
+            elements.refreshHistoryBtn.addEventListener('click', function() {
+                const agentName = elements.paymentAgentSelect.value;
+                const weekIndex = parseInt(elements.paymentWeekSelect.value);
+                if (agentName && !isNaN(weekIndex)) {
+                    const week = availableWeeks[weekIndex];
+                    loadPaymentHistoryFromGoogleSheets(agentName, week);
+                }
             });
             
             // Load data initially
