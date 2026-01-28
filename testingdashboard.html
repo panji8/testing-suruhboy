@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* SEMUA STYLE CSS PERTAMA TETAP SAMA */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +23,7 @@
         }
         
         .container {
-            max-width: 1800px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -109,7 +110,7 @@
             margin-bottom: 25px;
         }
         
-        @media (max-width: 1400px) {
+        @media (max-width: 1200px) {
             .main-dashboard {
                 grid-template-columns: 1fr;
             }
@@ -250,11 +251,6 @@
             padding: 25px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             height: fit-content;
-            margin-bottom: 25px;
-        }
-        
-        .panel:last-child {
-            margin-bottom: 0;
         }
         
         .panel-header {
@@ -267,7 +263,7 @@
         }
         
         .panel-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: #333;
         }
@@ -332,12 +328,7 @@
         }
         
         .chart-container {
-            height: 250px;
-            margin-top: 10px;
-        }
-        
-        .trend-chart-container {
-            height: 220px;
+            height: 300px;
             margin-top: 10px;
         }
         
@@ -375,7 +366,7 @@
             background-color: #f8f9fd;
             padding: 15px;
             border-radius: 8px;
-            margin-top: 15px;
+            margin-top: 20px;
             border-left: 4px solid #3a56e6;
         }
         
@@ -758,84 +749,6 @@
             color: #10b981;
         }
         
-        /* TREND ANALYSIS SECTION */
-        .trend-analysis {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            margin-bottom: 25px;
-        }
-        
-        .trend-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .trend-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .trend-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: white;
-            cursor: pointer;
-            min-width: 150px;
-        }
-        
-        .trend-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .trend-stat {
-            text-align: center;
-            padding: 12px;
-            background-color: #f8f9fd;
-            border-radius: 8px;
-        }
-        
-        .trend-stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .trend-stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #3a56e6;
-        }
-        
-        .trend-stat-growth {
-            font-size: 12px;
-            margin-top: 3px;
-        }
-        
-        .growth-up {
-            color: #10b981;
-        }
-        
-        .growth-down {
-            color: #ef4444;
-        }
-        
         /* TOAST NOTIFICATION */
         .toast-container {
             position: fixed;
@@ -961,10 +874,6 @@
                 grid-template-columns: 1fr;
             }
             
-            .trend-stats {
-                grid-template-columns: 1fr;
-            }
-            
             .agent-info-row {
                 flex-direction: column;
                 gap: 5px;
@@ -1073,7 +982,7 @@
                 <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">
                     Google Sheets Order Agent
                 </a>
-                | Sheet: "To Dashboard" & "Database Agent"
+                | Sheets: "To Dashboard" & "Database Agent"
             </div>
         </header>
         
@@ -1228,7 +1137,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="agent-table">
-                                    <!-- Data akan diisi oleh JavaScript -->
+                                    <!-- Data will be populated by JavaScript -->
                                 </tbody>
                                 <tfoot>
                                     <tr class="total-row">
@@ -1255,16 +1164,28 @@
                     </div>
                 </div>
                 
-                <!-- RIGHT PANEL: CHART & TREND ANALYSIS & PAYMENT -->
+                <!-- RIGHT PANEL: CHART & PAYMENT -->
                 <div>
-                    <!-- DISTRIBUTION CHART PANEL -->
+                    <!-- WEEKLY TREND CHART PANEL - TAMBAHAN BARU -->
                     <div class="panel">
                         <div class="panel-header">
-                            <h2 class="panel-title">Distribusi Orderan</h2>
-                            <div id="chart-title">Top 5 Agent</div>
+                            <h2 class="panel-title">📈 Tren 5 Minggu Terakhir</h2>
+                            <div id="weekly-chart-title">Data dari Report Weekly</div>
                         </div>
                         <div class="chart-container">
-                            <canvas id="ordersChart"></canvas>
+                            <canvas id="weeklyTrendChart"></canvas>
+                        </div>
+                        
+                        <!-- WEEKLY TREND STATS -->
+                        <div class="week-stats" id="weekly-trend-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Pertumbuhan Terakhir</div>
+                                <div class="stat-value" id="growth-rate">-</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Minggu Tertinggi</div>
+                                <div class="stat-value" id="highest-week">-</div>
+                            </div>
                         </div>
                         
                         <!-- INFO BOX -->
@@ -1273,42 +1194,7 @@
                             <p><strong>Mode Aggregated:</strong> Data dikelompokkan per agent per minggu</p>
                             <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
                             <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" & "Database Agent"</p>
-                            <p><strong>Data Trend:</strong> Diambil dari kolom E,F,G sheet "To Dashboard"</p>
-                        </div>
-                    </div>
-                    
-                    <!-- TREND ANALYSIS PANEL (BARU) -->
-                    <div class="panel">
-                        <div class="panel-header">
-                            <div class="trend-title">
-                                <i class="fas fa-chart-line"></i> Trend 5 Minggu Terakhir
-                            </div>
-                            <select class="trend-select" id="trend-metric">
-                                <option value="totalOrder">Total Order</option>
-                                <option value="nominalOrder">Total Nominal</option>
-                            </select>
-                        </div>
-                        <div class="trend-chart-container">
-                            <canvas id="trendChart"></canvas>
-                        </div>
-                        
-                        <!-- TREND STATS -->
-                        <div class="trend-stats">
-                            <div class="trend-stat">
-                                <div class="trend-stat-label">Pertumbuhan</div>
-                                <div class="trend-stat-value" id="trend-growth">0%</div>
-                                <div class="trend-stat-growth" id="trend-growth-direction"></div>
-                            </div>
-                            <div class="trend-stat">
-                                <div class="trend-stat-label">Rata-rata</div>
-                                <div class="trend-stat-value" id="trend-average">0</div>
-                                <div class="trend-stat-label">Per Minggu</div>
-                            </div>
-                            <div class="trend-stat">
-                                <div class="trend-stat-label">Puncak</div>
-                                <div class="trend-stat-value" id="trend-peak">0</div>
-                                <div class="trend-stat-label" id="trend-peak-week">-</div>
-                            </div>
+                            <p><strong>Tren Mingguan:</strong> Data dari sheet "Report Weekly" (5 minggu terakhir) - Minggu terbaru di kanan</p>
                         </div>
                     </div>
                     
@@ -1361,7 +1247,7 @@
                         <div class="payment-history">
                             <h3 class="history-title">Riwayat Pembayaran</h3>
                             <div id="payment-history-list">
-                                <!-- History akan diisi di sini -->
+                                <!-- History will be populated here -->
                                 <div style="text-align: center; color: #888; padding: 20px;">
                                     Belum ada riwayat pembayaran
                                 </div>
@@ -1376,7 +1262,7 @@
         <div class="toast-container" id="toast-container"></div>
         
         <footer>
-            <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp, Payment & Trend Analysis</p>
+            <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Status Pembayaran</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 Terakhir diupdate: <span id="last-update">-</span>
             </p>
@@ -1384,24 +1270,25 @@
     </div>
 
     <script>
-        // Google Sheets Configuration
+        // Google Sheets Configuration - TAMBAHKAN WEEKLY REPORT
         const SHEET_ID = '1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c';
         const ORDER_SHEET_NAME = 'To Dashboard';
         const AGENT_SHEET_NAME = 'Database Agent';
+        const WEEKLY_SHEET_NAME = 'Report Weekly'; // TAB BARU
         
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
+        const WEEKLY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${WEEKLY_SHEET_NAME}`; // URL BARU
         
-        // Application State
+        // Application State - TAMBAHKAN VARIABEL WEEKLY
         let rawData = [];
         let aggregatedData = {};
         let availableWeeks = [];
         let agentDatabase = {};
         let paymentHistory = {};
         let currentWeekIndex = 0;
-        let ordersChart = null;
-        let trendChart = null;
-        let trendData = [];
+        let weeklyData = []; // DATA WEEKLY REPORT
+        let weeklyChart = null; // CHART WEEKLY
         
         // DOM Elements
         const elements = {
@@ -1433,17 +1320,6 @@
             statTopAdmin: document.getElementById('stat-top-admin'),
             statAvgOrder: document.getElementById('stat-avg-order'),
             
-            // Charts
-            chartTitle: document.getElementById('chart-title'),
-            
-            // Trend Analysis Elements
-            trendMetric: document.getElementById('trend-metric'),
-            trendGrowth: document.getElementById('trend-growth'),
-            trendGrowthDirection: document.getElementById('trend-growth-direction'),
-            trendAverage: document.getElementById('trend-average'),
-            trendPeak: document.getElementById('trend-peak'),
-            trendPeakWeek: document.getElementById('trend-peak-week'),
-            
             // Footer
             lastUpdate: document.getElementById('last-update'),
             
@@ -1469,7 +1345,10 @@
             paymentStatusDisplay: document.getElementById('payment-status-display'),
             paymentStatusText: document.getElementById('payment-status-text'),
             paymentAmountText: document.getElementById('payment-amount-text'),
-            paymentHistoryList: document.getElementById('payment-history-list')
+            paymentHistoryList: document.getElementById('payment-history-list'),
+            
+            // Weekly Chart Elements
+            weeklyChartTitle: document.getElementById('weekly-chart-title')
         };
         
         // Toast Notification System
@@ -1488,16 +1367,13 @@
             
             container.appendChild(toast);
             
-            // Show animation
             setTimeout(() => toast.classList.add('show'), 10);
             
-            // Close button
             toast.querySelector('.toast-close').addEventListener('click', () => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             });
             
-            // Auto remove
             if (duration > 0) {
                 setTimeout(() => {
                     if (toast.parentNode) {
@@ -1512,16 +1388,6 @@
         function formatCurrency(amount) {
             if (amount === 0 || amount === '0') return 'Rp0';
             return 'Rp' + amount.toLocaleString('id-ID');
-        }
-        
-        // Format Currency Short
-        function formatCurrencyShort(amount) {
-            if (amount >= 1000000) {
-                return 'Rp' + (amount / 1000000).toFixed(1) + 'Jt';
-            } else if (amount >= 1000) {
-                return 'Rp' + (amount / 1000).toFixed(0) + 'rb';
-            }
-            return 'Rp' + amount;
         }
         
         // Format WhatsApp number
@@ -1539,63 +1405,13 @@
             return parseInt(adminFee) * 10;
         }
         
-        // Calculate Growth Percentage
-        function calculateGrowth(current, previous) {
-            if (previous === 0) return 0;
-            return Math.round(((current - previous) / previous) * 100);
-        }
-        
-        // Parse Week to Date untuk sorting
-        function parseWeekToDate(weekStr) {
-            if (!weekStr) return new Date(2000, 0, 1);
-            
-            try {
-                // Format: "14-20 Des" atau "28 Des - 3 Jan"
-                const parts = weekStr.split(/[-–]/);
-                if (parts.length >= 1) {
-                    const firstPart = parts[0].trim();
-                    const dateMatch = firstPart.match(/(\d+)\s*(\w+)/);
-                    
-                    if (dateMatch) {
-                        const day = parseInt(dateMatch[1]);
-                        const monthStr = dateMatch[2].toLowerCase();
-                        
-                        const monthMap = {
-                            'jan': 0, 'januari': 0,
-                            'feb': 1, 'februari': 1,
-                            'mar': 2, 'maret': 2,
-                            'apr': 3, 'april': 3,
-                            'mei': 4, 'may': 4,
-                            'jun': 5, 'juni': 5,
-                            'jul': 6, 'juli': 6,
-                            'agu': 7, 'agustus': 7, 'aug': 7,
-                            'sep': 8, 'september': 8,
-                            'okt': 9, 'oktober': 9, 'oct': 9,
-                            'nov': 10, 'november': 10,
-                            'des': 11, 'desember': 11, 'dec': 11
-                        };
-                        
-                        const month = monthMap[monthStr];
-                        if (month !== undefined) {
-                            // Default tahun 2024, bisa disesuaikan
-                            return new Date(2024, month, day);
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Error parsing week:', weekStr, e);
-            }
-            
-            return new Date(2000, 0, 1);
-        }
-        
         // Update Status Indicator
         function updateStatus(text, type = 'loading') {
             elements.dataStatus.textContent = text;
             elements.statusDot.className = 'status-dot ' + type;
         }
         
-        // Parse CSV Data (MENDAPATKAN KOLOM E,F,G JUGA)
+        // Parse CSV Data - DIPERBAIKI untuk menangani format Google Sheets CSV
         function parseCSV(csvText, sheetType = 'order') {
             const lines = csvText.split('\n').filter(line => line.trim() !== '');
             const data = [];
@@ -1605,6 +1421,7 @@
                     let columns = [];
                     let currentLine = lines[i];
                     
+                    // Handle quoted strings with commas inside
                     let inQuotes = false;
                     let currentValue = '';
                     
@@ -1621,7 +1438,10 @@
                         }
                     }
                     
+                    // Add the last value
                     columns.push(currentValue.trim());
+                    
+                    // Remove quotes from each column
                     columns = columns.map(col => col.replace(/^"|"$/g, ''));
                     
                     if (sheetType === 'order' && columns.length >= 3) {
@@ -1629,21 +1449,12 @@
                         const adminFee = parseInt(columns[1].replace(/[^0-9-]/g, '')) || 0;
                         const week = columns[2] || '';
                         
-                        // AMBIL DATA REPORT WEEKLY DARI KOLOM E,F,G (jika ada)
-                        const weekReport = columns[4] || '';    // Kolom E
-                        const totalOrderReport = parseInt(columns[5]) || 0; // Kolom F
-                        const nominalOrderReport = parseInt(columns[6]?.replace(/[^0-9]/g, '') || '0') || 0; // Kolom G
-                        
                         if (agent && agent.trim() !== '' && !agent.toLowerCase().includes('agent') && 
                             !agent.toLowerCase().includes('nama') && week.trim() !== '') {
                             data.push({
                                 agent: agent.trim(),
                                 adminFee: adminFee,
-                                week: week.trim(),
-                                // DATA REPORT WEEKLY (dari kolom E,F,G)
-                                weekReport: weekReport.trim(),
-                                totalOrderReport: totalOrderReport,
-                                nominalOrderReport: nominalOrderReport
+                                week: week.trim()
                             });
                         }
                     } else if (sheetType === 'agent' && columns.length >= 2) {
@@ -1657,6 +1468,21 @@
                                 whatsapp: whatsapp.trim()
                             });
                         }
+                    } else if (sheetType === 'weekly' && columns.length >= 3) {
+                        // Parse data dari Report Weekly
+                        const week = columns[0];
+                        const totalOrder = parseInt(columns[1].replace(/[^0-9-]/g, '')) || 0;
+                        const totalAmount = parseInt(columns[2].replace(/[^0-9-]/g, '')) || 0;
+                        
+                        if (week && week.trim() !== '' && !week.toLowerCase().includes('week') && 
+                            !week.toLowerCase().includes('minggu')) {
+                            data.push({
+                                week: week.trim(),
+                                totalOrder: totalOrder,
+                                totalAmount: totalAmount,
+                                originalIndex: i // Simpan index asli untuk sorting
+                            });
+                        }
                     }
                 } catch (error) {
                     console.warn('Error parsing line:', lines[i], error);
@@ -1666,33 +1492,27 @@
             return data;
         }
         
-        // Extract Weekly Report Data dari kolom E,F,G
-        function extractWeeklyReportData(rawData) {
-            const reportMap = {};
+        // Parse Weekly Data dari Report Weekly - FUNGSI BARU
+        function parseWeeklyData(csvText) {
+            const data = parseCSV(csvText, 'weekly');
             
-            rawData.forEach(item => {
-                // Hanya ambil data yang punya weekReport dan totalOrderReport > 0
-                if (item.weekReport && item.weekReport.trim() !== '' && 
-                    item.totalOrderReport > 0 && !reportMap[item.weekReport]) {
-                    reportMap[item.weekReport] = {
-                        week: item.weekReport,
-                        totalOrder: item.totalOrderReport,
-                        nominalOrder: item.nominalOrderReport
-                    };
-                }
-            });
+            if (data.length === 0) {
+                console.log('No weekly data found');
+                return [];
+            }
             
-            // Convert ke array dan sort
-            const reportArray = Object.values(reportMap);
+            // Sort berdasarkan index asli (data terbaru biasanya di bawah)
+            const sortedData = data.sort((a, b) => a.originalIndex - b.originalIndex);
             
-            return reportArray.sort((a, b) => {
-                const dateA = parseWeekToDate(a.week);
-                const dateB = parseWeekToDate(b.week);
-                return dateA - dateB;
-            });
+            // Ambil 5 data terakhir (paling bawah = paling baru)
+            const last5Data = sortedData.slice(-5);
+            
+            console.log('Weekly data loaded:', last5Data.length, 'weeks');
+            
+            return last5Data;
         }
         
-        // Aggregate data per agent per week (dari kolom A,B,C)
+        // Aggregate data per agent per week
         function aggregateData(data) {
             const aggregated = {};
             
@@ -1715,9 +1535,49 @@
             return aggregated;
         }
         
-        // Extract unique weeks dari aggregated data
+        // Extract unique weeks from aggregated data
         function extractAndSortWeeks(aggregatedData) {
             const weeks = Object.keys(aggregatedData);
+            
+            function parseWeekToDate(weekStr) {
+                try {
+                    // Try to parse "14-20 Des" or "28 Des - 3 Jan" format
+                    const parts = weekStr.split(/[-–]/);
+                    if (parts.length >= 1) {
+                        const firstPart = parts[0].trim();
+                        const dateMatch = firstPart.match(/(\d+)\s*(\w+)/);
+                        
+                        if (dateMatch) {
+                            const day = parseInt(dateMatch[1]);
+                            const monthStr = dateMatch[2].toLowerCase();
+                            
+                            const monthMap = {
+                                'jan': 0, 'januari': 0,
+                                'feb': 1, 'februari': 1,
+                                'mar': 2, 'maret': 2,
+                                'apr': 3, 'april': 3,
+                                'mei': 4, 'may': 4,
+                                'jun': 5, 'juni': 5,
+                                'jul': 6, 'juli': 6,
+                                'agu': 7, 'agustus': 7, 'aug': 7,
+                                'sep': 8, 'september': 8,
+                                'okt': 9, 'oktober': 9, 'oct': 9,
+                                'nov': 10, 'november': 10,
+                                'des': 11, 'desember': 11, 'dec': 11
+                            };
+                            
+                            const month = monthMap[monthStr];
+                            if (month !== undefined) {
+                                return new Date(2024, month, day);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error parsing week:', weekStr, e);
+                }
+                
+                return new Date(2000, 0, 1);
+            }
             
             return weeks.sort((a, b) => {
                 const dateA = parseWeekToDate(a);
@@ -1797,181 +1657,6 @@
             }
         }
         
-        // Calculate trend statistics
-        function calculateTrendStats(trendData) {
-            if (trendData.length < 2) {
-                return {
-                    growth: 0,
-                    average: 0,
-                    peak: 0,
-                    peakWeek: '-'
-                };
-            }
-            
-            const lastIndex = trendData.length - 1;
-            const metric = elements.trendMetric.value;
-            
-            // Get values based on selected metric
-            const values = trendData.map(item => {
-                switch(metric) {
-                    case 'nominalOrder': return item.nominalOrder;
-                    default: return item.totalOrder;
-                }
-            });
-            
-            // Calculate growth
-            const growth = calculateGrowth(values[lastIndex], values[lastIndex - 1]);
-            
-            // Calculate average
-            const average = Math.round(values.reduce((sum, val) => sum + val, 0) / values.length);
-            
-            // Find peak
-            let peak = 0;
-            let peakWeek = '-';
-            trendData.forEach(item => {
-                const value = metric === 'nominalOrder' ? item.nominalOrder : item.totalOrder;
-                if (value > peak) {
-                    peak = value;
-                    peakWeek = item.week;
-                }
-            });
-            
-            return {
-                growth,
-                average,
-                peak,
-                peakWeek
-            };
-        }
-        
-        // Update trend display
-        function updateTrendDisplay() {
-            if (trendData.length === 0) {
-                // Jika tidak ada trend data, sembunyikan atau tampilkan pesan
-                document.getElementById('trendChart').style.display = 'none';
-                return;
-            }
-            
-            const stats = calculateTrendStats(trendData);
-            const metric = elements.trendMetric.value;
-            
-            // Update trend stats
-            elements.trendGrowth.textContent = `${stats.growth >= 0 ? '+' : ''}${stats.growth}%`;
-            elements.trendGrowthDirection.innerHTML = stats.growth >= 0 ? 
-                '<span class="growth-up">↑</span>' : 
-                '<span class="growth-down">↓</span>';
-            
-            // Format values based on metric
-            if (metric === 'nominalOrder') {
-                elements.trendAverage.textContent = formatCurrencyShort(stats.average);
-                elements.trendPeak.textContent = formatCurrencyShort(stats.peak);
-            } else {
-                elements.trendAverage.textContent = stats.average.toLocaleString();
-                elements.trendPeak.textContent = stats.peak.toLocaleString();
-            }
-            
-            elements.trendPeakWeek.textContent = stats.peakWeek;
-            
-            // Update trend chart
-            renderTrendChart();
-        }
-        
-        // Render trend chart
-        function renderTrendChart() {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            
-            if (trendChart) {
-                trendChart.destroy();
-            }
-            
-            if (trendData.length === 0) {
-                const canvas = document.getElementById('trendChart');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#666';
-                ctx.font = '14px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Tidak ada data trend dari kolom E,F,G', canvas.width/2, canvas.height/2);
-                return;
-            }
-            
-            const metric = elements.trendMetric.value;
-            const labels = trendData.map(item => item.week);
-            const data = trendData.map(item => {
-                switch(metric) {
-                    case 'nominalOrder': return item.nominalOrder / 1000000; // Convert to millions
-                    default: return item.totalOrder;
-                }
-            });
-            
-            const labelMap = {
-                'totalOrder': 'Total Order',
-                'nominalOrder': 'Total Nominal (Juta Rp)'
-            };
-            
-            trendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: labelMap[metric],
-                        data: data,
-                        borderColor: '#4f6ef7',
-                        backgroundColor: 'rgba(79, 110, 247, 0.1)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointBackgroundColor: '#4f6ef7',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        tension: 0.2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { 
-                            grid: { display: false },
-                            ticks: {
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
-                            ticks: {
-                                callback: function(value) {
-                                    if (metric === 'nominalOrder') {
-                                        return 'Rp' + value.toFixed(1) + 'Jt';
-                                    }
-                                    return value;
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = labelMap[metric] || '';
-                                    if (metric === 'nominalOrder') {
-                                        return `${label}: ${formatCurrency(context.raw * 1000000)}`;
-                                    } else {
-                                        return `${label}: ${context.raw.toLocaleString()}`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
         // Populate week dropdown
         function populateWeekDropdown() {
             const selects = [
@@ -1997,21 +1682,24 @@
             updateNavigationButtons();
         }
         
-        // Populate agent dropdowns
+        // Populate agent dropdowns - DIPERBAIKI
         function populateAgentDropdowns() {
             const agentSelects = [
                 elements.agentSelect,
                 elements.paymentAgentSelect
             ];
             
+            // Get all agents from both order data and agent database
             const allAgents = new Set();
             
+            // Add agents from order data
             rawData.forEach(item => {
                 if (item.agent && item.agent.trim() !== '') {
                     allAgents.add(item.agent);
                 }
             });
             
+            // Add agents from agent database
             Object.keys(agentDatabase).forEach(agent => {
                 allAgents.add(agent);
             });
@@ -2036,14 +1724,14 @@
             elements.nextWeekBtn.disabled = currentWeekIndex === availableWeeks.length - 1;
         }
         
-        // Load Data from Google Sheets
+        // Load Data from Google Sheets - DIPERBAIKI untuk parsing agent database
         async function loadData() {
             try {
                 elements.loading.style.display = 'block';
                 elements.dashboard.style.display = 'none';
                 updateStatus('Mengambil data dari Google Sheets...', 'loading');
                 
-                // Load order data (INCLUDE REPORT DATA DI KOLOM E,F,G)
+                // Load order data
                 const orderResponse = await fetch(ORDER_CSV_URL);
                 if (!orderResponse.ok) throw new Error(`Order data: HTTP ${orderResponse.status}`);
                 const orderCsv = await orderResponse.text();
@@ -2053,20 +1741,13 @@
                 
                 console.log('Order data loaded:', rawData.length, 'records');
                 
-                // EKSTRAK DATA REPORT WEEKLY DARI KOLOM E,F,G
-                const weeklyReportData = extractWeeklyReportData(rawData);
-                console.log('Weekly report data extracted:', weeklyReportData);
-                
-                // Ambil 5 minggu terakhir untuk trend chart
-                trendData = weeklyReportData.slice(-5);
-                console.log('Trend data (5 weeks):', trendData);
-                
-                // Load agent database
+                // Load agent database - DIPERBAIKI
                 const agentResponse = await fetch(AGENT_CSV_URL);
                 if (agentResponse.ok) {
                     const agentCsv = await agentResponse.text();
                     const agentData = parseCSV(agentCsv, 'agent');
                     
+                    // Convert to object for easy lookup
                     agentDatabase = {};
                     agentData.forEach(item => {
                         if (item.agent && item.whatsapp) {
@@ -2076,14 +1757,32 @@
                     
                     console.log('Agent database:', Object.keys(agentDatabase).length, 'agents');
                 } else {
-                    console.warn('Failed to load agent database');
+                    console.warn('Failed to load agent database, using empty database');
                     agentDatabase = {};
                 }
                 
-                // Aggregate data untuk table agent (DARI KOLOM A,B,C)
-                aggregatedData = aggregateData(rawData);
+                // Load weekly report data - TAMBAHAN BARU
+                try {
+                    const weeklyResponse = await fetch(WEEKLY_CSV_URL);
+                    if (weeklyResponse.ok) {
+                        const weeklyCsv = await weeklyResponse.text();
+                        weeklyData = parseWeeklyData(weeklyCsv);
+                        console.log('Weekly report data loaded:', weeklyData);
+                    } else {
+                        console.warn('Failed to load weekly report data');
+                        // Load sample weekly data sebagai fallback
+                        loadSampleWeeklyData();
+                    }
+                } catch (weeklyError) {
+                    console.warn('Error loading weekly report:', weeklyError);
+                    loadSampleWeeklyData();
+                }
                 
-                // Extract and sort weeks untuk dropdown (DARI KOLOM C)
+                // Aggregate data
+                aggregatedData = aggregateData(rawData);
+                console.log('Aggregated data:', aggregatedData);
+                
+                // Extract and sort weeks
                 availableWeeks = extractAndSortWeeks(aggregatedData);
                 if (availableWeeks.length === 0) throw new Error('Tidak ada week yang ditemukan');
                 
@@ -2092,10 +1791,10 @@
                 // Set current week to the latest one
                 currentWeekIndex = availableWeeks.length - 1;
                 
-                // Load payment history dari localStorage
+                // Load payment history from localStorage
                 loadPaymentHistory();
                 
-                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu, ${Object.keys(agentDatabase).length} agents, ${trendData.length} trend weeks`, '');
+                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu, ${Object.keys(agentDatabase).length} agents`, '');
                 
                 // Populate dropdowns
                 populateWeekDropdown();
@@ -2107,7 +1806,11 @@
                 elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
                 
                 renderWeekData(currentWeekIndex);
-                updateTrendDisplay();
+                
+                // Render weekly chart jika ada data
+                if (weeklyData.length > 0) {
+                    renderWeeklyChart();
+                }
                 
                 showToast('Data berhasil dimuat dari Google Sheets', 'success');
                 
@@ -2121,7 +1824,6 @@
                 elements.loading.style.display = 'none';
                 elements.dashboard.style.display = 'block';
                 renderWeekData(currentWeekIndex);
-                updateTrendDisplay();
                 
                 showToast(`Menggunakan data sample: ${error.message}`, 'error');
             }
@@ -2192,6 +1894,7 @@
             const key = `${agent}_${week}`;
             const records = [];
             
+            // Check for specific record
             if (paymentHistory[key]) {
                 records.push(paymentHistory[key]);
             }
@@ -2199,56 +1902,70 @@
             return records;
         }
         
-        // Load Sample Data (Fallback) - DENGAN DATA REPORT DI KOLOM E,F,G
-        function loadSampleData() {
-            rawData = [
-                // Format: agent, adminFee, week, (kosong), weekReport, totalOrderReport, nominalOrderReport
-                { agent: "Diar", adminFee: 20000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Diar", adminFee: 30000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Diar", adminFee: 10000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Agung", adminFee: 0, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Lutfi Majid", adminFee: 15500, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Restu", adminFee: 3000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Restu", adminFee: 2000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Bagus", adminFee: 1600, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Aryo", adminFee: 2000, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des", weekReport: "14-20 Des", totalOrderReport: 105, nominalOrderReport: 2232000 },
-                
-                { agent: "Diar", adminFee: 25000, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                { agent: "Diar", adminFee: 35000, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                { agent: "Restu", adminFee: 8000, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                { agent: "Restu", adminFee: 7000, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                { agent: "Fajar", adminFee: 28500, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                { agent: "Kharisma", adminFee: 32000, week: "21-27 Des", weekReport: "21-27 Des", totalOrderReport: 140, nominalOrderReport: 2991000 },
-                
-                { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan", weekReport: "28 Des - 3 Jan", totalOrderReport: 85, nominalOrderReport: 1870000 },
-                { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan", weekReport: "28 Des - 3 Jan", totalOrderReport: 85, nominalOrderReport: 1870000 },
-                { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan", weekReport: "28 Des - 3 Jan", totalOrderReport: 85, nominalOrderReport: 1870000 },
-                
-                // Data tambahan untuk trend 5 minggu
-                { agent: "Diar", adminFee: 15000, week: "7-13 Des", weekReport: "7-13 Des", totalOrderReport: 95, nominalOrderReport: 2100000 },
-                { agent: "Restu", adminFee: 4000, week: "7-13 Des", weekReport: "7-13 Des", totalOrderReport: 95, nominalOrderReport: 2100000 },
-                
-                { agent: "Diar", adminFee: 12000, week: "30 Nov - 6 Des", weekReport: "30 Nov - 6 Des", totalOrderReport: 75, nominalOrderReport: 1650000 },
-                { agent: "Restu", adminFee: 3000, week: "30 Nov - 6 Des", weekReport: "30 Nov - 6 Des", totalOrderReport: 75, nominalOrderReport: 1650000 }
+        // Sample Weekly Data (Fallback) - FUNGSI BARU
+        function loadSampleWeeklyData() {
+            weeklyData = [
+                { week: "13-19 Jan", totalOrder: 156, totalAmount: 13820000 },
+                { week: "20-26 Jan", totalOrder: 192, totalAmount: 16780000 },
+                { week: "27 Jan - 2 Feb", totalOrder: 178, totalAmount: 15240000 },
+                { week: "3-9 Feb", totalOrder: 205, totalAmount: 18450000 },
+                { week: "10-16 Feb", totalOrder: 220, totalAmount: 19800000 }
             ];
             
-            // Extract trend data dari kolom E,F,G
-            const reportMap = {};
-            rawData.forEach(item => {
-                if (item.weekReport && !reportMap[item.weekReport]) {
-                    reportMap[item.weekReport] = {
-                        week: item.weekReport,
-                        totalOrder: item.totalOrderReport,
-                        nominalOrder: item.nominalOrderReport
-                    };
-                }
-            });
+            console.log('Loaded sample weekly data');
+        }
+        
+        // Load Sample Data (Fallback) - DIPERBAIKI dengan data WhatsApp
+        function loadSampleData() {
+            rawData = [
+                { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 30000, week: "14-20 Des" },
+                { agent: "Diar", adminFee: 10000, week: "14-20 Des" },
+                { agent: "Agung", adminFee: 0, week: "14-20 Des" },
+                { agent: "Lutfi Majid", adminFee: 15500, week: "14-20 Des" },
+                { agent: "Restu", adminFee: 3000, week: "14-20 Des" },
+                { agent: "Restu", adminFee: 2000, week: "14-20 Des" },
+                { agent: "Bagus", adminFee: 1600, week: "14-20 Des" },
+                { agent: "Aryo", adminFee: 2000, week: "14-20 Des" },
+                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des" },
+                { agent: "Agus", adminFee: 0, week: "14-20 Des" },
+                { agent: "Yosi", adminFee: 4900, week: "14-20 Des" },
+                { agent: "Yosi", adminFee: 3100, week: "14-20 Des" },
+                { agent: "Mukhlis", adminFee: 0, week: "14-20 Des" },
+                { agent: "Andi", adminFee: 6700, week: "14-20 Des" },
+                { agent: "Panji", adminFee: 0, week: "14-20 Des" },
+                { agent: "Awa", adminFee: 1500, week: "14-20 Des" },
+                { agent: "Mbak Yuni", adminFee: 0, week: "14-20 Des" },
+                { agent: "Malek", adminFee: 0, week: "14-20 Des" },
+                { agent: "Naily", adminFee: 0, week: "14-20 Des" },
+                { agent: "Barkah", adminFee: 0, week: "14-20 Des" },
+                { agent: "Ilham", adminFee: 0, week: "14-20 Des" },
+                { agent: "Ardi", adminFee: 7500, week: "14-20 Des" },
+                { agent: "Kharisma", adminFee: 25600, week: "14-20 Des" },
+                { agent: "PUTRI UTAMI", adminFee: 10000, week: "14-20 Des" },
+                { agent: "Nia", adminFee: 0, week: "14-20 Des" },
+                { agent: "Defita", adminFee: 31200, week: "14-20 Des" },
+                { agent: "Fajar", adminFee: 31300, week: "14-20 Des" },
+                { agent: "Angga", adminFee: 1200, week: "14-20 Des" },
+                { agent: "Acil", adminFee: 0, week: "14-20 Des" },
+                
+                { agent: "Diar", adminFee: 25000, week: "21-27 Des" },
+                { agent: "Diar", adminFee: 35000, week: "21-27 Des" },
+                { agent: "Restu", adminFee: 8000, week: "21-27 Des" },
+                { agent: "Restu", adminFee: 7000, week: "21-27 Des" },
+                { agent: "Fajar", adminFee: 28500, week: "21-27 Des" },
+                { agent: "Kharisma", adminFee: 32000, week: "21-27 Des" },
+                { agent: "Agung", adminFee: 12000, week: "21-27 Des" },
+                { agent: "Defita", adminFee: 41500, week: "21-27 Des" },
+                { agent: "Lutfi Majid", adminFee: 22500, week: "21-27 Des" },
+                { agent: "Akhmad Rifki", adminFee: 18500, week: "21-27 Des" },
+                
+                { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan" },
+                { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan" },
+                { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
+            ];
             
-            trendData = Object.values(reportMap)
-                .sort((a, b) => parseWeekToDate(a.week) - parseWeekToDate(b.week))
-                .slice(-5);
-            
+            // Sample agent database with WhatsApp numbers
             agentDatabase = {
                 "Diar": "081234567890",
                 "Agung": "082345678901",
@@ -2257,64 +1974,95 @@
                 "Bagus": "085678901234",
                 "Aryo": "086789012345",
                 "Akhmad Rifki": "087890123456",
+                "Agus": "088901234567",
+                "Yosi": "089012345678",
+                "Mukhlis": "081112345678",
+                "Andi": "082212345678",
+                "Panji": "083312345678",
+                "Awa": "084412345678",
+                "Mbak Yuni": "085512345678",
+                "Malek": "086612345678",
+                "Naily": "087712345678",
+                "Barkah": "088812345678",
+                "Ilham": "089912345678",
+                "Ardi": "081001234567",
+                "Kharisma": "082112345678",
+                "PUTRI UTAMI": "083212345678",
+                "Nia": "084312345678",
+                "Defita": "085412345678",
                 "Fajar": "086512345678",
-                "Kharisma": "082112345678"
+                "Angga": "087612345678",
+                "Acil": "088712345678"
             };
+            
+            // Load sample weekly data juga
+            loadSampleWeeklyData();
             
             aggregatedData = aggregateData(rawData);
             availableWeeks = extractAndSortWeeks(aggregatedData);
             currentWeekIndex = availableWeeks.length - 1;
             
+            // Load payment history
             loadPaymentHistory();
         }
         
-        // Render Week Data
+        // Render Week Data - DIPERBAIKI untuk menampilkan nomor WhatsApp di tabel
         function renderWeekData(weekIndex) {
             const currentWeek = availableWeeks[weekIndex];
             
+            // Update dropdown selection
             elements.weekDropdown.value = weekIndex;
             
+            // Get aggregated data untuk week yang dipilih
             const weekData = getAggregatedWeekData(currentWeek);
             
+            // Update UI
             elements.currentWeek.textContent = `Minggu: ${currentWeek}`;
             elements.weekDisplay.textContent = currentWeek;
             elements.tableSubtitle.textContent = `${currentWeek}: ${weekData.length} agent`;
-            elements.chartTitle.textContent = `Top 5 Agent ${currentWeek}`;
             
+            // Calculate totals
             const totalAdmin = weekData.reduce((sum, item) => sum + item.adminFee, 0);
             const totalOrders = weekData.reduce((sum, item) => sum + item.totalOrder, 0);
             const activeAgents = weekData.filter(item => item.isActive).length;
             
+            // Find top agent
             const topAgent = weekData.reduce((top, item) => 
                 item.totalOrder > top.totalOrder ? item : top, 
                 { agent: '-', totalOrder: 0 }
             );
             
+            // Find agent with highest admin fee
             const topAdminAgent = weekData.reduce((top, item) => 
                 item.adminFee > top.adminFee ? item : top, 
                 { agent: '-', adminFee: 0 }
             );
             
+            // Calculate average
             const avgOrder = activeAgents > 0 ? Math.round(totalOrders / activeAgents) : 0;
             
+            // Update Summary Cards
             elements.cardTotalAgents.textContent = weekData.length;
             elements.cardTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.cardTotalOrders.textContent = formatCurrency(totalOrders);
             elements.cardTopAgent.textContent = topAgent.agent;
             
+            // Update Table Footer
             elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
             
+            // Update Stats
             elements.statTopAdmin.textContent = `${topAdminAgent.agent} (${formatCurrency(topAdminAgent.adminFee)})`;
             elements.statAvgOrder.textContent = formatCurrency(avgOrder);
             
+            // Update navigation buttons
             updateNavigationButtons();
             
+            // Render Table
             renderTable(weekData, currentWeek);
-            renderChart(weekData, currentWeek);
         }
         
-        // Render Table
+        // Render Table - DITAMBAHKAN kolom WhatsApp
         function renderTable(data, week) {
             const tbody = elements.agentTable;
             tbody.innerHTML = '';
@@ -2344,63 +2092,97 @@
             });
         }
         
-        // Render Chart
-        function renderChart(data, weekLabel) {
-            const topAgents = [...data]
-                .filter(item => item.isActive)
-                .sort((a, b) => b.totalOrder - a.totalOrder)
-                .slice(0, 5);
-            
-            const ctx = document.getElementById('ordersChart').getContext('2d');
-            
-            if (ordersChart) {
-                ordersChart.destroy();
-            }
-            
-            if (topAgents.length === 0) {
-                const canvas = document.getElementById('ordersChart');
+        // Render Weekly Trend Chart - FUNGSI BARU
+        function renderWeeklyChart() {
+            if (weeklyData.length === 0) {
+                console.warn('No weekly data to display');
+                // Tampilkan pesan di chart container
+                const canvas = document.getElementById('weeklyTrendChart');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#666';
                 ctx.font = '16px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('Tidak ada data aktif untuk periode ini', canvas.width/2, canvas.height/2);
+                ctx.fillText('Tidak ada data weekly report', canvas.width/2, canvas.height/2);
                 return;
             }
             
-            ordersChart = new Chart(ctx, {
-                type: 'bar',
+            const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+            
+            if (weeklyChart) {
+                weeklyChart.destroy();
+            }
+            
+            // Data sudah dalam urutan dari lama ke baru
+            const labels = weeklyData.map(item => item.week);
+            const orderData = weeklyData.map(item => item.totalOrder);
+            const amountData = weeklyData.map(item => item.totalAmount);
+            
+            // Update stats
+            updateWeeklyStats(weeklyData);
+            
+            weeklyChart = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: topAgents.map(item => item.agent),
+                    labels: labels,
                     datasets: [
                         {
-                            label: 'Total Orderan (Rp)',
-                            data: topAgents.map(item => item.totalOrder),
-                            backgroundColor: 'rgba(58, 86, 230, 0.7)',
+                            label: 'Jumlah Orderan',
+                            data: orderData,
+                            backgroundColor: 'rgba(58, 86, 230, 0.1)',
                             borderColor: 'rgba(58, 86, 230, 1)',
-                            borderWidth: 1
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y'
                         },
                         {
-                            label: 'Total Biaya Admin (Rp)',
-                            data: topAgents.map(item => item.adminFee),
-                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
+                            label: 'Total Nominal (Rp)',
+                            data: amountData,
+                            backgroundColor: 'rgba(37, 211, 102, 0.1)',
+                            borderColor: 'rgba(37, 211, 102, 1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     scales: {
+                        x: {
+                            grid: { display: true },
+                            ticks: {
+                                // Warna berbeda untuk minggu terbaru (paling kanan)
+                                callback: function(value, index) {
+                                    const label = this.getLabelForValue(value);
+                                    if (index === labels.length - 1) {
+                                        return `📈 ${label}`; // Tambahkan icon untuk minggu terbaru
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
                         y: {
-                            beginAtZero: true,
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Jumlah Orderan' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Total Nominal (Rp)' },
                             ticks: {
                                 callback: function(value) {
                                     if (value >= 1000000) {
-                                        return 'Rp' + (value / 1000000).toFixed(1) + ' jt';
+                                        return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
                                     } else if (value >= 1000) {
-                                        return 'Rp' + (value / 1000).toFixed(0) + ' rb';
+                                        return 'Rp' + (value / 1000).toFixed(0) + 'rb';
                                     }
                                     return 'Rp' + value;
                                 }
@@ -2415,24 +2197,72 @@
                                     if (label) {
                                         label += ': ';
                                     }
-                                    label += formatCurrency(context.raw);
+                                    if (context.datasetIndex === 0) {
+                                        label += context.raw + ' order';
+                                    } else {
+                                        label += formatCurrency(context.raw);
+                                    }
                                     return label;
+                                },
+                                afterLabel: function(context) {
+                                    // Tunjukkan apakah ini minggu terbaru
+                                    if (context.dataIndex === labels.length - 1) {
+                                        return '📅 Minggu Terkini';
+                                    }
+                                    return '';
                                 }
                             }
                         },
                         title: {
                             display: true,
-                            text: `Periode: ${weekLabel}`,
-                            font: {
-                                size: 14
-                            }
+                            text: 'Tren 5 Minggu Terakhir (Terbaru di Kanan)',
+                            font: { size: 16, weight: 'bold' }
                         }
                     }
                 }
             });
         }
         
-        // Update agent info in WhatsApp section
+        // Update Weekly Stats - FUNGSI BARU
+        function updateWeeklyStats(data) {
+            if (data.length < 2) {
+                document.getElementById('growth-rate').textContent = '-';
+                document.getElementById('highest-week').textContent = '-';
+                return;
+            }
+            
+            // Data sudah urut dari lama ke baru
+            const currentWeekData = data[data.length - 1]; // Paling kanan = terbaru
+            const previousWeekData = data[data.length - 2]; // Sebelumnya
+            
+            const currentOrders = currentWeekData.totalOrder;
+            const previousOrders = previousWeekData.totalOrder;
+            
+            // Hitung pertumbuhan
+            let growthRate = 0;
+            if (previousOrders > 0) {
+                growthRate = ((currentOrders - previousOrders) / previousOrders) * 100;
+            }
+            
+            // Cari minggu dengan order tertinggi
+            const highestWeek = data.reduce((max, item) => 
+                item.totalOrder > max.totalOrder ? item : max, 
+                { week: '-', totalOrder: 0 }
+            );
+            
+            // Format growth rate
+            const growthFormatted = Math.abs(growthRate).toFixed(1);
+            const growthIcon = growthRate >= 0 ? '↗' : '↘';
+            const growthText = growthRate >= 0 ? `+${growthFormatted}%` : `-${growthFormatted}%`;
+            
+            document.getElementById('growth-rate').textContent = 
+                `${growthText} ${growthIcon}`;
+            
+            document.getElementById('highest-week').textContent = 
+                `${highestWeek.week} (${highestWeek.totalOrder} order)`;
+        }
+        
+        // Update agent info in WhatsApp section - DIPERBAIKI
         function updateAgentInfo() {
             const agentName = elements.agentSelect.value;
             const weekIndex = parseInt(elements.whatsappWeekSelect.value);
@@ -2455,6 +2285,7 @@
                 return;
             }
             
+            // Update agent info
             elements.agentName.textContent = agentData.agent;
             elements.agentWhatsapp.textContent = formatWhatsappNumber(agentData.whatsapp || '');
             elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
@@ -2464,11 +2295,13 @@
             elements.agentPaymentStatus.textContent = statusText;
             elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
             
+            // Enable/disable buttons
             const hasWhatsapp = agentData.whatsapp && agentData.whatsapp.trim() !== '';
             elements.agentInfoCard.style.display = 'block';
             elements.whatsappContactBtn.disabled = !hasWhatsapp;
             elements.whatsappReminderBtn.disabled = !hasWhatsapp || agentData.adminFee === 0;
             
+            // Update payment form
             updatePaymentForm(agentName, weekIndex);
         }
         
@@ -2482,13 +2315,16 @@
             
             if (!agentData) return;
             
+            // Update form values
             elements.paymentAgentSelect.value = agentName;
             elements.paymentWeekSelect.value = weekIndex;
             elements.paymentTotalAdmin.value = formatCurrency(agentData.adminFee);
             elements.paymentPaidAmount.value = agentData.paidAmount || '';
             
+            // Calculate and display payment status
             calculatePaymentStatus(agentData.adminFee, agentData.paidAmount || 0);
             
+            // Update payment history
             updatePaymentHistoryDisplay(agentName, week);
         }
         
@@ -2563,7 +2399,7 @@
             return message;
         }
         
-        // Export to Excel
+        // Export to Excel - DIPERBAIKI untuk menyertakan nomor WhatsApp
         function exportToExcel() {
             try {
                 const currentWeek = availableWeeks[currentWeekIndex];
@@ -2574,6 +2410,7 @@
                     return;
                 }
                 
+                // Create CSV content
                 let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran\n";
                 
                 weekData.forEach((item, index) => {
@@ -2583,6 +2420,7 @@
                     csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}"\n`;
                 });
                 
+                // Create blob and download
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -2628,11 +2466,6 @@
             }
         }
         
-        // Handle trend metric change
-        function handleTrendMetricChange() {
-            updateTrendDisplay();
-        }
-        
         // Handle WhatsApp agent select change
         function handleWhatsappAgentChange() {
             updateAgentInfo();
@@ -2670,10 +2503,13 @@
                 return;
             }
             
+            // Save payment
             savePayment(agentName, week, paidAmount);
             
+            // Update UI
             updateAgentInfo();
             
+            // Show success message
             const remaining = agentData.adminFee - paidAmount;
             if (remaining === 0) {
                 showToast(`Pembayaran lunas untuk ${agentName}`, 'success');
@@ -2683,6 +2519,7 @@
                 showToast(`Pembayaran sebagian ${formatCurrency(paidAmount)} untuk ${agentName}`, 'success');
             }
             
+            // Reset form
             elements.paymentPaidAmount.value = '';
         }
         
@@ -2738,7 +2575,6 @@
             elements.prevWeekBtn.addEventListener('click', goToPreviousWeek);
             elements.nextWeekBtn.addEventListener('click', goToNextWeek);
             elements.weekDropdown.addEventListener('change', handleWeekDropdownChange);
-            elements.trendMetric.addEventListener('change', handleTrendMetricChange);
             
             // WhatsApp section
             elements.agentSelect.addEventListener('change', handleWhatsappAgentChange);
