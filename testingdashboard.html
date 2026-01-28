@@ -2517,112 +2517,106 @@
         }
         
         // Load Data from Google Sheets dengan saldo
-        async function loadData() {
-            try {
-                elements.loading.style.display = 'block';
-                elements.dashboard.style.display = 'none';
-                updateStatus('Mengambil data dari Google Sheets...', 'loading');
-                
-                // Test Apps Script connection
-                await testAppsScriptConnection();
-                
-                // Load order data
-                const orderResponse = await fetch(ORDER_CSV_URL);
-                if (!orderResponse.ok) throw new Error(`Order data: HTTP ${orderResponse.status}`);
-                const orderCsv = await orderResponse.text();
-                rawData = parseCSV(orderCsv, 'order');
-                
-                if (rawData.length === 0) throw new Error('Tidak ada data order yang valid');
-                
-                console.log('Order data loaded:', rawData.length, 'records');
-                
-                // Load agent database
-                const agentResponse = await fetch(AGENT_CSV_URL);
-                if (agentResponse.ok) {
-                    const agentCsv = await agentResponse.text();
-                    const agentData = parseCSV(agentCsv, 'agent');
-                    
-                    agentDatabase = {};
-                    agentData.forEach(item => {
-                        if (item.agent && item.whatsapp) {
-                            agentDatabase[item.agent] = item.whatsapp;
-                        }
-                    });
-                    
-                    console.log('Agent database:', Object.keys(agentDatabase).length, 'agents');
-                } else {
-                    console.warn('Failed to load agent database, using empty database');
-                    agentDatabase = {};
-                }
-                
-                // Load weekly report data
-                try {
-                    const weeklyResponse = await fetch(WEEKLY_CSV_URL);
-                    if (weeklyResponse.ok) {
-                        const weeklyCsv = await weeklyResponse.text();
-                        weeklyData = parseWeeklyData(weeklyCsv);
-                        console.log('Weekly report data loaded:', weeklyData);
-                    } else {
-                        console.warn('Failed to load weekly report data');
-                        loadSampleWeeklyData();
-                    }
-                } catch (weeklyError) {
-                    console.warn('Error loading weekly report:', weeklyError);
-                    loadSampleWeeklyData();
-                }
-                
-                // Aggregate data
-                aggregatedData = aggregateData(rawData);
-                console.log('Aggregated data:', aggregatedData);
-                
-                // Extract and sort weeks
-                availableWeeks = extractAndSortWeeks(aggregatedData);
-                if (availableWeeks.length === 0) throw new Error('Tidak ada week yang ditemukan');
-                
-                console.log('Available weeks:', availableWeeks);
-                
-                // Set current week to the latest one
-                currentWeekIndex = availableWeeks.length - 1;
-                
-                // Load payment history from localStorage
-                loadPaymentHistory();
-                
-                updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu`, '');
-                
-                // Populate dropdowns
-                populateWeekDropdown();
-                populateAgentDropdowns();
-                
-                elements.loading.style.display = 'none';
-                elements.dashboard.style.display = 'block';
-                
-                elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
-                
-                renderWeekData(currentWeekIndex);
-                
-                if (weeklyData.length > 0) {
-                    renderWeeklyChart();
-                }
-                
-                // Render saldo section
-                renderSaldoSection();
-                
-                showToast('Data berhasil dimuat dari Google Sheets', 'success');
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                updateStatus(`Error: ${error.message}`, 'error');
-                
-                loadSampleData();
-                
-                elements.loading.style.display = 'none';
-                elements.dashboard.style.display = 'block';
-                renderWeekData(currentWeekIndex);
-                renderSaldoSection();
-                
-                showToast(`Menggunakan data sample: ${error.message}`, 'error');
-            }
-        }
+        // Ganti function loadData() di kode HTML dengan ini:
+async function loadData() {
+  try {
+    elements.loading.style.display = 'block';
+    elements.dashboard.style.display = 'none';
+    updateStatus('Mengambil data dari Google Sheets...', 'loading');
+    
+    // Test Apps Script connection
+    await testAppsScriptConnection();
+    
+    // 1. Load order data dari Apps Script
+    const orderUrl = `${APPS_SCRIPT_URL}?action=getOrderData`;
+    const orderResponse = await fetch(orderUrl);
+    
+    if (!orderResponse.ok) {
+      throw new Error(`Failed to load order data: HTTP ${orderResponse.status}`);
+    }
+    
+    const orderResult = await orderResponse.json();
+    
+    if (!orderResult.success) {
+      throw new Error(orderResult.message || 'Gagal mengambil data order');
+    }
+    
+    rawData = orderResult.data || [];
+    
+    if (rawData.length === 0) {
+      throw new Error('Tidak ada data order yang valid');
+    }
+    
+    console.log('Order data loaded via Apps Script:', rawData.length, 'records');
+    
+    // 2. Load agent database dari Apps Script
+    const agentUrl = `${APPS_SCRIPT_URL}?action=getAgentData`;
+    const agentResponse = await fetch(agentUrl);
+    
+    if (agentResponse.ok) {
+      const agentResult = await agentResponse.json();
+      if (agentResult.success) {
+        agentDatabase = agentResult.data || {};
+        console.log('Agent database loaded:', Object.keys(agentDatabase).length, 'agents');
+      }
+    } else {
+      console.warn('Failed to load agent database, using empty database');
+      agentDatabase = {};
+    }
+    
+    // 3. Load weekly report data (optional)
+    // ... [kode untuk weekly data tetap sama]
+    
+    // Aggregate data
+    aggregatedData = aggregateData(rawData);
+    console.log('Aggregated data:', aggregatedData);
+    
+    // Extract and sort weeks
+    availableWeeks = extractAndSortWeeks(aggregatedData);
+    if (availableWeeks.length === 0) throw new Error('Tidak ada week yang ditemukan');
+    
+    console.log('Available weeks:', availableWeeks);
+    
+    // Set current week to the latest one
+    currentWeekIndex = availableWeeks.length - 1;
+    
+    // Load payment history from localStorage
+    loadPaymentHistory();
+    
+    updateStatus(`Data loaded: ${rawData.length} records, ${availableWeeks.length} minggu`, '');
+    
+    // Populate dropdowns
+    populateWeekDropdown();
+    populateAgentDropdowns();
+    
+    elements.loading.style.display = 'none';
+    elements.dashboard.style.display = 'block';
+    
+    elements.lastUpdate.textContent = new Date().toLocaleString('id-ID');
+    
+    renderWeekData(currentWeekIndex);
+    
+    // Render saldo section jika ada
+    if (typeof renderSaldoSection === 'function') {
+      renderSaldoSection();
+    }
+    
+    showToast('✅ Data berhasil dimuat dari Google Sheets', 'success');
+    
+  } catch (error) {
+    console.error('Error loading data:', error);
+    updateStatus(`Error: ${error.message}`, 'error');
+    
+    // Fallback ke data sample
+    loadSampleData();
+    
+    elements.loading.style.display = 'none';
+    elements.dashboard.style.display = 'block';
+    renderWeekData(currentWeekIndex);
+    
+    showToast(`⚠️ Menggunakan data sample: ${error.message}`, 'error');
+  }
+}
         
         // Sample data functions dengan saldo
         function loadSampleWeeklyData() {
