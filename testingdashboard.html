@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Order Agent - WhatsApp & Payment Status</title>
+    <title>Dashboard Order Agent - WhatsApp & Payment Status dengan Saldo</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -603,7 +603,7 @@
             background-color: #ccc;
         }
         
-        /* PAYMENT SECTION STYLES */
+        /* PAYMENT SECTION STYLES DENGAN SALDO */
         .payment-section {
             background-color: white;
             border-radius: 12px;
@@ -695,6 +695,11 @@
         .status-partial {
             background-color: #fef3c7;
             color: #92400e;
+        }
+        
+        .status-overpaid {
+            background-color: #dbeafe;
+            color: #1e40af;
         }
         
         .submit-btn {
@@ -995,6 +1000,146 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+        
+        /* STYLE BARU UNTUK SISTEM SALDO */
+        .saldo-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .saldo-positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .saldo-negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .agent-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .balance-label {
+            color: #666;
+        }
+        
+        .balance-value {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .balance-positive {
+            color: #10b981;
+        }
+        
+        .balance-negative {
+            color: #ef4444;
+        }
+        
+        .saldo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .saldo-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .saldo-icon {
+            color: #f59e0b;
+            font-size: 20px;
+        }
+        
+        .saldo-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .saldo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .saldo-card {
+            background: #f8f9fd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .saldo-agent {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .saldo-amount {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .payment-preview {
+            background: #f8f9fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .preview-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .preview-label {
+            color: #666;
+        }
+        
+        .preview-value {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .use-saldo-group {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .saldo-available {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -1013,7 +1158,7 @@
                 <a href="https://docs.google.com/spreadsheets/d/1fDE1tj2mYanx9FA4deMPd-OLY6CdxWHZecMsdVtkc6c/edit?usp=sharing" target="_blank">
                     Google Sheets Order Agent
                 </a>
-                | Sheets: "To Dashboard" & "Database Agent" & "Payment History"
+                | Sheets: "To Dashboard" & "Database Agent"
             </div>
         </header>
         
@@ -1055,6 +1200,17 @@
                     <button class="export-btn" id="export-excel">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </button>
+                </div>
+            </div>
+            
+            <!-- SALDO SECTION -->
+            <div class="saldo-section" id="saldo-section" style="display: none;">
+                <div class="saldo-header">
+                    <i class="fas fa-wallet saldo-icon"></i>
+                    <h2 class="saldo-title">💰 Saldo Agent</h2>
+                </div>
+                <div id="saldo-content">
+                    <!-- Saldo agent akan ditampilkan di sini -->
                 </div>
             </div>
             
@@ -1109,8 +1265,8 @@
                         <span class="agent-info-value" id="agent-payment-status">Belum diinput</span>
                     </div>
                     <div class="agent-info-row">
-                        <span class="agent-info-label">Sisa yang Harus Dibayar:</span>
-                        <span class="agent-info-value" id="agent-remaining-payment">Rp0</span>
+                        <span class="agent-info-label">Sisa/Saldo:</span>
+                        <span class="agent-info-value" id="agent-saldo">Rp0</span>
                     </div>
                 </div>
                 
@@ -1144,12 +1300,12 @@
                             <div class="card-value"><span id="card-total-orders">0</span> <span class="card-currency">Rp</span></div>
                         </div>
                         <div class="card">
-                            <div class="card-title">Agent dengan Order Tertinggi</div>
-                            <div class="card-value" id="card-top-agent">-</div>
+                            <div class="card-title">Total Saldo Aktif</div>
+                            <div class="card-value"><span id="card-total-saldo">0</span> <span class="card-currency">Rp</span></div>
                         </div>
                     </div>
                     
-                    <!-- ORDER TABLE PANEL -->
+                    <!-- ORDER TABLE PANEL DENGAN SALDO -->
                     <div class="panel">
                         <div class="panel-header">
                             <h2 class="panel-title">Total per Agent (Minggu Ini)</h2>
@@ -1162,9 +1318,10 @@
                                         <th>No</th>
                                         <th>Nama Agent</th>
                                         <th>Nomor WhatsApp</th>
-                                        <th>Total Biaya Admin (10%)</th>
-                                        <th>Total Orderan</th>
-                                        <th>Status Pembayaran</th>
+                                        <th>Biaya Admin</th>
+                                        <th>Dibayar</th>
+                                        <th>Status</th>
+                                        <th>Saldo</th>
                                     </tr>
                                 </thead>
                                 <tbody id="agent-table">
@@ -1174,8 +1331,9 @@
                                     <tr class="total-row">
                                         <td colspan="3">TOTAL MINGGU INI</td>
                                         <td class="currency" id="table-total-admin">Rp0</td>
-                                        <td class="currency" id="table-total-orders">Rp0</td>
+                                        <td class="currency" id="table-total-paid">Rp0</td>
                                         <td></td>
+                                        <td class="currency" id="table-total-saldo">Rp0</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1184,7 +1342,7 @@
                         <!-- WEEK STATS -->
                         <div class="week-stats">
                             <div class="stat-box">
-                                <div class="stat-label">Agent dengan Admin Fee Tertinggi</div>
+                                <div class="stat-label">Agent dengan Admin Tertinggi</div>
                                 <div class="stat-value" id="stat-top-admin">-</div>
                             </div>
                             <div class="stat-box">
@@ -1195,9 +1353,9 @@
                     </div>
                 </div>
                 
-                <!-- RIGHT PANEL: CHART & PAYMENT -->
+                <!-- RIGHT PANEL: CHART & PAYMENT DENGAN SALDO -->
                 <div>
-                    <!-- WEEKLY TREND CHART PANEL - TAMBAHAN BARU -->
+                    <!-- WEEKLY TREND CHART PANEL -->
                     <div class="panel">
                         <div class="panel-header">
                             <h2 class="panel-title">📈 Tren 5 Minggu Terakhir</h2>
@@ -1224,19 +1382,19 @@
                             <div class="info-title">📊 Informasi Dashboard</div>
                             <p><strong>Mode Aggregated:</strong> Data dikelompokkan per agent per minggu</p>
                             <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
-                            <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" & "Database Agent"</p>
-                            <p><strong>Tren Mingguan:</strong> Data dari sheet "Report Weekly" (5 minggu terakhir) - Minggu terbaru di kanan</p>
+                            <p><strong>Sistem Saldo:</strong> Kelebihan pembayaran jadi saldo, bisa dipakai minggu depan</p>
+                            <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" (Kolom A, B, C)</p>
                         </div>
                     </div>
                     
-                    <!-- PAYMENT SECTION -->
+                    <!-- PAYMENT SECTION DENGAN SALDO -->
                     <div class="payment-section">
                         <div class="payment-header">
                             <i class="fas fa-money-bill-wave payment-icon"></i>
-                            <h2 class="payment-title">Input Status Pembayaran</h2>
+                            <h2 class="payment-title">Input Pembayaran dengan Saldo</h2>
                         </div>
                         
-                        <form class="payment-form" id="payment-form">
+                        <div class="payment-form" id="payment-form">
                             <div class="form-group">
                                 <label class="form-label">Pilih Agent:</label>
                                 <select class="form-input" id="payment-agent-select" required>
@@ -1251,16 +1409,64 @@
                                 </select>
                             </div>
                             
+                            <!-- AGENT INFO -->
+                            <div id="agent-payment-info" style="display: none;">
+                                <div class="agent-balance">
+                                    <span class="balance-label">Biaya Admin:</span>
+                                    <span class="balance-value" id="payment-total-admin">Rp0</span>
+                                </div>
+                                <div class="agent-balance">
+                                    <span class="balance-label">Sudah Dibayar:</span>
+                                    <span class="balance-value" id="payment-already-paid">Rp0</span>
+                                </div>
+                                <div class="agent-balance">
+                                    <span class="balance-label">Sisa Tagihan:</span>
+                                    <span class="balance-value" id="payment-remaining">Rp0</span>
+                                </div>
+                                <div class="agent-balance">
+                                    <span class="balance-label">Saldo Tersedia:</span>
+                                    <span class="balance-value" id="payment-available-saldo">Rp0</span>
+                                </div>
+                            </div>
+                            
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label">Total Biaya Admin:</label>
-                                    <input type="text" class="form-input" id="payment-total-admin" readonly>
+                                    <label class="form-label">Jumlah Bayar (Rp):</label>
+                                    <input type="number" class="form-input" id="payment-amount" 
+                                           placeholder="Masukkan jumlah" min="0" step="1000">
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label class="form-label">Jumlah yang Sudah Dibayar:</label>
-                                    <input type="number" class="form-input" id="payment-paid-amount" 
-                                           placeholder="Masukkan jumlah" min="0" required>
+                                    <label class="form-label">Gunakan Saldo:</label>
+                                    <input type="number" class="form-input" id="use-saldo" 
+                                           placeholder="Jumlah saldo" min="0" value="0">
+                                    <div class="saldo-available">Saldo tersedia: <span id="available-saldo-amount">Rp0</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Keterangan (Opsional):</label>
+                                <input type="text" class="form-input" id="payment-notes" 
+                                       placeholder="Contoh: Transfer BCA, Cash, dll">
+                            </div>
+                            
+                            <!-- PAYMENT PREVIEW -->
+                            <div class="payment-preview" id="payment-preview" style="display: none;">
+                                <div class="preview-row">
+                                    <span class="preview-label">Total Pembayaran:</span>
+                                    <span class="preview-value" id="preview-total">Rp0</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="preview-label">Total Dibayar (setelah):</span>
+                                    <span class="preview-value" id="preview-new-total">Rp0</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="preview-label">Status:</span>
+                                    <span class="preview-value" id="preview-status">-</span>
+                                </div>
+                                <div class="preview-row">
+                                    <span class="preview-label">Saldo Baru:</span>
+                                    <span class="preview-value" id="preview-new-saldo">Rp0</span>
                                 </div>
                             </div>
                             
@@ -1269,8 +1475,8 @@
                                 <span id="payment-amount-text">Rp0</span>
                             </div>
                             
-                            <button type="submit" class="submit-btn" id="payment-submit-btn">
-                                <i class="fas fa-save"></i> Simpan ke Google Sheets
+                            <button type="button" class="submit-btn" id="payment-submit-btn">
+                                <i class="fas fa-save"></i> Simpan Pembayaran
                             </button>
                         </form>
                         
@@ -1302,7 +1508,7 @@
         <div class="toast-container" id="toast-container"></div>
         
         <footer>
-            <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Status Pembayaran</p>
+            <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Sistem Saldo</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 Terakhir diupdate: <span id="last-update">-</span> | 
                 Payment API Status: <span id="api-status">🔴 Offline</span>
@@ -1318,7 +1524,7 @@
         const WEEKLY_SHEET_NAME = 'Report Weekly';
         
         // URL Apps Script Anda
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjFclx9m-RzvTCoJEHDdVVn4zmZb0BW-bEXeilBLb3xCD-ieTEUgiw3FpbOlIuqqTIFA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVR8YonZVMHCqQzfkFUU6sVxnw7nKQ4rG864R-jNoZ80oHklvqM5wPji3xfHbzUCjVVg/exec';
         
         const ORDER_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${ORDER_SHEET_NAME}`;
         const AGENT_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${AGENT_SHEET_NAME}`;
@@ -1330,6 +1536,7 @@
         let availableWeeks = [];
         let agentDatabase = {};
         let paymentHistory = {};
+        let agentSaldo = {};
         let currentWeekIndex = 0;
         let weeklyData = [];
         let weeklyChart = null;
@@ -1353,12 +1560,13 @@
             cardTotalAgents: document.getElementById('card-total-agents'),
             cardTotalAdmin: document.getElementById('card-total-admin'),
             cardTotalOrders: document.getElementById('card-total-orders'),
-            cardTopAgent: document.getElementById('card-top-agent'),
+            cardTotalSaldo: document.getElementById('card-total-saldo'),
             
             // Table Elements
             agentTable: document.getElementById('agent-table'),
             tableTotalAdmin: document.getElementById('table-total-admin'),
-            tableTotalOrders: document.getElementById('table-total-orders'),
+            tableTotalPaid: document.getElementById('table-total-paid'),
+            tableTotalSaldo: document.getElementById('table-total-saldo'),
             
             // Stats
             statTopAdmin: document.getElementById('stat-top-admin'),
@@ -1377,16 +1585,28 @@
             agentAdminFee: document.getElementById('agent-admin-fee'),
             agentTotalOrder: document.getElementById('agent-total-order'),
             agentPaymentStatus: document.getElementById('agent-payment-status'),
-            agentRemainingPayment: document.getElementById('agent-remaining-payment'),
+            agentSaldo: document.getElementById('agent-saldo'),
             whatsappReminderBtn: document.getElementById('whatsapp-reminder-btn'),
             whatsappContactBtn: document.getElementById('whatsapp-contact-btn'),
             
-            // Payment Section
+            // Payment Section dengan Saldo
             paymentAgentSelect: document.getElementById('payment-agent-select'),
             paymentWeekSelect: document.getElementById('payment-week-select'),
-            paymentTotalAdmin: document.getElementById('payment-total-admin'),
-            paymentPaidAmount: document.getElementById('payment-paid-amount'),
+            paymentAmount: document.getElementById('payment-amount'),
+            useSaldo: document.getElementById('use-saldo'),
+            availableSaldoAmount: document.getElementById('available-saldo-amount'),
+            paymentNotes: document.getElementById('payment-notes'),
             paymentForm: document.getElementById('payment-form'),
+            agentPaymentInfo: document.getElementById('agent-payment-info'),
+            paymentTotalAdmin: document.getElementById('payment-total-admin'),
+            paymentAlreadyPaid: document.getElementById('payment-already-paid'),
+            paymentRemaining: document.getElementById('payment-remaining'),
+            paymentAvailableSaldo: document.getElementById('payment-available-saldo'),
+            paymentPreview: document.getElementById('payment-preview'),
+            previewTotal: document.getElementById('preview-total'),
+            previewNewTotal: document.getElementById('preview-new-total'),
+            previewStatus: document.getElementById('preview-status'),
+            previewNewSaldo: document.getElementById('preview-new-saldo'),
             paymentStatusDisplay: document.getElementById('payment-status-display'),
             paymentStatusText: document.getElementById('payment-status-text'),
             paymentAmountText: document.getElementById('payment-amount-text'),
@@ -1395,7 +1615,11 @@
             paymentSubmitBtn: document.getElementById('payment-submit-btn'),
             
             // Weekly Chart Elements
-            weeklyChartTitle: document.getElementById('weekly-chart-title')
+            weeklyChartTitle: document.getElementById('weekly-chart-title'),
+            
+            // Saldo Section
+            saldoSection: document.getElementById('saldo-section'),
+            saldoContent: document.getElementById('saldo-content')
         };
         
         // Toast Notification System
@@ -1627,7 +1851,7 @@
             });
         }
         
-        // Get aggregated data for a specific week
+        // Get aggregated data for a specific week dengan saldo
         function getAggregatedWeekData(week) {
             if (!aggregatedData[week]) {
                 return [];
@@ -1638,6 +1862,20 @@
                 const paymentInfo = getPaymentInfo(agent, week);
                 const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
                 const remaining = adminFee - paidAmount;
+                const agentCurrentSaldo = agentSaldo[agent] || 0;
+                const totalSaldo = (paidAmount - adminFee) + agentCurrentSaldo;
+                
+                // Determine payment status dengan saldo
+                let paymentStatus = 'belum_bayar';
+                let saldoStatus = 'normal';
+                
+                if (paidAmount === 0) {
+                    paymentStatus = 'belum_bayar';
+                } else if (paidAmount >= adminFee) {
+                    paymentStatus = totalSaldo > 0 ? 'overpaid' : 'lunas';
+                } else {
+                    paymentStatus = 'sebagian';
+                }
                 
                 return {
                     agent: agent,
@@ -1647,7 +1885,9 @@
                     isActive: adminFee > 0,
                     paidAmount: paidAmount,
                     remaining: remaining,
-                    paymentStatus: getPaymentStatus(adminFee, paidAmount)
+                    saldo: totalSaldo,
+                    paymentStatus: paymentStatus,
+                    saldoStatus: saldoStatus
                 };
             });
             
@@ -1660,25 +1900,33 @@
             return paymentHistory[key] || null;
         }
         
-        // Calculate payment status
-        function getPaymentStatus(totalAdmin, paidAmount) {
-            if (totalAdmin === 0) return 'tidak_ada';
-            if (paidAmount === 0) return 'belum_bayar';
-            if (paidAmount >= totalAdmin) return 'lunas';
-            return 'sebagian';
+        // Calculate payment status dengan saldo
+        function getPaymentStatus(totalAdmin, paidAmount, agentSaldoAmount = 0) {
+            const totalSaldo = (paidAmount - totalAdmin) + agentSaldoAmount;
+            
+            if (totalAdmin === 0) return { status: 'tidak_ada', saldo: 0 };
+            if (paidAmount === 0) return { status: 'belum_bayar', saldo: agentSaldoAmount };
+            if (paidAmount >= totalAdmin) {
+                return totalSaldo > 0 ? 
+                    { status: 'overpaid', saldo: totalSaldo } : 
+                    { status: 'lunas', saldo: totalSaldo };
+            }
+            return { status: 'sebagian', saldo: totalSaldo };
         }
         
         // Get payment status text
-        function getPaymentStatusText(status, remaining = 0) {
+        function getPaymentStatusText(status, remaining = 0, saldo = 0) {
             switch(status) {
                 case 'tidak_ada':
                     return 'Tidak ada biaya admin';
                 case 'belum_bayar':
-                    return 'Belum bayar';
+                    return saldo > 0 ? `Belum bayar (Saldo: ${formatCurrency(saldo)})` : 'Belum bayar';
                 case 'lunas':
-                    return 'Lunas';
+                    return `Lunas${saldo !== 0 ? ` (Saldo: ${formatCurrency(saldo)})` : ''}`;
+                case 'overpaid':
+                    return `Kelebihan (Saldo: ${formatCurrency(saldo)})`;
                 case 'sebagian':
-                    return `Sebagian (kurang ${formatCurrency(remaining)})`;
+                    return `Sebagian (kurang ${formatCurrency(remaining)})${saldo !== 0 ? ` (Saldo: ${formatCurrency(saldo)})` : ''}`;
                 default:
                     return 'Belum diinput';
             }
@@ -1693,14 +1941,46 @@
                     return 'status-unpaid';
                 case 'sebagian':
                     return 'status-partial';
+                case 'overpaid':
+                    return 'status-overpaid';
                 default:
                     return '';
             }
         }
         
-        // ==============================================
-        // FUNGSI BARU: INTEGRASI GOOGLE SHEETS PAYMENT
-        // ==============================================
+        // Calculate agent saldo from all payment history
+        function calculateAgentSaldo() {
+            agentSaldo = {};
+            
+            // Initialize all agents with 0 saldo
+            Object.keys(aggregatedData).forEach(week => {
+                Object.keys(aggregatedData[week]).forEach(agent => {
+                    if (!agentSaldo[agent]) {
+                        agentSaldo[agent] = 0;
+                    }
+                });
+            });
+            
+            // Calculate saldo from payment history
+            Object.values(paymentHistory).forEach(payment => {
+                const agent = payment.agent;
+                const week = payment.week;
+                const paidAmount = payment.paidAmount || 0;
+                
+                // Get admin fee for this agent in this week
+                const adminFee = aggregatedData[week] && aggregatedData[week][agent] ? 
+                               aggregatedData[week][agent] : 0;
+                
+                // Calculate saldo for this payment (paid - admin fee)
+                const paymentSaldo = paidAmount - adminFee;
+                
+                // Add to agent's total saldo
+                if (!agentSaldo[agent]) agentSaldo[agent] = 0;
+                agentSaldo[agent] += paymentSaldo;
+            });
+            
+            return agentSaldo;
+        }
         
         // Test koneksi ke Apps Script
         async function testAppsScriptConnection() {
@@ -1725,7 +2005,7 @@
             }
         }
         
-        // Kirim data pembayaran ke Google Sheets
+        // Kirim data pembayaran ke Google Sheets dengan saldo
         async function sendPaymentToGoogleSheets(paymentData) {
             try {
                 showToast('Mengirim data ke Google Sheets...', 'info');
@@ -1744,7 +2024,7 @@
                     action: 'savePayment'
                 };
                 
-                // Gunakan proxy untuk menghindari CORS (alternatif)
+                // Gunakan proxy untuk menghindari CORS
                 const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(APPS_SCRIPT_URL)}`;
                 
                 const response = await fetch(proxyUrl, {
@@ -1762,14 +2042,8 @@
                     // Simpan juga ke localStorage sebagai backup
                     savePaymentToLocalStorage(paymentData);
                     
-                    // Trigger reload data
-                    loadPaymentHistoryFromGoogleSheets(paymentData.agent, paymentData.week);
-                    
-                    // Animasikan success
-                    elements.paymentSubmitBtn.classList.add('payment-success-animation');
-                    setTimeout(() => {
-                        elements.paymentSubmitBtn.classList.remove('payment-success-animation');
-                    }, 2000);
+                    // Recalculate saldo
+                    calculateAgentSaldo();
                     
                     return { success: true, data: result };
                 } else {
@@ -1790,7 +2064,7 @@
             }
         }
         
-        // Simpan ke localStorage sebagai backup
+        // Simpan ke localStorage sebagai backup dengan saldo
         function savePaymentToLocalStorage(paymentData) {
             try {
                 const key = `payment_${paymentData.agent}_${paymentData.week}_${Date.now()}`;
@@ -1806,7 +2080,7 @@
                 localStorage.setItem('offline_payments', JSON.stringify(offlinePayments));
                 
                 // Simpan juga ke payment history lokal
-                savePayment(paymentData.agent, paymentData.week, paymentData.paidAmount);
+                savePayment(paymentData.agent, paymentData.week, paymentData.paidAmount, paymentData.useSaldo);
                 
                 return true;
             } catch (error) {
@@ -1815,59 +2089,7 @@
             }
         }
         
-        // Load payment history dari Google Sheets
-        async function loadPaymentHistoryFromGoogleSheets(agentName, week) {
-            try {
-                elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                elements.refreshHistoryBtn.disabled = true;
-                
-                const url = `${APPS_SCRIPT_URL}?action=getHistory&agent=${encodeURIComponent(agentName || '')}&week=${encodeURIComponent(week || '')}&timestamp=${Date.now()}`;
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-                
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Combine dengan data lokal
-                    const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
-                    const allHistory = [...data.history || [], ...offlinePayments];
-                    
-                    // Filter untuk agent/week tertentu
-                    let filteredHistory = allHistory;
-                    if (agentName) {
-                        filteredHistory = filteredHistory.filter(h => h.agent === agentName);
-                    }
-                    if (week) {
-                        filteredHistory = filteredHistory.filter(h => h.week === week);
-                    }
-                    
-                    // Sort by timestamp
-                    filteredHistory.sort((a, b) => {
-                        const timeA = new Date(a.timestamp || a.savedAt || 0);
-                        const timeB = new Date(b.timestamp || b.savedAt || 0);
-                        return timeB - timeA;
-                    });
-                    
-                    renderPaymentHistory(filteredHistory);
-                    
-                } else {
-                    renderPaymentHistory([]);
-                }
-                
-            } catch (error) {
-                console.warn('Error loading payment history:', error);
-                renderPaymentHistory([]);
-                
-                // Tampilkan data dari localStorage saja
-                showToast('⚠️ Menampilkan data lokal (offline)', 'info');
-                
-            } finally {
-                elements.refreshHistoryBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-                elements.refreshHistoryBtn.disabled = false;
-            }
-        }
-        
-        // Render payment history
+        // Render payment history dengan saldo
         function renderPaymentHistory(history) {
             const container = elements.paymentHistoryList;
             
@@ -1909,7 +2131,6 @@
             // Render
             let html = '';
             const dates = Object.keys(groupedByDate).sort((a, b) => {
-                // Sort dates descending
                 return new Date(b.split(', ')[1] || b) - new Date(a.split(', ')[1] || a);
             });
             
@@ -1927,15 +2148,24 @@
                         }) : '--:--';
                     
                     const isOffline = record.isOffline;
+                    const useSaldo = record.useSaldo || 0;
+                    const cashPayment = record.paidAmount - useSaldo;
+                    
                     const status = record.status || 
                         (record.paidAmount >= record.totalAdmin ? 'Lunas' : 
                          record.paidAmount === 0 ? 'Belum Bayar' : 'Sebagian');
                     
                     const statusClass = status === 'Lunas' ? 'status-paid' : 
-                                      status === 'Belum Bayar' ? 'status-unpaid' : 'status-partial';
+                                      status === 'Belum Bayar' ? 'status-unpaid' : 
+                                      status === 'Sebagian' ? 'status-partial' : 'status-overpaid';
                     
                     const offlineBadge = isOffline ? 
                         `<span style="font-size: 10px; background: #f59e0b; color: white; padding: 1px 5px; border-radius: 3px; margin-left: 5px;">OFFLINE</span>` : '';
+                    
+                    const saldoInfo = useSaldo > 0 ? 
+                        `<div style="font-size: 11px; color: #888; margin-top: 2px;">
+                            💰 Saldo: ${formatCurrency(useSaldo)} | Cash: ${formatCurrency(cashPayment)}
+                        </div>` : '';
                     
                     html += `
                         <div class="history-item" ${isOffline ? 'style="border-left: 3px solid #f59e0b;"' : ''}>
@@ -1947,6 +2177,7 @@
                                 <div style="font-size: 12px; color: #999; margin-top: 2px;">
                                     ${time} • ${record.keterangan || record.inputBy || 'Dashboard'}
                                 </div>
+                                ${saldoInfo}
                             </div>
                             <div style="text-align: right;">
                                 <div style="font-weight: 700; color: #10b981; font-size: 14px;">
@@ -1968,15 +2199,17 @@
             container.innerHTML = html;
         }
         
-        // Handle payment form submission
+        // Handle payment form submission dengan saldo
         async function handlePaymentFormSubmit(e) {
             e.preventDefault();
             
             const agentName = elements.paymentAgentSelect.value;
             const weekIndex = parseInt(elements.paymentWeekSelect.value);
-            const paidAmount = parseInt(elements.paymentPaidAmount.value);
+            const paymentAmount = parseInt(elements.paymentAmount.value) || 0;
+            const useSaldoAmount = parseInt(elements.useSaldo.value) || 0;
+            const notes = elements.paymentNotes.value;
             
-            if (!agentName || isNaN(weekIndex) || isNaN(paidAmount) || paidAmount < 0) {
+            if (!agentName || isNaN(weekIndex) || (paymentAmount === 0 && useSaldoAmount === 0)) {
                 showToast('Harap isi semua field dengan benar', 'error');
                 return;
             }
@@ -1990,9 +2223,21 @@
                 return;
             }
             
-            if (paidAmount > agentData.adminFee * 1.5) {
+            const totalPayment = paymentAmount + useSaldoAmount;
+            const newTotalPaid = (agentData.paidAmount || 0) + totalPayment;
+            
+            // Check if trying to use more saldo than available
+            const availableSaldo = agentSaldo[agentName] || 0;
+            if (useSaldoAmount > availableSaldo) {
+                showToast(`Saldo tidak cukup! Saldo tersedia: ${formatCurrency(availableSaldo)}`, 'error');
+                return;
+            }
+            
+            // Show confirmation for large payment
+            if (totalPayment > agentData.adminFee * 1.5) {
                 const confirm = window.confirm(
-                    `Jumlah pembayaran (${formatCurrency(paidAmount)}) lebih besar dari biaya admin (${formatCurrency(agentData.adminFee)}).\nApakah Anda yakin?`
+                    `Jumlah pembayaran (${formatCurrency(totalPayment)}) lebih besar dari biaya admin (${formatCurrency(agentData.adminFee)}).\n` +
+                    `Kelebihan akan menjadi saldo.\n\nApakah Anda yakin?`
                 );
                 if (!confirm) return;
             }
@@ -2003,13 +2248,19 @@
             elements.paymentSubmitBtn.disabled = true;
             
             try {
-                // Prepare payment data
+                // Prepare payment data dengan saldo
                 const paymentData = {
                     agent: agentName,
                     week: week,
                     totalAdmin: agentData.adminFee,
-                    paidAmount: paidAmount,
-                    remaining: agentData.adminFee - paidAmount
+                    paidAmount: totalPayment,
+                    useSaldo: useSaldoAmount,
+                    cashPayment: paymentAmount,
+                    previousSaldo: availableSaldo,
+                    newSaldo: (newTotalPaid - agentData.adminFee) + (availableSaldo - useSaldoAmount),
+                    remaining: agentData.adminFee - newTotalPaid,
+                    notes: notes,
+                    action: 'savePaymentWithSaldo'
                 };
                 
                 // Send to Google Sheets
@@ -2018,21 +2269,32 @@
                 if (result.success) {
                     // Update UI
                     updateAgentInfo();
+                    updatePaymentForm(agentName, weekIndex);
                     
-                    // Show success
-                    if (paidAmount >= agentData.adminFee) {
-                        showToast(`✅ Pembayaran lunas untuk ${agentName}`, 'success');
-                    } else if (paidAmount === 0) {
-                        showToast(`🔄 Status direset untuk ${agentName}`, 'info');
-                    } else {
-                        showToast(`✅ Pembayaran ${formatCurrency(paidAmount)} berhasil disimpan`, 'success');
+                    // Show success message with saldo info
+                    const newSaldo = paymentData.newSaldo;
+                    let message = `✅ Pembayaran ${formatCurrency(totalPayment)} berhasil disimpan!`;
+                    
+                    if (useSaldoAmount > 0) {
+                        message += ` (Saldo digunakan: ${formatCurrency(useSaldoAmount)})`;
                     }
                     
-                    // Clear form
-                    elements.paymentPaidAmount.value = '';
+                    if (newSaldo > 0) {
+                        message += `\n💰 ${agentName} sekarang punya saldo ${formatCurrency(newSaldo)}`;
+                    } else if (newSaldo < 0) {
+                        message += `\n⚠️ ${agentName} masih punya tunggakan ${formatCurrency(Math.abs(newSaldo))}`;
+                    }
                     
-                    // Reload payment history
-                    loadPaymentHistoryFromGoogleSheets(agentName, week);
+                    showToast(message, 'success');
+                    
+                    // Clear form
+                    elements.paymentAmount.value = '';
+                    elements.useSaldo.value = '0';
+                    elements.paymentNotes.value = '';
+                    
+                    // Refresh data
+                    renderWeekData(currentWeekIndex);
+                    renderSaldoSection();
                     
                 } else {
                     showToast(`⚠️ ${result.message}`, 'info');
@@ -2048,7 +2310,7 @@
             }
         }
         
-        // Load payment history from localStorage (existing function)
+        // Load payment history from localStorage
         function loadPaymentHistory() {
             const saved = localStorage.getItem('agent_payment_history');
             if (saved) {
@@ -2060,69 +2322,129 @@
             } else {
                 paymentHistory = {};
             }
+            
+            // Calculate saldo
+            calculateAgentSaldo();
         }
         
-        // Save payment to localStorage (existing function)
-        function savePayment(agent, week, paidAmount, date) {
+        // Save payment to localStorage dengan saldo
+        function savePayment(agent, week, paidAmount, useSaldo = 0, date) {
             const key = `${agent}_${week}`;
-            paymentHistory[key] = {
-                agent: agent,
-                week: week,
-                paidAmount: parseInt(paidAmount),
-                date: date || new Date().toISOString()
-            };
+            const existingPayment = paymentHistory[key];
+            
+            if (existingPayment) {
+                // Update existing payment
+                existingPayment.paidAmount += parseInt(paidAmount);
+                existingPayment.useSaldo = (existingPayment.useSaldo || 0) + parseInt(useSaldo);
+                existingPayment.date = new Date().toISOString();
+            } else {
+                // Create new payment
+                paymentHistory[key] = {
+                    agent: agent,
+                    week: week,
+                    paidAmount: parseInt(paidAmount),
+                    useSaldo: parseInt(useSaldo),
+                    date: date || new Date().toISOString()
+                };
+            }
             
             localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+            
+            // Recalculate saldo
+            calculateAgentSaldo();
         }
         
-        // Update payment form display
+        // Update payment form display dengan saldo
         function updatePaymentForm(agentName, weekIndex) {
-            if (!agentName || isNaN(weekIndex)) return;
+            if (!agentName || isNaN(weekIndex)) {
+                elements.agentPaymentInfo.style.display = 'none';
+                elements.paymentPreview.style.display = 'none';
+                return;
+            }
             
             const week = availableWeeks[weekIndex];
             const weekData = getAggregatedWeekData(week);
             const agentData = weekData.find(item => item.agent === agentName);
             
-            if (!agentData) return;
-            
-            elements.paymentAgentSelect.value = agentName;
-            elements.paymentWeekSelect.value = weekIndex;
-            elements.paymentTotalAdmin.value = formatCurrency(agentData.adminFee);
-            elements.paymentPaidAmount.value = agentData.paidAmount || '';
-            elements.paymentPaidAmount.min = 0;
-            elements.paymentPaidAmount.max = agentData.adminFee * 2;
-            
-            calculatePaymentStatus(agentData.adminFee, agentData.paidAmount || 0);
-            
-            loadPaymentHistoryFromGoogleSheets(agentName, week);
-        }
-        
-        // Calculate payment status
-        function calculatePaymentStatus(totalAdmin, paidAmount) {
-            if (totalAdmin === 0) {
-                elements.paymentStatusDisplay.style.display = 'none';
+            if (!agentData) {
+                elements.agentPaymentInfo.style.display = 'none';
+                elements.paymentPreview.style.display = 'none';
                 return;
             }
             
-            const remaining = totalAdmin - paidAmount;
-            let statusText = '';
-            let statusClass = '';
+            const availableSaldo = agentSaldo[agentName] || 0;
             
-            if (paidAmount === 0) {
-                statusText = 'Belum bayar';
-                statusClass = 'status-unpaid';
-            } else if (paidAmount >= totalAdmin) {
-                statusText = 'Lunas';
-                statusClass = 'status-paid';
-            } else {
-                statusText = `Sebagian (kurang ${formatCurrency(remaining)})`;
-                statusClass = 'status-partial';
+            // Update form values
+            elements.paymentAgentSelect.value = agentName;
+            elements.paymentWeekSelect.value = weekIndex;
+            elements.paymentTotalAdmin.textContent = formatCurrency(agentData.adminFee);
+            elements.paymentAlreadyPaid.textContent = formatCurrency(agentData.paidAmount);
+            elements.paymentRemaining.textContent = formatCurrency(agentData.remaining);
+            elements.paymentAvailableSaldo.textContent = formatCurrency(availableSaldo);
+            elements.availableSaldoAmount.textContent = formatCurrency(availableSaldo);
+            
+            // Set max for useSaldo
+            elements.useSaldo.max = Math.max(0, availableSaldo);
+            
+            elements.agentPaymentInfo.style.display = 'block';
+            
+            // Update payment preview
+            updatePaymentPreview();
+        }
+        
+        // Update payment preview dengan saldo
+        function updatePaymentPreview() {
+            const agentName = elements.paymentAgentSelect.value;
+            const weekIndex = parseInt(elements.paymentWeekSelect.value);
+            
+            if (!agentName || isNaN(weekIndex)) {
+                elements.paymentPreview.style.display = 'none';
+                return;
             }
             
-            elements.paymentStatusText.textContent = `Status: ${statusText}`;
-            elements.paymentAmountText.textContent = formatCurrency(paidAmount);
-            elements.paymentStatusDisplay.className = `payment-status ${statusClass}`;
-            elements.paymentStatusDisplay.style.display = 'flex';
+            const week = availableWeeks[weekIndex];
+            const weekData = getAggregatedWeekData(week);
+            const agentData = weekData.find(item => item.agent === agentName);
+            
+            if (!agentData) {
+                elements.paymentPreview.style.display = 'none';
+                return;
+            }
+            
+            const paymentAmount = parseInt(elements.paymentAmount.value) || 0;
+            const useSaldoAmount = parseInt(elements.useSaldo.value) || 0;
+            const totalPayment = paymentAmount + useSaldoAmount;
+            const availableSaldo = agentSaldo[agentName] || 0;
+            const newTotalPaid = (agentData.paidAmount || 0) + totalPayment;
+            const newRemaining = agentData.adminFee - newTotalPaid;
+            const newSaldo = (newTotalPaid - agentData.adminFee) + (availableSaldo - useSaldoAmount);
+            
+            // Determine status
+            let status = '';
+            let statusClass = '';
+            
+            if (totalPayment === 0) {
+                status = 'Belum ada pembayaran';
+                statusClass = 'status-unpaid';
+            } else if (newRemaining > 0) {
+                status = `Sebagian (kurang ${formatCurrency(newRemaining)})`;
+                statusClass = 'status-partial';
+            } else if (newRemaining === 0) {
+                status = 'Lunas';
+                statusClass = 'status-paid';
+            } else {
+                status = `Kelebihan (saldo ${formatCurrency(Math.abs(newRemaining))})`;
+                statusClass = 'status-overpaid';
+            }
+            
+            // Update preview
+            elements.previewTotal.textContent = formatCurrency(totalPayment);
+            elements.previewNewTotal.textContent = formatCurrency(newTotalPaid);
+            elements.previewStatus.textContent = status;
+            elements.previewStatus.className = statusClass;
+            elements.previewNewSaldo.textContent = formatCurrency(newSaldo);
+            
+            elements.paymentPreview.style.display = 'block';
         }
         
         // Populate week dropdown
@@ -2150,7 +2472,7 @@
             updateNavigationButtons();
         }
         
-        // Populate agent dropdowns
+        // Populate agent dropdowns dengan saldo info
         function populateAgentDropdowns() {
             const agentSelects = [
                 elements.agentSelect,
@@ -2177,7 +2499,12 @@
                 sortedAgents.forEach(agent => {
                     const option = document.createElement('option');
                     option.value = agent;
-                    option.textContent = agent;
+                    
+                    // Add saldo info to agent name
+                    const saldo = agentSaldo[agent] || 0;
+                    const saldoText = saldo !== 0 ? ` (Saldo: ${formatCurrency(saldo)})` : '';
+                    option.textContent = `${agent}${saldoText}`;
+                    
                     select.appendChild(option);
                 });
             });
@@ -2189,7 +2516,7 @@
             elements.nextWeekBtn.disabled = currentWeekIndex === availableWeeks.length - 1;
         }
         
-        // Load Data from Google Sheets
+        // Load Data from Google Sheets dengan saldo
         async function loadData() {
             try {
                 elements.loading.style.display = 'block';
@@ -2277,6 +2604,9 @@
                     renderWeeklyChart();
                 }
                 
+                // Render saldo section
+                renderSaldoSection();
+                
                 showToast('Data berhasil dimuat dari Google Sheets', 'success');
                 
             } catch (error) {
@@ -2288,12 +2618,13 @@
                 elements.loading.style.display = 'none';
                 elements.dashboard.style.display = 'block';
                 renderWeekData(currentWeekIndex);
+                renderSaldoSection();
                 
                 showToast(`Menggunakan data sample: ${error.message}`, 'error');
             }
         }
         
-        // Sample data functions (keep your existing ones)
+        // Sample data functions dengan saldo
         function loadSampleWeeklyData() {
             weeklyData = [
                 { week: "13-19 Jan", totalOrder: 156, totalAmount: 13820000 },
@@ -2309,45 +2640,14 @@
                 { agent: "Diar", adminFee: 20000, week: "14-20 Des" },
                 { agent: "Diar", adminFee: 30000, week: "14-20 Des" },
                 { agent: "Diar", adminFee: 10000, week: "14-20 Des" },
-                { agent: "Agung", adminFee: 0, week: "14-20 Des" },
-                { agent: "Lutfi Majid", adminFee: 15500, week: "14-20 Des" },
                 { agent: "Restu", adminFee: 3000, week: "14-20 Des" },
                 { agent: "Restu", adminFee: 2000, week: "14-20 Des" },
-                { agent: "Bagus", adminFee: 1600, week: "14-20 Des" },
-                { agent: "Aryo", adminFee: 2000, week: "14-20 Des" },
-                { agent: "Akhmad Rifki", adminFee: 15200, week: "14-20 Des" },
-                { agent: "Agus", adminFee: 0, week: "14-20 Des" },
-                { agent: "Yosi", adminFee: 4900, week: "14-20 Des" },
-                { agent: "Yosi", adminFee: 3100, week: "14-20 Des" },
-                { agent: "Mukhlis", adminFee: 0, week: "14-20 Des" },
-                { agent: "Andi", adminFee: 6700, week: "14-20 Des" },
-                { agent: "Panji", adminFee: 0, week: "14-20 Des" },
-                { agent: "Awa", adminFee: 1500, week: "14-20 Des" },
-                { agent: "Mbak Yuni", adminFee: 0, week: "14-20 Des" },
-                { agent: "Malek", adminFee: 0, week: "14-20 Des" },
-                { agent: "Naily", adminFee: 0, week: "14-20 Des" },
-                { agent: "Barkah", adminFee: 0, week: "14-20 Des" },
-                { agent: "Ilham", adminFee: 0, week: "14-20 Des" },
-                { agent: "Ardi", adminFee: 7500, week: "14-20 Des" },
-                { agent: "Kharisma", adminFee: 25600, week: "14-20 Des" },
-                { agent: "PUTRI UTAMI", adminFee: 10000, week: "14-20 Des" },
-                { agent: "Nia", adminFee: 0, week: "14-20 Des" },
-                { agent: "Defita", adminFee: 31200, week: "14-20 Des" },
-                { agent: "Fajar", adminFee: 31300, week: "14-20 Des" },
-                { agent: "Angga", adminFee: 1200, week: "14-20 Des" },
-                { agent: "Acil", adminFee: 0, week: "14-20 Des" },
-                
-                { agent: "Diar", adminFee: 25000, week: "21-27 Des" },
-                { agent: "Diar", adminFee: 35000, week: "21-27 Des" },
-                { agent: "Restu", adminFee: 8000, week: "21-27 Des" },
-                { agent: "Restu", adminFee: 7000, week: "21-27 Des" },
                 { agent: "Fajar", adminFee: 28500, week: "21-27 Des" },
                 { agent: "Kharisma", adminFee: 32000, week: "21-27 Des" },
                 { agent: "Agung", adminFee: 12000, week: "21-27 Des" },
                 { agent: "Defita", adminFee: 41500, week: "21-27 Des" },
                 { agent: "Lutfi Majid", adminFee: 22500, week: "21-27 Des" },
                 { agent: "Akhmad Rifki", adminFee: 18500, week: "21-27 Des" },
-                
                 { agent: "Diar", adminFee: 18000, week: "28 Des - 3 Jan" },
                 { agent: "Restu", adminFee: 6000, week: "28 Des - 3 Jan" },
                 { agent: "Fajar", adminFee: 22000, week: "28 Des - 3 Jan" }
@@ -2358,29 +2658,21 @@
                 "Agung": "082345678901",
                 "Lutfi Majid": "083456789012",
                 "Restu": "084567890123",
-                "Bagus": "085678901234",
-                "Aryo": "086789012345",
-                "Akhmad Rifki": "087890123456",
-                "Agus": "088901234567",
-                "Yosi": "089012345678",
-                "Mukhlis": "081112345678",
-                "Andi": "082212345678",
-                "Panji": "083312345678",
-                "Awa": "084412345678",
-                "Mbak Yuni": "085512345678",
-                "Malek": "086612345678",
-                "Naily": "087712345678",
-                "Barkah": "088812345678",
-                "Ilham": "089912345678",
-                "Ardi": "081001234567",
-                "Kharisma": "082112345678",
-                "PUTRI UTAMI": "083212345678",
-                "Nia": "084312345678",
-                "Defita": "085412345678",
-                "Fajar": "086512345678",
-                "Angga": "087612345678",
-                "Acil": "088712345678"
+                "Fajar": "085678901234",
+                "Kharisma": "086789012345",
+                "Defita": "087890123456",
+                "Akhmad Rifki": "088901234567"
             };
+            
+            // Add sample payment history with saldo
+            paymentHistory = {
+                "Diar_14-20 Des": { agent: "Diar", week: "14-20 Des", paidAmount: 70000, useSaldo: 0, date: "2024-12-20T10:00:00" },
+                "Restu_14-20 Des": { agent: "Restu", week: "14-20 Des", paidAmount: 6000, useSaldo: 0, date: "2024-12-19T14:30:00" },
+                "Fajar_21-27 Des": { agent: "Fajar", week: "21-27 Des", paidAmount: 35000, useSaldo: 0, date: "2024-12-27T16:45:00" },
+                "Kharisma_21-27 Des": { agent: "Kharisma", week: "21-27 Des", paidAmount: 40000, useSaldo: 0, date: "2024-12-26T09:15:00" }
+            };
+            
+            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
             
             loadSampleWeeklyData();
             
@@ -2388,10 +2680,10 @@
             availableWeeks = extractAndSortWeeks(aggregatedData);
             currentWeekIndex = availableWeeks.length - 1;
             
-            loadPaymentHistory();
+            loadPaymentHistory(); // This will calculate saldo
         }
         
-        // Render Week Data
+        // Render Week Data dengan saldo
         function renderWeekData(weekIndex) {
             const currentWeek = availableWeeks[weekIndex];
             
@@ -2405,6 +2697,8 @@
             
             const totalAdmin = weekData.reduce((sum, item) => sum + item.adminFee, 0);
             const totalOrders = weekData.reduce((sum, item) => sum + item.totalOrder, 0);
+            const totalPaid = weekData.reduce((sum, item) => sum + item.paidAmount, 0);
+            const totalSaldo = weekData.reduce((sum, item) => sum + item.saldo, 0);
             const activeAgents = weekData.filter(item => item.isActive).length;
             
             const topAgent = weekData.reduce((top, item) => 
@@ -2422,10 +2716,11 @@
             elements.cardTotalAgents.textContent = weekData.length;
             elements.cardTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.cardTotalOrders.textContent = formatCurrency(totalOrders);
-            elements.cardTopAgent.textContent = topAgent.agent;
+            elements.cardTotalSaldo.textContent = formatCurrency(totalSaldo);
             
             elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
-            elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
+            elements.tableTotalPaid.textContent = formatCurrency(totalPaid);
+            elements.tableTotalSaldo.textContent = formatCurrency(totalSaldo);
             
             elements.statTopAdmin.textContent = `${topAdminAgent.agent} (${formatCurrency(topAdminAgent.adminFee)})`;
             elements.statAvgOrder.textContent = formatCurrency(avgOrder);
@@ -2435,7 +2730,7 @@
             renderTable(weekData, currentWeek);
         }
         
-        // Render Table
+        // Render Table dengan saldo
         function renderTable(data, week) {
             const tbody = elements.agentTable;
             tbody.innerHTML = '';
@@ -2446,23 +2741,73 @@
                 const row = document.createElement('tr');
                 if (item.isActive) row.classList.add('highlight');
                 
-                const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
+                const statusText = getPaymentStatusText(item.paymentStatus, item.remaining, item.saldo);
                 const statusClass = getPaymentStatusClass(item.paymentStatus);
                 const whatsappDisplay = item.whatsapp ? formatWhatsappNumber(item.whatsapp) : '-';
+                const saldoClass = item.saldo > 0 ? 'saldo-positive' : 
+                                 item.saldo < 0 ? 'saldo-negative' : '';
                 
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td><strong>${item.agent}</strong></td>
                     <td class="whatsapp-number">${whatsappDisplay}</td>
                     <td class="currency">${formatCurrency(item.adminFee)}</td>
-                    <td class="currency">${formatCurrency(item.totalOrder)}</td>
+                    <td class="currency">${formatCurrency(item.paidAmount)}</td>
                     <td>
                         <span class="${statusClass} payment-status-badge">${statusText}</span>
                     </td>
+                    <td class="currency ${saldoClass}">${formatCurrency(item.saldo)}</td>
                 `;
                 
                 tbody.appendChild(row);
             });
+        }
+        
+        // Render saldo section
+        function renderSaldoSection() {
+            // Filter agents with non-zero saldo
+            const agentsWithSaldo = Object.entries(agentSaldo)
+                .filter(([agent, saldo]) => saldo !== 0)
+                .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+            
+            if (agentsWithSaldo.length === 0) {
+                elements.saldoSection.style.display = 'none';
+                return;
+            }
+            
+            elements.saldoSection.style.display = 'block';
+            
+            let html = '<div class="saldo-grid">';
+            let totalSaldo = 0;
+            
+            agentsWithSaldo.forEach(([agent, saldo]) => {
+                totalSaldo += saldo;
+                const saldoClass = saldo > 0 ? 'saldo-positive' : 'saldo-negative';
+                
+                html += `
+                    <div class="saldo-card">
+                        <div class="saldo-agent">${agent}</div>
+                        <div class="saldo-amount ${saldoClass}">${formatCurrency(saldo)}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            // Add total
+            const totalClass = totalSaldo > 0 ? 'saldo-positive' : 
+                             totalSaldo < 0 ? 'saldo-negative' : '';
+            
+            html += `
+                <div class="agent-balance" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <span class="balance-label"><strong>Total Saldo Semua Agent:</strong></span>
+                    <span class="balance-value ${totalClass}">
+                        <strong>${formatCurrency(totalSaldo)}</strong>
+                    </span>
+                </div>
+            `;
+            
+            elements.saldoContent.innerHTML = html;
         }
         
         // Render Weekly Chart
@@ -2626,7 +2971,7 @@
                 `${highestWeek.week} (${highestWeek.totalOrder} order)`;
         }
         
-        // Update agent info in WhatsApp section
+        // Update agent info in WhatsApp section dengan saldo
         function updateAgentInfo() {
             const agentName = elements.agentSelect.value;
             const weekIndex = parseInt(elements.whatsappWeekSelect.value);
@@ -2649,16 +2994,16 @@
                 return;
             }
             
+            const statusText = getPaymentStatusText(agentData.paymentStatus, agentData.remaining, agentData.saldo);
+            const hasWhatsapp = agentData.whatsapp && agentData.whatsapp.trim() !== '';
+            
             elements.agentName.textContent = agentData.agent;
             elements.agentWhatsapp.textContent = formatWhatsappNumber(agentData.whatsapp || '');
             elements.agentAdminFee.textContent = formatCurrency(agentData.adminFee);
             elements.agentTotalOrder.textContent = formatCurrency(agentData.totalOrder);
-            
-            const statusText = getPaymentStatusText(agentData.paymentStatus, agentData.remaining);
             elements.agentPaymentStatus.textContent = statusText;
-            elements.agentRemainingPayment.textContent = formatCurrency(agentData.remaining);
+            elements.agentSaldo.textContent = formatCurrency(agentData.saldo);
             
-            const hasWhatsapp = agentData.whatsapp && agentData.whatsapp.trim() !== '';
             elements.agentInfoCard.style.display = 'block';
             elements.whatsappContactBtn.disabled = !hasWhatsapp;
             elements.whatsappReminderBtn.disabled = !hasWhatsapp || agentData.adminFee === 0;
@@ -2666,7 +3011,7 @@
             updatePaymentForm(agentName, weekIndex);
         }
         
-        // Send WhatsApp message
+        // Send WhatsApp message dengan info saldo
         function sendWhatsAppMessage(phoneNumber, message) {
             if (!phoneNumber) {
                 showToast('Nomor WhatsApp tidak tersedia', 'error');
@@ -2683,12 +3028,13 @@
             window.open(url, '_blank');
         }
         
-        // Generate reminder message
-        function generateReminderMessage(agentName, week, adminFee, paidAmount, remaining) {
+        // Generate reminder message dengan saldo
+        function generateReminderMessage(agentName, week, adminFee, paidAmount, remaining, saldo) {
             const formattedWeek = week;
             const formattedAdminFee = formatCurrency(adminFee);
             const formattedPaid = formatCurrency(paidAmount);
             const formattedRemaining = formatCurrency(remaining);
+            const formattedSaldo = formatCurrency(saldo);
             
             let message = `Halo ${agentName}!\n\n`;
             message += `Ini pengingat untuk pembayaran biaya admin periode *${formattedWeek}*.\n\n`;
@@ -2696,20 +3042,38 @@
             message += `• Total Biaya Admin: ${formattedAdminFee}\n`;
             message += `• Sudah dibayar: ${formattedPaid}\n`;
             
+            if (saldo > 0) {
+                message += `• *Saldo tersedia: ${formattedSaldo}*\n`;
+            }
+            
             if (remaining > 0) {
                 message += `• *Sisa yang harus dibayar: ${formattedRemaining}*\n\n`;
-                message += `Silakan lunasi pembayaran segera ya. Terima kasih! 😊`;
+                message += `Silakan lunasi pembayaran segera ya.`;
+                
+                if (saldo > 0) {
+                    message += ` Anda bisa menggunakan saldo ${formattedSaldo} untuk pembayaran ini.`;
+                }
+                message += ` Terima kasih! 😊`;
             } else if (paidAmount >= adminFee) {
-                message += `• *Status: LUNAS* ✅\n\n`;
-                message += `Terima kasih telah melunasi pembayaran!`;
+                if (saldo > 0) {
+                    message += `• *Status: LUNAS dengan saldo ${formattedSaldo}* ✅\n\n`;
+                    message += `Terima kasih! Anda punya saldo ${formattedSaldo} untuk pembayaran berikutnya.`;
+                } else {
+                    message += `• *Status: LUNAS* ✅\n\n`;
+                    message += `Terima kasih telah melunasi pembayaran!`;
+                }
             } else {
-                message += `\nSilakan bayar biaya admin sebesar ${formattedAdminFee}. Terima kasih!`;
+                message += `\nSilakan bayar biaya admin sebesar ${formattedAdminFee}.`;
+                if (saldo > 0) {
+                    message += ` Anda bisa menggunakan saldo ${formattedSaldo}.`;
+                }
+                message += ` Terima kasih!`;
             }
             
             return message;
         }
         
-        // Export to Excel
+        // Export to Excel dengan saldo
         function exportToExcel() {
             try {
                 const currentWeek = availableWeeks[currentWeekIndex];
@@ -2720,13 +3084,13 @@
                     return;
                 }
                 
-                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran\n";
+                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin,Total Orderan,Dibayar,Status,Saldo\n";
                 
                 weekData.forEach((item, index) => {
-                    const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
+                    const statusText = getPaymentStatusText(item.paymentStatus, item.remaining, item.saldo);
                     const whatsapp = item.whatsapp || '-';
                     
-                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}"\n`;
+                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},${item.paidAmount},"${statusText}",${item.saldo}\n`;
                 });
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -2734,7 +3098,7 @@
                 const url = URL.createObjectURL(blob);
                 
                 link.setAttribute('href', url);
-                link.setAttribute('download', `Order_Agent_${currentWeek.replace(/\s+/g, '_')}.csv`);
+                link.setAttribute('download', `Order_Agent_${currentWeek.replace(/\s+/g, '_')}_with_saldo.csv`);
                 link.style.visibility = 'hidden';
                 
                 document.body.appendChild(link);
@@ -2754,6 +3118,7 @@
             if (currentWeekIndex > 0) {
                 currentWeekIndex--;
                 renderWeekData(currentWeekIndex);
+                renderSaldoSection();
             }
         }
         
@@ -2762,6 +3127,7 @@
             if (currentWeekIndex < availableWeeks.length - 1) {
                 currentWeekIndex++;
                 renderWeekData(currentWeekIndex);
+                renderSaldoSection();
             }
         }
         
@@ -2771,6 +3137,7 @@
             if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < availableWeeks.length) {
                 currentWeekIndex = selectedIndex;
                 renderWeekData(currentWeekIndex);
+                renderSaldoSection();
             }
         }
         
@@ -2784,7 +3151,7 @@
             updateAgentInfo();
         }
         
-        // Handle WhatsApp reminder button click
+        // Handle WhatsApp reminder button click dengan saldo
         function handleWhatsappReminderClick() {
             const agentName = elements.agentSelect.value;
             const weekIndex = parseInt(elements.whatsappWeekSelect.value);
@@ -2803,7 +3170,8 @@
                 week, 
                 agentData.adminFee, 
                 agentData.paidAmount || 0, 
-                agentData.remaining
+                agentData.remaining,
+                agentData.saldo
             );
             
             sendWhatsAppMessage(phoneNumber, message);
@@ -2843,7 +3211,7 @@
             elements.whatsappReminderBtn.addEventListener('click', handleWhatsappReminderClick);
             elements.whatsappContactBtn.addEventListener('click', handleWhatsappContactClick);
             
-            // Payment section
+            // Payment section dengan saldo
             elements.paymentForm.addEventListener('submit', handlePaymentFormSubmit);
             elements.paymentAgentSelect.addEventListener('change', function() {
                 updatePaymentForm(this.value, parseInt(elements.paymentWeekSelect.value));
@@ -2851,17 +3219,19 @@
             elements.paymentWeekSelect.addEventListener('change', function() {
                 updatePaymentForm(elements.paymentAgentSelect.value, parseInt(this.value));
             });
-            elements.paymentPaidAmount.addEventListener('input', function() {
-                const totalAdmin = parseInt(elements.paymentTotalAdmin.value.replace(/\D/g, '') || 0);
-                const paidAmount = parseInt(this.value || 0);
-                calculatePaymentStatus(totalAdmin, paidAmount);
-            });
+            elements.paymentAmount.addEventListener('input', updatePaymentPreview);
+            elements.useSaldo.addEventListener('input', updatePaymentPreview);
             elements.refreshHistoryBtn.addEventListener('click', function() {
                 const agentName = elements.paymentAgentSelect.value;
                 const weekIndex = parseInt(elements.paymentWeekSelect.value);
                 if (agentName && !isNaN(weekIndex)) {
                     const week = availableWeeks[weekIndex];
-                    loadPaymentHistoryFromGoogleSheets(agentName, week);
+                    // In a real app, you would load from Google Sheets here
+                    // For now, we'll just show the local history
+                    const history = Object.values(paymentHistory).filter(h => 
+                        h.agent === agentName && h.week === week
+                    );
+                    renderPaymentHistory(history);
                 }
             });
             
