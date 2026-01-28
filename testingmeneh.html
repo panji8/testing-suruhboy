@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Tagihan Agent - Real Data</title>
     <style>
-        /* CSS sama seperti sebelumnya, tetap dipertahankan */
+        /* CSS sama seperti sebelumnya... */
         * {
             margin: 0;
             padding: 0;
@@ -159,6 +159,11 @@
             color: #d97706;
         }
         
+        .status.overpaid {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        
         .currency {
             font-family: 'Courier New', monospace;
             font-weight: 600;
@@ -269,6 +274,13 @@
             display: block;
         }
         
+        .notification.info {
+            background: #dbeafe;
+            color: #3b82f6;
+            border: 1px solid #bfdbfe;
+            display: block;
+        }
+        
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -334,6 +346,62 @@
             padding: 40px;
             color: #667eea;
         }
+        
+        .payment-status-display {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .saldo-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .saldo-positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .saldo-negative {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .agent-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .balance-label {
+            color: #666;
+        }
+        
+        .balance-value {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .balance-positive {
+            color: #10b981;
+        }
+        
+        .balance-negative {
+            color: #ef4444;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -369,6 +437,17 @@
                 </button>
             </div>
             
+            <!-- SALDO AGENT SECTION -->
+            <div id="saldoSection" class="saldo-info" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="fas fa-wallet"></i>
+                    <strong>Saldo Agent</strong>
+                </div>
+                <div id="saldoList">
+                    <!-- Saldo agent akan ditampilkan di sini -->
+                </div>
+            </div>
+            
             <!-- SUMMARY CARDS -->
             <div class="summary-cards">
                 <div class="card">
@@ -384,8 +463,8 @@
                     <div class="card-value" id="totalOrders">Rp0</div>
                 </div>
                 <div class="card">
-                    <div class="card-label">Agent Tertinggi</div>
-                    <div class="card-value" id="topAgent">-</div>
+                    <div class="card-label">Saldo Aktif</div>
+                    <div class="card-value" id="totalSaldo">Rp0</div>
                 </div>
             </div>
             
@@ -403,9 +482,11 @@
                             <thead>
                                 <tr>
                                     <th>Agent</th>
-                                    <th>Total Admin Fee</th>
-                                    <th>Total Orderan</th>
+                                    <th>Total Admin</th>
+                                    <th>Total Order</th>
+                                    <th>Dibayar</th>
                                     <th>Status</th>
+                                    <th>Saldo</th>
                                 </tr>
                             </thead>
                             <tbody id="invoiceTable">
@@ -416,14 +497,16 @@
                                     <td>TOTAL</td>
                                     <td class="currency" id="tableTotalAdmin">Rp0</td>
                                     <td class="currency" id="tableTotalOrders">Rp0</td>
+                                    <td class="currency" id="tableTotalPaid">Rp0</td>
                                     <td></td>
+                                    <td class="currency" id="tableTotalSaldo">Rp0</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                     
                     <div style="margin-top: 20px; font-size: 13px; color: #888; text-align: center;">
-                        <i class="fas fa-info-circle"></i> Total Orderan = Biaya Admin × 10
+                        <i class="fas fa-info-circle"></i> Total Order = Biaya Admin × 10 | Saldo = Dibayar - Biaya Admin
                     </div>
                 </div>
                 
@@ -448,16 +531,37 @@
                             </select>
                         </div>
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Total Biaya Admin:</label>
-                                <input type="text" class="form-input" id="totalAdminInput" readonly value="Rp0">
+                        <!-- INFO AGENT -->
+                        <div id="agentInfo" style="display: none;">
+                            <div class="agent-balance">
+                                <span class="balance-label">Biaya Admin Minggu Ini:</span>
+                                <span class="balance-value" id="infoAdminFee">Rp0</span>
                             </div>
-                            
+                            <div class="agent-balance">
+                                <span class="balance-label">Total Sudah Dibayar:</span>
+                                <span class="balance-value" id="infoTotalPaid">Rp0</span>
+                            </div>
+                            <div class="agent-balance">
+                                <span class="balance-label">Sisa Tagihan:</span>
+                                <span class="balance-value" id="infoRemaining">Rp0</span>
+                            </div>
+                            <div class="agent-balance">
+                                <span class="balance-label">Saldo Sebelumnya:</span>
+                                <span class="balance-value" id="infoPreviousSaldo">Rp0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Jumlah Bayar (Rp):</label>
                                 <input type="number" class="form-input" id="paymentAmount" 
-                                       placeholder="Masukkan jumlah" min="0">
+                                       placeholder="Masukkan jumlah" min="0" step="5000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Gunakan Saldo:</label>
+                                <input type="number" class="form-input" id="useSaldo" 
+                                       placeholder="Jumlah saldo yg digunakan" min="0" value="0">
                             </div>
                         </div>
                         
@@ -467,13 +571,16 @@
                                    placeholder="Contoh: Transfer BCA, Cash, dll">
                         </div>
                         
+                        <!-- PAYMENT STATUS DISPLAY -->
+                        <div id="paymentStatusDisplay" class="payment-status-display"></div>
+                        
                         <div class="loading" id="loading" style="display: none;">
                             <div class="loading-spinner"></div>
                             <p>Menyimpan data...</p>
                         </div>
                         
                         <button type="button" class="submit-btn" id="submitPaymentBtn" onclick="submitPayment()">
-                            <i class="fas fa-save"></i> Simpan ke Google Sheets
+                            <i class="fas fa-save"></i> Simpan Pembayaran
                         </button>
                     </div>
                     
@@ -513,8 +620,8 @@
         let aggregatedData = {};
         let availableWeeks = [];
         let currentWeek = '';
-        let agentDatabase = {};
         let paymentHistory = {};
+        let agentSaldo = {}; // Menyimpan saldo per agent
         
         // DOM Elements
         const elements = {
@@ -525,8 +632,8 @@
             selectedWeek: document.getElementById('selectedWeek'),
             agentSelect: document.getElementById('agentSelect'),
             paymentWeekSelect: document.getElementById('paymentWeekSelect'),
-            totalAdminInput: document.getElementById('totalAdminInput'),
             paymentAmount: document.getElementById('paymentAmount'),
+            useSaldo: document.getElementById('useSaldo'),
             paymentNotes: document.getElementById('paymentNotes'),
             loading: document.getElementById('loading'),
             submitPaymentBtn: document.getElementById('submitPaymentBtn'),
@@ -534,12 +641,22 @@
             totalAgents: document.getElementById('totalAgents'),
             totalAdmin: document.getElementById('totalAdmin'),
             totalOrders: document.getElementById('totalOrders'),
-            topAgent: document.getElementById('topAgent'),
+            totalSaldo: document.getElementById('totalSaldo'),
             tableTotalAdmin: document.getElementById('tableTotalAdmin'),
             tableTotalOrders: document.getElementById('tableTotalOrders'),
+            tableTotalPaid: document.getElementById('tableTotalPaid'),
+            tableTotalSaldo: document.getElementById('tableTotalSaldo'),
             paymentHistory: document.getElementById('paymentHistory'),
             lastUpdate: document.getElementById('lastUpdate'),
-            sheetStatus: document.getElementById('sheetStatus')
+            sheetStatus: document.getElementById('sheetStatus'),
+            agentInfo: document.getElementById('agentInfo'),
+            infoAdminFee: document.getElementById('infoAdminFee'),
+            infoTotalPaid: document.getElementById('infoTotalPaid'),
+            infoRemaining: document.getElementById('infoRemaining'),
+            infoPreviousSaldo: document.getElementById('infoPreviousSaldo'),
+            paymentStatusDisplay: document.getElementById('paymentStatusDisplay'),
+            saldoSection: document.getElementById('saldoSection'),
+            saldoList: document.getElementById('saldoList')
         };
         
         // Format currency
@@ -664,7 +781,6 @@
             
             // Simple sort based on week string (assuming format like "14-20 Des")
             return weeks.sort((a, b) => {
-                // Try to extract dates for proper sorting
                 const getDate = (weekStr) => {
                     const match = weekStr.match(/(\d+)/);
                     return match ? parseInt(match[1]) : 0;
@@ -673,7 +789,41 @@
             });
         }
         
-        // Get data for specific week
+        // Calculate agent saldo from payment history
+        function calculateAgentSaldo() {
+            agentSaldo = {};
+            
+            // Initialize all agents with 0 saldo
+            Object.keys(aggregatedData).forEach(week => {
+                Object.keys(aggregatedData[week]).forEach(agent => {
+                    if (!agentSaldo[agent]) {
+                        agentSaldo[agent] = 0;
+                    }
+                });
+            });
+            
+            // Calculate saldo from payment history
+            Object.values(paymentHistory).forEach(payment => {
+                const agent = payment.agent;
+                const week = payment.week;
+                const paidAmount = payment.paidAmount || 0;
+                
+                // Get admin fee for this agent in this week
+                const adminFee = aggregatedData[week] && aggregatedData[week][agent] ? 
+                               aggregatedData[week][agent] : 0;
+                
+                // Calculate saldo for this payment (paid - admin fee)
+                const paymentSaldo = paidAmount - adminFee;
+                
+                // Add to agent's total saldo
+                if (!agentSaldo[agent]) agentSaldo[agent] = 0;
+                agentSaldo[agent] += paymentSaldo;
+            });
+            
+            return agentSaldo;
+        }
+        
+        // Get data for specific week including saldo calculation
         function getWeekData(week) {
             if (!aggregatedData[week]) return [];
             
@@ -682,11 +832,15 @@
                 const paymentInfo = getPaymentInfo(agent, week);
                 const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
                 const remaining = adminFee - paidAmount;
+                const saldo = (paidAmount - adminFee) + (agentSaldo[agent] || 0);
                 
                 // Determine payment status
                 let status = 'unpaid';
-                if (paidAmount >= adminFee) status = 'paid';
-                else if (paidAmount > 0) status = 'partial';
+                if (paidAmount >= adminFee) {
+                    status = saldo > 0 ? 'overpaid' : 'paid';
+                } else if (paidAmount > 0) {
+                    status = 'partial';
+                }
                 
                 return {
                     agent: agent,
@@ -694,6 +848,7 @@
                     totalOrder: totalOrder,
                     paidAmount: paidAmount,
                     remaining: remaining,
+                    saldo: saldo,
                     status: status
                 };
             });
@@ -708,6 +863,13 @@
             return paymentHistory[key] || null;
         }
         
+        // Get all payments for an agent
+        function getAgentPayments(agent) {
+            return Object.values(paymentHistory)
+                .filter(p => p.agent === agent)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+        }
+        
         // Load payment history from localStorage
         function loadPaymentHistory() {
             try {
@@ -718,19 +880,40 @@
             } catch (e) {
                 paymentHistory = {};
             }
+            
+            // Calculate agent saldo
+            calculateAgentSaldo();
         }
         
         // Save payment to localStorage
-        function savePayment(agent, week, paidAmount) {
+        function savePayment(agent, week, paidAmount, notes = '') {
             const key = `${agent}_${week}`;
-            paymentHistory[key] = {
-                agent: agent,
-                week: week,
-                paidAmount: parseInt(paidAmount),
-                date: new Date().toISOString()
-            };
+            const existingPayment = paymentHistory[key];
             
+            if (existingPayment) {
+                // Update existing payment
+                existingPayment.paidAmount += parseInt(paidAmount);
+                existingPayment.notes = existingPayment.notes ? 
+                    `${existingPayment.notes}; ${notes}` : notes;
+                existingPayment.date = new Date().toISOString();
+            } else {
+                // Create new payment
+                paymentHistory[key] = {
+                    agent: agent,
+                    week: week,
+                    paidAmount: parseInt(paidAmount),
+                    notes: notes,
+                    date: new Date().toISOString()
+                };
+            }
+            
+            // Recalculate agent saldo
+            calculateAgentSaldo();
+            
+            // Save to localStorage
             localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+            
+            return paymentHistory[key];
         }
         
         // Populate week dropdowns
@@ -778,35 +961,146 @@
             weekAgents.forEach(agent => {
                 const option = document.createElement('option');
                 option.value = agent;
-                option.textContent = `${agent} (${formatCurrency(aggregatedData[currentWeek][agent])})`;
+                
+                // Add saldo info to agent name
+                const saldo = agentSaldo[agent] || 0;
+                const saldoText = saldo !== 0 ? ` (Saldo: ${formatCurrency(saldo)})` : '';
+                option.textContent = `${agent}${saldoText}`;
+                
                 elements.agentSelect.appendChild(option);
             });
             
             // Add change listener
-            elements.agentSelect.addEventListener('change', function() {
-                const agent = this.value;
-                const week = elements.paymentWeekSelect.value;
+            elements.agentSelect.addEventListener('change', updateAgentInfo);
+            elements.paymentWeekSelect.addEventListener('change', updateAgentInfo);
+            elements.paymentAmount.addEventListener('input', updatePaymentStatus);
+            elements.useSaldo.addEventListener('input', updatePaymentStatus);
+        }
+        
+        // Update agent info when selected
+        function updateAgentInfo() {
+            const agent = elements.agentSelect.value;
+            const week = elements.paymentWeekSelect.value;
+            
+            if (!agent || !week || !aggregatedData[week] || !aggregatedData[week][agent]) {
+                elements.agentInfo.style.display = 'none';
+                elements.paymentStatusDisplay.style.display = 'none';
+                return;
+            }
+            
+            const adminFee = aggregatedData[week][agent];
+            const paymentInfo = getPaymentInfo(agent, week);
+            const paidAmount = paymentInfo ? paymentInfo.paidAmount : 0;
+            const remaining = adminFee - paidAmount;
+            const previousSaldo = agentSaldo[agent] || 0;
+            
+            // Update info display
+            elements.infoAdminFee.textContent = formatCurrency(adminFee);
+            elements.infoTotalPaid.textContent = formatCurrency(paidAmount);
+            elements.infoRemaining.textContent = formatCurrency(remaining);
+            elements.infoPreviousSaldo.textContent = formatCurrency(previousSaldo);
+            
+            // Set max for useSaldo (can't use more than available saldo)
+            elements.useSaldo.max = Math.max(0, previousSaldo);
+            elements.useSaldo.value = Math.min(elements.useSaldo.value || 0, previousSaldo);
+            
+            elements.agentInfo.style.display = 'block';
+            
+            // Update payment status
+            updatePaymentStatus();
+        }
+        
+        // Update payment status display
+        function updatePaymentStatus() {
+            const agent = elements.agentSelect.value;
+            const week = elements.paymentWeekSelect.value;
+            const paymentAmount = parseInt(elements.paymentAmount.value) || 0;
+            const useSaldoAmount = parseInt(elements.useSaldo.value) || 0;
+            
+            if (!agent || !week || !aggregatedData[week] || !aggregatedData[week][agent]) {
+                return;
+            }
+            
+            const adminFee = aggregatedData[week][agent];
+            const paymentInfo = getPaymentInfo(agent, week);
+            const alreadyPaid = paymentInfo ? paymentInfo.paidAmount : 0;
+            const remaining = adminFee - alreadyPaid;
+            const previousSaldo = agentSaldo[agent] || 0;
+            
+            const totalPayment = paymentAmount + useSaldoAmount;
+            const newTotalPaid = alreadyPaid + totalPayment;
+            const newRemaining = adminFee - newTotalPaid;
+            const newSaldo = (newTotalPaid - adminFee) + (previousSaldo - useSaldoAmount);
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (totalPayment === 0) {
+                statusText = `Sisa tagihan: ${formatCurrency(remaining)}`;
+                statusClass = 'info';
+            } else if (newRemaining > 0) {
+                statusText = `Setelah bayar: Sisa ${formatCurrency(newRemaining)}`;
+                statusClass = 'partial';
+            } else if (newRemaining === 0) {
+                statusText = `✅ Akan LUNAS setelah pembayaran`;
+                statusClass = 'paid';
+            } else {
+                statusText = `💰 Akan ada saldo ${formatCurrency(Math.abs(newRemaining))}`;
+                statusClass = 'overpaid';
+            }
+            
+            // Add saldo info
+            if (newSaldo !== 0) {
+                statusText += `<br>Saldo akhir: <span class="${newSaldo > 0 ? 'saldo-positive' : 'saldo-negative'}">${formatCurrency(newSaldo)}</span>`;
+            }
+            
+            elements.paymentStatusDisplay.innerHTML = statusText;
+            elements.paymentStatusDisplay.className = `payment-status-display status-${statusClass}`;
+            elements.paymentStatusDisplay.style.display = 'block';
+        }
+        
+        // Render saldo section
+        function renderSaldoSection() {
+            // Filter agents with non-zero saldo
+            const agentsWithSaldo = Object.entries(agentSaldo)
+                .filter(([agent, saldo]) => saldo !== 0)
+                .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+            
+            if (agentsWithSaldo.length === 0) {
+                elements.saldoSection.style.display = 'none';
+                return;
+            }
+            
+            elements.saldoSection.style.display = 'block';
+            
+            let html = '';
+            let totalSaldo = 0;
+            
+            agentsWithSaldo.forEach(([agent, saldo]) => {
+                totalSaldo += saldo;
                 
-                if (agent && week && aggregatedData[week] && aggregatedData[week][agent]) {
-                    const adminFee = aggregatedData[week][agent];
-                    elements.totalAdminInput.value = formatCurrency(adminFee);
-                } else {
-                    elements.totalAdminInput.value = 'Rp0';
-                }
+                html += `
+                    <div class="agent-balance">
+                        <span class="balance-label">${agent}:</span>
+                        <span class="balance-value ${saldo > 0 ? 'balance-positive' : 'balance-negative'}">
+                            ${formatCurrency(saldo)}
+                        </span>
+                    </div>
+                `;
             });
             
-            // Add change listener to payment week select
-            elements.paymentWeekSelect.addEventListener('change', function() {
-                const agent = elements.agentSelect.value;
-                const week = this.value;
-                
-                if (agent && week && aggregatedData[week] && aggregatedData[week][agent]) {
-                    const adminFee = aggregatedData[week][agent];
-                    elements.totalAdminInput.value = formatCurrency(adminFee);
-                } else {
-                    elements.totalAdminInput.value = 'Rp0';
-                }
-            });
+            // Add total
+            html += `
+                <div class="agent-balance" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;">
+                    <span class="balance-label"><strong>Total Saldo Semua Agent:</strong></span>
+                    <span class="balance-value ${totalSaldo > 0 ? 'balance-positive' : 'balance-negative'}">
+                        <strong>${formatCurrency(totalSaldo)}</strong>
+                    </span>
+                </div>
+            `;
+            
+            elements.saldoList.innerHTML = html;
+            elements.totalSaldo.textContent = formatCurrency(totalSaldo);
         }
         
         // Render invoice table
@@ -817,7 +1111,7 @@
             if (weekData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 40px; color: #888;">
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #888;">
                             <i class="fas fa-inbox"></i><br>
                             Tidak ada data untuk minggu ini
                         </td>
@@ -828,20 +1122,30 @@
             
             let totalAdmin = 0;
             let totalOrders = 0;
+            let totalPaid = 0;
+            let totalSaldo = 0;
             
             weekData.forEach(item => {
                 totalAdmin += item.adminFee;
                 totalOrders += item.totalOrder;
+                totalPaid += item.paidAmount;
+                totalSaldo += item.saldo;
                 
                 const statusText = item.status === 'paid' ? 'Lunas' : 
-                                  item.status === 'partial' ? 'Sebagian' : 'Belum Bayar';
+                                  item.status === 'partial' ? 'Sebagian' : 
+                                  item.status === 'overpaid' ? 'Kelebihan' : 'Belum Bayar';
+                
+                const saldoClass = item.saldo > 0 ? 'saldo-positive' : 
+                                 item.saldo < 0 ? 'saldo-negative' : '';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${item.agent}</strong></td>
                     <td class="currency">${formatCurrency(item.adminFee)}</td>
                     <td class="currency">${formatCurrency(item.totalOrder)}</td>
+                    <td class="currency">${formatCurrency(item.paidAmount)}</td>
                     <td><span class="status ${item.status}">${statusText}</span></td>
+                    <td class="currency ${saldoClass}">${formatCurrency(item.saldo)}</td>
                 `;
                 
                 tbody.appendChild(row);
@@ -850,18 +1154,13 @@
             // Update totals
             elements.tableTotalAdmin.textContent = formatCurrency(totalAdmin);
             elements.tableTotalOrders.textContent = formatCurrency(totalOrders);
+            elements.tableTotalPaid.textContent = formatCurrency(totalPaid);
+            elements.tableTotalSaldo.textContent = formatCurrency(totalSaldo);
             
             // Update summary cards
             elements.totalAgents.textContent = weekData.length;
             elements.totalAdmin.textContent = formatCurrency(totalAdmin);
             elements.totalOrders.textContent = formatCurrency(totalOrders);
-            
-            // Find top agent
-            if (weekData.length > 0) {
-                const top = weekData.reduce((max, agent) => 
-                    agent.adminFee > max.adminFee ? agent : max, weekData[0]);
-                elements.topAgent.textContent = top.agent;
-            }
         }
         
         // Render payment history
@@ -887,9 +1186,9 @@
             
             currentPayments.forEach(payment => {
                 const date = new Date(payment.date).toLocaleString('id-ID');
-                const status = payment.paidAmount >= (aggregatedData[payment.week]?.[payment.agent] || 0) ? 
-                    '<span class="status paid" style="font-size: 11px;">Lunas</span>' : 
-                    '<span class="status partial" style="font-size: 11px;">Sebagian</span>';
+                const adminFee = aggregatedData[payment.week]?.[payment.agent] || 0;
+                const status = payment.paidAmount >= adminFee ? 'Lunas' : 'Sebagian';
+                const saldo = payment.paidAmount - adminFee;
                 
                 html += `
                     <div style="padding: 12px; margin-bottom: 10px; background: #f8f9fd; border-radius: 8px;">
@@ -897,10 +1196,18 @@
                             <div>
                                 <strong>${payment.agent}</strong>
                                 <div style="font-size: 12px; color: #666;">${date}</div>
+                                ${payment.notes ? `<div style="font-size: 11px; color: #888; margin-top: 2px;">📝 ${payment.notes}</div>` : ''}
                             </div>
                             <div style="text-align: right;">
-                                <strong style="color: #10b981;">${formatCurrency(payment.paidAmount)}</strong>
-                                <div style="font-size: 11px; color: #888;">${status}</div>
+                                <div style="font-weight: 700; color: #10b981; font-size: 14px;">
+                                    ${formatCurrency(payment.paidAmount)}
+                                </div>
+                                <div style="font-size: 11px; color: #888;">
+                                    <span class="status ${status === 'Lunas' ? 'paid' : 'partial'}" style="font-size: 10px;">
+                                        ${status}
+                                    </span>
+                                    ${saldo !== 0 ? `<br><span style="font-size: 10px;">Saldo: ${formatCurrency(saldo)}</span>` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -944,6 +1251,7 @@
                 populateWeekDropdowns();
                 populateAgentDropdown();
                 renderWeekData(currentWeek);
+                renderSaldoSection();
                 
                 elements.sheetStatus.textContent = '✅ Terhubung';
                 elements.sheetStatus.style.color = '#10b981';
@@ -993,10 +1301,20 @@
             availableWeeks = getSortedWeeks(aggregatedData);
             currentWeek = availableWeeks[availableWeeks.length - 1];
             
+            // Add some sample payment history with overpayment
+            paymentHistory = {
+                "Diar_25-31 Jan 2025": { agent: "Diar", week: "25-31 Jan 2025", paidAmount: 50000, notes: "Bayar lebih", date: "2025-01-30T10:00:00" },
+                "Restu_25-31 Jan 2025": { agent: "Restu", week: "25-31 Jan 2025", paidAmount: 30000, notes: "DP", date: "2025-01-29T14:30:00" },
+                "Fajar_25-31 Jan 2025": { agent: "Fajar", week: "25-31 Jan 2025", paidAmount: 60000, notes: "Bayar lebih banyak", date: "2025-01-28T16:45:00" }
+            };
+            
+            localStorage.setItem('agent_payment_history', JSON.stringify(paymentHistory));
+            
             loadPaymentHistory();
             populateWeekDropdowns();
             populateAgentDropdown();
             renderWeekData(currentWeek);
+            renderSaldoSection();
             
             elements.lastUpdate.textContent = new Date().toLocaleString('id-ID') + ' (Sample Data)';
         }
@@ -1009,6 +1327,7 @@
             const weekData = getWeekData(week);
             renderInvoiceTable(weekData);
             renderPaymentHistory();
+            renderSaldoSection();
             
             // Update agent dropdown for this week
             populateAgentDropdown();
@@ -1027,12 +1346,18 @@
         async function submitPayment() {
             const agent = elements.agentSelect.value;
             const week = elements.paymentWeekSelect.value;
-            const amount = elements.paymentAmount.value;
+            const paymentAmount = parseInt(elements.paymentAmount.value) || 0;
+            const useSaldoAmount = parseInt(elements.useSaldo.value) || 0;
             const notes = elements.paymentNotes.value;
             
             // Validation
-            if (!agent || !week || !amount || amount <= 0) {
-                showNotification('Harap pilih agent, week, dan isi jumlah pembayaran!', 'error');
+            if (!agent || !week) {
+                showNotification('Harap pilih agent dan week!', 'error');
+                return;
+            }
+            
+            if (paymentAmount === 0 && useSaldoAmount === 0) {
+                showNotification('Harap isi jumlah pembayaran atau gunakan saldo!', 'error');
                 return;
             }
             
@@ -1043,6 +1368,24 @@
             }
             
             const totalAdmin = aggregatedData[week][agent];
+            const totalPayment = paymentAmount + useSaldoAmount;
+            
+            // Show confirmation for overpayment
+            const paymentInfo = getPaymentInfo(agent, week);
+            const alreadyPaid = paymentInfo ? paymentInfo.paidAmount : 0;
+            const newTotalPaid = alreadyPaid + totalPayment;
+            
+            if (newTotalPaid > totalAdmin * 1.2) { // 20% lebih dari tagihan
+                const confirmOverpay = confirm(
+                    `Pembayaran akan melebihi tagihan:\n\n` +
+                    `Tagihan: ${formatCurrency(totalAdmin)}\n` +
+                    `Sudah dibayar: ${formatCurrency(alreadyPaid)}\n` +
+                    `Pembayaran baru: ${formatCurrency(totalPayment)}\n` +
+                    `Total akan jadi: ${formatCurrency(newTotalPaid)}\n\n` +
+                    `Apakah Anda yakin? Kelebihan akan jadi saldo.`
+                );
+                if (!confirmOverpay) return;
+            }
             
             // Show loading
             elements.loading.style.display = 'block';
@@ -1054,10 +1397,13 @@
                 const paymentData = {
                     agent: agent,
                     week: week,
-                    amount: parseInt(amount),
+                    payment_amount: paymentAmount,
+                    use_saldo: useSaldoAmount,
+                    total_payment: totalPayment,
                     notes: notes || '',
                     total_admin: totalAdmin,
-                    remaining: totalAdmin - parseInt(amount),
+                    previous_saldo: agentSaldo[agent] || 0,
+                    new_saldo: (newTotalPaid - totalAdmin) + (agentSaldo[agent] || 0) - useSaldoAmount,
                     timestamp: new Date().toISOString(),
                     source: 'Dashboard Payment'
                 };
@@ -1073,18 +1419,31 @@
                 
                 if (result.success) {
                     // Save to localStorage
-                    savePayment(agent, week, amount);
+                    savePayment(agent, week, totalPayment, notes);
                     
                     // Update UI
                     renderWeekData(currentWeek);
                     renderPaymentHistory();
+                    renderSaldoSection();
                     
                     // Clear form
                     elements.paymentAmount.value = '';
+                    elements.useSaldo.value = '0';
                     elements.paymentNotes.value = '';
-                    elements.totalAdminInput.value = 'Rp0';
+                    elements.agentInfo.style.display = 'none';
+                    elements.paymentStatusDisplay.style.display = 'none';
                     
-                    showNotification(`✅ ${result.message}`, 'success');
+                    // Show success message with saldo info
+                    const newSaldo = agentSaldo[agent] || 0;
+                    let message = `✅ Pembayaran ${formatCurrency(totalPayment)} berhasil disimpan!`;
+                    
+                    if (newSaldo > 0) {
+                        message += `\n💰 ${agent} sekarang punya saldo ${formatCurrency(newSaldo)}`;
+                    } else if (newSaldo < 0) {
+                        message += `\n⚠️ ${agent} masih punya tunggakan ${formatCurrency(Math.abs(newSaldo))}`;
+                    }
+                    
+                    showNotification(message, 'success');
                     
                 } else {
                     throw new Error(result.message || 'Gagal menyimpan ke Google Sheets');
@@ -1094,9 +1453,10 @@
                 console.error('Error saving payment:', error);
                 
                 // Fallback: save to localStorage only
-                savePayment(agent, week, amount);
+                savePayment(agent, week, totalPayment, notes);
                 renderWeekData(currentWeek);
                 renderPaymentHistory();
+                renderSaldoSection();
                 
                 showNotification(`⚠️ Disimpan lokal: ${error.message}`, 'info');
                 
@@ -1104,7 +1464,7 @@
                 // Hide loading
                 elements.loading.style.display = 'none';
                 elements.submitPaymentBtn.disabled = false;
-                elements.submitPaymentBtn.innerHTML = '<i class="fas fa-save"></i> Simpan ke Google Sheets';
+                elements.submitPaymentBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Pembayaran';
             }
         }
         
