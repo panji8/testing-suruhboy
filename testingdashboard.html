@@ -279,7 +279,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 900px;
         }
         
         th {
@@ -847,6 +847,54 @@
             justify-content: center;
         }
         
+        /* CTWA Button Styles */
+        .ctwa-btn {
+            padding: 8px 15px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s;
+            min-width: 120px;
+            white-space: nowrap;
+        }
+        
+        .ctwa-btn:hover {
+            background-color: #1da851;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3);
+        }
+        
+        .ctwa-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .ctwa-btn i {
+            font-size: 14px;
+        }
+        
+        .ctwa-btn.small {
+            padding: 5px 10px;
+            font-size: 11px;
+            min-width: 90px;
+        }
+        
+        .no-ctwa {
+            color: #999;
+            font-size: 13px;
+            font-style: italic;
+        }
+        
         /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
             body {
@@ -904,6 +952,21 @@
             .agent-info-label, .agent-info-value {
                 min-width: 100%;
                 text-align: left;
+            }
+            
+            /* Untuk tabel yang lebih lebar karena ada kolom baru */
+            .table-container {
+                font-size: 12px;
+            }
+            
+            .ctwa-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                min-width: 80px;
+            }
+            
+            .ctwa-btn i {
+                font-size: 12px;
             }
         }
         
@@ -1149,7 +1212,7 @@
                         </div>
                     </div>
                     
-                    <!-- ORDER TABLE PANEL -->
+                    <!-- ORDER TABLE PANEL DENGAN KOLOM CTWA -->
                     <div class="panel">
                         <div class="panel-header">
                             <h2 class="panel-title">Total per Agent (Minggu Ini)</h2>
@@ -1165,16 +1228,18 @@
                                         <th>Total Biaya Admin (10%)</th>
                                         <th>Total Orderan</th>
                                         <th>Status Pembayaran</th>
+                                        <th>CTWA ke Agent</th>
                                     </tr>
                                 </thead>
                                 <tbody id="agent-table">
-                                    <!-- Data will be populated by JavaScript -->
+                                    <!-- Data akan diisi oleh JavaScript -->
                                 </tbody>
                                 <tfoot>
                                     <tr class="total-row">
                                         <td colspan="3">TOTAL MINGGU INI</td>
                                         <td class="currency" id="table-total-admin">Rp0</td>
                                         <td class="currency" id="table-total-orders">Rp0</td>
+                                        <td></td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
@@ -1197,7 +1262,7 @@
                 
                 <!-- RIGHT PANEL: CHART & PAYMENT -->
                 <div>
-                    <!-- WEEKLY TREND CHART PANEL - TAMBAHAN BARU -->
+                    <!-- WEEKLY TREND CHART PANEL -->
                     <div class="panel">
                         <div class="panel-header">
                             <h2 class="panel-title">📈 Tren 5 Minggu Terakhir</h2>
@@ -1226,6 +1291,7 @@
                             <p><strong>Perhitungan:</strong> Total Orderan = Total Biaya Admin × 10</p>
                             <p><strong>Sumber Data:</strong> Google Sheets "To Dashboard" & "Database Agent"</p>
                             <p><strong>Tren Mingguan:</strong> Data dari sheet "Report Weekly" (5 minggu terakhir) - Minggu terbaru di kanan</p>
+                            <p><strong>Fitur CTWA:</strong> Tombol hijau di tabel untuk kirim pesan langsung ke agent</p>
                         </div>
                     </div>
                     
@@ -1283,7 +1349,7 @@
                                 </button>
                             </h3>
                             <div id="payment-history-list">
-                                <!-- History will be populated here -->
+                                <!-- History akan diisi di sini -->
                                 <div style="text-align: center; color: #888; padding: 30px 20px;">
                                     <i class="fas fa-history" style="font-size: 24px; margin-bottom: 10px; opacity: 0.5;"></i>
                                     <div>Belum ada riwayat pembayaran</div>
@@ -1305,7 +1371,8 @@
             <p>Dashboard Order Agent &copy; 2025 | Dengan Fitur WhatsApp & Status Pembayaran</p>
             <p style="font-size: 12px; margin-top: 5px;">
                 Terakhir diupdate: <span id="last-update">-</span> | 
-                Payment API Status: <span id="api-status">🔴 Offline</span>
+                Payment API Status: <span id="api-status">🔴 Offline</span> |
+                Fitur CTWA: <span style="color: #25D366;">✓ Aktif</span>
             </p>
         </footer>
     </div>
@@ -2293,7 +2360,134 @@
             }
         }
         
-        // Sample data functions (keep your existing ones)
+        // ==============================================
+        // FUNGSI BARU: CTWA (CONTACT WHATSAPP)
+        // ==============================================
+        
+        // Generate CTWA message
+        function generateCTWAMessage(agentName, week, adminFee, paidAmount, remaining) {
+            const formattedWeek = week;
+            const formattedAdminFee = formatCurrency(adminFee);
+            const formattedPaid = formatCurrency(paidAmount);
+            const formattedRemaining = formatCurrency(remaining);
+            
+            let message = `Halo ${agentName}!\n\n`;
+            message += `Berikut informasi pembayaran biaya admin periode *${formattedWeek}*:\n\n`;
+            message += `📊 *Detail Tagihan:*\n`;
+            message += `• Total Biaya Admin: ${formattedAdminFee}\n`;
+            message += `• Sudah dibayar: ${formattedPaid}\n`;
+            
+            if (remaining > 0) {
+                message += `• *Sisa yang harus dibayar: ${formattedRemaining}*\n\n`;
+                message += `Silakan lunasi pembayaran segera ya. Terima kasih! 😊`;
+            } else if (paidAmount >= adminFee) {
+                message += `• *Status: LUNAS* ✅\n\n`;
+                message += `Terima kasih telah melunasi pembayaran!`;
+            } else {
+                message += `\nSilakan bayar biaya admin sebesar ${formattedAdminFee}. Terima kasih!`;
+            }
+            
+            return message;
+        }
+        
+        // Add CTWA event listeners
+        function addCTWAEventListeners() {
+            const ctwaButtons = document.querySelectorAll('.ctwa-btn');
+            
+            ctwaButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const phoneNumber = this.getAttribute('data-whatsapp');
+                    const message = decodeURIComponent(this.getAttribute('data-message'));
+                    
+                    if (phoneNumber) {
+                        sendWhatsAppMessage(phoneNumber, message);
+                    }
+                });
+            });
+        }
+        
+        // Send WhatsApp message
+        function sendWhatsAppMessage(phoneNumber, message) {
+            if (!phoneNumber) {
+                showToast('Nomor WhatsApp tidak tersedia', 'error');
+                return;
+            }
+            
+            const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+            if (cleanNumber.length < 10) {
+                showToast('Nomor WhatsApp tidak valid', 'error');
+                return;
+            }
+            
+            const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+        
+        // ==============================================
+        // FUNGSI RENDER TABLE DENGAN KOLOM CTWA
+        // ==============================================
+        
+        // Render Table dengan kolom CTWA
+        function renderTable(data, week) {
+            const tbody = elements.agentTable;
+            tbody.innerHTML = '';
+            
+            const sortedData = [...data].sort((a, b) => b.totalOrder - a.totalOrder);
+            
+            sortedData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                if (item.isActive) row.classList.add('highlight');
+                
+                const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
+                const statusClass = getPaymentStatusClass(item.paymentStatus);
+                const whatsappDisplay = item.whatsapp ? formatWhatsappNumber(item.whatsapp) : '-';
+                
+                // Cek apakah agent memiliki nomor WhatsApp
+                const hasWhatsapp = item.whatsapp && item.whatsapp.trim() !== '';
+                const hasAdminFee = item.adminFee > 0;
+                
+                // Buat pesan CTWA
+                const ctwaMessage = generateCTWAMessage(item.agent, week, item.adminFee, item.paidAmount || 0, item.remaining);
+                
+                // Buat tombol CTWA atau tampilkan pesan "Tidak ada WA"
+                let ctwaCell;
+                if (hasWhatsapp && hasAdminFee) {
+                    ctwaCell = `
+                        <button class="ctwa-btn" 
+                                data-whatsapp="${item.whatsapp}"
+                                data-message="${encodeURIComponent(ctwaMessage)}"
+                                title="Kirim pesan ke ${item.agent}">
+                            <i class="fab fa-whatsapp"></i> CTWA
+                        </button>
+                    `;
+                } else if (!hasWhatsapp) {
+                    ctwaCell = `<span class="no-ctwa">Tidak ada WA</span>`;
+                } else if (!hasAdminFee) {
+                    ctwaCell = `<span class="no-ctwa">Tidak ada admin fee</span>`;
+                } else {
+                    ctwaCell = `<span class="no-ctwa">-</span>`;
+                }
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${item.agent}</strong></td>
+                    <td class="whatsapp-number">${whatsappDisplay}</td>
+                    <td class="currency">${formatCurrency(item.adminFee)}</td>
+                    <td class="currency">${formatCurrency(item.totalOrder)}</td>
+                    <td>
+                        <span class="${statusClass} payment-status-badge">${statusText}</span>
+                    </td>
+                    <td>${ctwaCell}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Tambahkan event listener untuk tombol CTWA
+            addCTWAEventListeners();
+        }
+        
+        // Sample data functions
         function loadSampleWeeklyData() {
             weeklyData = [
                 { week: "13-19 Jan", totalOrder: 156, totalAmount: 13820000 },
@@ -2433,36 +2627,6 @@
             updateNavigationButtons();
             
             renderTable(weekData, currentWeek);
-        }
-        
-        // Render Table
-        function renderTable(data, week) {
-            const tbody = elements.agentTable;
-            tbody.innerHTML = '';
-            
-            const sortedData = [...data].sort((a, b) => b.totalOrder - a.totalOrder);
-            
-            sortedData.forEach((item, index) => {
-                const row = document.createElement('tr');
-                if (item.isActive) row.classList.add('highlight');
-                
-                const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
-                const statusClass = getPaymentStatusClass(item.paymentStatus);
-                const whatsappDisplay = item.whatsapp ? formatWhatsappNumber(item.whatsapp) : '-';
-                
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td><strong>${item.agent}</strong></td>
-                    <td class="whatsapp-number">${whatsappDisplay}</td>
-                    <td class="currency">${formatCurrency(item.adminFee)}</td>
-                    <td class="currency">${formatCurrency(item.totalOrder)}</td>
-                    <td>
-                        <span class="${statusClass} payment-status-badge">${statusText}</span>
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
         }
         
         // Render Weekly Chart
@@ -2666,23 +2830,6 @@
             updatePaymentForm(agentName, weekIndex);
         }
         
-        // Send WhatsApp message
-        function sendWhatsAppMessage(phoneNumber, message) {
-            if (!phoneNumber) {
-                showToast('Nomor WhatsApp tidak tersedia', 'error');
-                return;
-            }
-            
-            const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
-            if (cleanNumber.length < 10) {
-                showToast('Nomor WhatsApp tidak valid', 'error');
-                return;
-            }
-            
-            const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        }
-        
         // Generate reminder message
         function generateReminderMessage(agentName, week, adminFee, paidAmount, remaining) {
             const formattedWeek = week;
@@ -2720,13 +2867,14 @@
                     return;
                 }
                 
-                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran\n";
+                let csvContent = "No,Nama Agent,Nomor WhatsApp,Biaya Admin (10%),Total Orderan,Status Pembayaran,CTWA Message\n";
                 
                 weekData.forEach((item, index) => {
                     const statusText = getPaymentStatusText(item.paymentStatus, item.remaining);
                     const whatsapp = item.whatsapp || '-';
+                    const ctwaMessage = generateCTWAMessage(item.agent, currentWeek, item.adminFee, item.paidAmount || 0, item.remaining);
                     
-                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}"\n`;
+                    csvContent += `${index + 1},"${item.agent}","${whatsapp}",${item.adminFee},${item.totalOrder},"${statusText}","${ctwaMessage.replace(/"/g, '""')}"\n`;
                 });
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
