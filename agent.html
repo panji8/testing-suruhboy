@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Agent - Penerima Notifikasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 40px;
+            padding: 30px 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+            text-align: center;
+            backdrop-filter: blur(2px);
+        }
+        h1 {
+            color: #1e3c4c;
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .badge {
+            background: #2c7da0;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .status-box {
+            background: #eef2f5;
+            padding: 18px;
+            border-radius: 28px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        .indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 14px;
+            background: #aaa;
+            transition: 0.2s;
+        }
+        .indicator.active {
+            background: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+        }
+        button {
+            background: #2c7da0;
+            border: none;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #1f5e7a;
+            transform: scale(0.98);
+        }
+        .log-area {
+            background: #1e2a32;
+            color: #cbd5e1;
+            padding: 16px;
+            border-radius: 24px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .log-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #90e0ef;
+        }
+        .log-entry {
+            border-bottom: 1px solid #334155;
+            padding: 6px 0;
+        }
+        footer {
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #6c8d9c;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📱 AGENT MODE</h1>
+    <div class="badge">Penerima Notifikasi</div>
+    <div class="status-box">
+        <div class="status">
+            <span class="indicator" id="statusLed"></span>
+            <span id="statusText">Memeriksa izin...</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #2c3e50;">🔔 Notifikasi akan muncul langsung di HP/komputer ini saat CS klik tombol.</p>
+    </div>
+    <button id="requestBtn">🔔 Aktifkan Notifikasi</button>
+    <div class="log-area">
+        <div class="log-title">📨 Riwayat Notifikasi Masuk</div>
+        <div id="logMessages">— Belum ada notifikasi —</div>
+    </div>
+    <footer>✅ Support semua browser (Chrome, Safari, Edge, Firefox) & iOS (add to HomeScreen)</footer>
+</div>
+
+<script>
+    let swRegistration = null;
+    let isSubscribed = false;
+
+    // DOM elements
+    const statusLed = document.getElementById('statusLed');
+    const statusTextSpan = document.getElementById('statusText');
+    const requestBtn = document.getElementById('requestBtn');
+    const logContainer = document.getElementById('logMessages');
+
+    function addLog(message, isError = false) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        const time = new Date().toLocaleTimeString();
+        entry.innerHTML = `<span style="color:#5ee0fa;">[${time}]</span> ${message}`;
+        if (isError) entry.style.color = "#ffaaa5";
+        logContainer.prepend(entry);
+        if (logContainer.children.length > 15) logContainer.removeChild(logContainer.lastChild);
+    }
+
+    // Update status UI berdasarkan permission & subscription
+    function updateUI() {
+        if (!('Notification' in window)) {
+            statusTextSpan.innerText = '❌ Browser tidak support notifikasi';
+            statusLed.className = 'indicator';
+            requestBtn.disabled = true;
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            statusTextSpan.innerText = '✅ Izin diberikan - siap terima notif';
+            statusLed.className = 'indicator active';
+            requestBtn.innerText = '✅ Notifikasi Aktif (sudah diizinkan)';
+            requestBtn.disabled = true;
+            subscribeUser(); // pastikan subscription aktif untuk push
+        } else if (Notification.permission === 'denied') {
+            statusTextSpan.innerText = '⛔ Izin ditolak. Ubah di pengaturan browser';
+            statusLed.className = 'indicator';
+            requestBtn.innerText = '⚠️ Izin diblokir';
+            requestBtn.disabled = true;
+        } else {
+            statusTextSpan.innerText = '🔘 Klik tombol untuk mengaktifkan notifikasi';
+            statusLed.className = 'indicator';
+            requestBtn.innerText = '🔔 Aktifkan Notifikasi Sekarang';
+            requestBtn.disabled = false;
+        }
+    }
+
+    // Menampilkan notifikasi (fallback + push event akan memanggil ini juga)
+    function showLocalNotification(title, body, tag = 'agent_notif') {
+        if (Notification.permission !== 'granted') return;
+        const options = {
+            body: body,
+            icon: 'https://cdn-icons-png.flaticon.com/512/6199/6199315.png',
+            badge: 'https://cdn-icons-png.flaticon.com/512/6199/6199315.png',
+            vibrate: [200, 100, 200],
+            tag: tag,
+            renotify: true,
+            silent: false,
+            data: { time: new Date().toISOString() }
+        };
+        const notification = new Notification(title, options);
+        notification.onclick = (event) => {
+            event.preventDefault();
+            window.focus();
+            notification.close();
+            addLog(`📌 Diklik: ${title} - ${body}`);
+        };
+        addLog(`🔔 NOTIF MASUK: ${title} - ${body}`);
+    }
+
+    // Fungsi subscribe ke push manager (agar browser selalu mendengar event push)
+    async function subscribeUser() {
+        if (!swRegistration) {
+            addLog('⚠️ Service worker belum siap, coba lagi nanti', true);
+            return;
+        }
+        if (Notification.permission !== 'granted') return;
+        try {
+            const subscription = await swRegistration.pushManager.getSubscription();
+            if (subscription) {
+                isSubscribed = true;
+                addLog('✅ Sudah terdaftar untuk menerima push event dari CS');
+                return;
+            }
+            // Subscribe dengan VAPID (opsional, tapi dibutuhkan untuk push dari server)
+            // Agar antar device tetap bisa mengirim notifikasi lokal via postMessage,
+            // kita tidak perlu VAPID karena notifikasi dari CS akan dikirim via BroadcastChannel
+            // TAPI untuk menjaga kompatibilitas, kita tetap subscribe dummy (agar SW aktif)
+            // Namun karena kita tidak menggunakan backend push, cukup gunakan BroadcastChannel.
+            // TAPI agar notif bisa muncul saat tab CS kirim, kita cukup gunakan postMessage ke SW.
+            // Untuk mempermudah, kita gunakan BroadcastChannel API (simple dan cross-tab)
+            addLog('📡 Mode komunikasi realtime via BroadcastChannel (CS akan kirim notif langsung)');
+            isSubscribed = true;
+        } catch (err) {
+            addLog(`Gagal subscribe push: ${err}`, true);
+        }
+    }
+
+    // ==== INIT SERVICE WORKER ====
+    async function initServiceWorker() {
+        if (!('serviceWorker' in navigator)) {
+            addLog('❌ Service Worker tidak support, notifikasi hanya bisa via Notification API', true);
+            statusTextSpan.innerText = '⚠️ Browser terlalu lawas';
+            return false;
+        }
+        try {
+            const registration = await navigator.serviceWorker.register('/sw-agent.js');
+            console.log('SW registered:', registration);
+            swRegistration = registration;
+            addLog('⚙️ Service Worker agent terdaftar');
+
+            // Tunggu SW aktif lalu cek permission
+            if (Notification.permission === 'granted') {
+                await subscribeUser();
+            }
+
+            // LISTENER untuk pesan dari CS melalui BroadcastChannel (metode paling stabil)
+            const channel = new BroadcastChannel('agent_cs_channel');
+            channel.onmessage = (event) => {
+                const data = event.data;
+                if (data && data.type === 'NOTIF_CS_TO_AGENT') {
+                    const { title, message, timestamp } = data;
+                    addLog(`📨 Diterima dari CS: "${title}" - ${message}`);
+                    // Tampilkan notifikasi di layar agent (meskipun background)
+                    if (Notification.permission === 'granted') {
+                        showLocalNotification(title, message, `cs_notif_${timestamp}`);
+                    } else {
+                        addLog(`⚠️ Notifikasi tidak muncul karena izin belum diberikan.`, true);
+                    }
+                }
+            };
+            addLog('📡 Channel realtime aktif. CS dapat mengirim notifikasi sekarang.');
+
+            // Jika ada pesan dari service worker (opsional)
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+                    showLocalNotification(event.data.title, event.data.body);
+                }
+            });
+
+            return true;
+        } catch (err) {
+            addLog(`Gagal registrasi SW: ${err.message}`, true);
+            return false;
+        }
+    }
+
+    // Request izin notifikasi
+    async function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            alert('Browser tidak support notifikasi');
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            updateUI();
+            return;
+        }
+        if (Notification.permission === 'denied') {
+            alert('Izin notifikasi sebelumnya ditolak. Silakan aktifkan manual via pengaturan browser.');
+            return;
+        }
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            updateUI();
+            await subscribeUser();
+            showLocalNotification('✅ Sukses!', 'Agent siap menerima notifikasi dari CS.');
+            addLog('✨ Izin notifikasi diberikan. Agent mode aktif.');
+        } else {
+            updateUI();
+            addLog('❌ Izin notifikasi ditolak, notif tidak akan muncul.', true);
+        }
+    }
+
+    requestBtn.addEventListener('click', requestNotificationPermission);
+
+    // Initial load
+    updateUI();
+    initServiceWorker().catch(console.error);
+</script>
+</body>
+</html>
