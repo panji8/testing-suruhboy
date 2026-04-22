@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CS - Kirim Notifikasi ke Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #f8f9fc, #eef2f7);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 48px;
+            padding: 32px 24px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        .cs-icon {
+            background: #1e6f5c;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 16px;
+            border-radius: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 14px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #1e3b3a;
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #5f7d7c;
+            margin-bottom: 28px;
+            font-size: 0.9rem;
+        }
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            color: #1e4a48;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid #d4dee5;
+            border-radius: 32px;
+            font-size: 1rem;
+            background: #fefefe;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #1e6f5c;
+            box-shadow: 0 0 0 3px rgba(30,111,92,0.2);
+        }
+        textarea {
+            border-radius: 28px;
+            resize: vertical;
+        }
+        button {
+            background: #1e6f5c;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        button:active {
+            transform: scale(0.97);
+            background: #155a4b;
+        }
+        .info-box {
+            background: #eef3f2;
+            border-radius: 28px;
+            padding: 14px;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: #2c6e5e;
+        }
+        .status-cs {
+            background: #e9ecef;
+            border-radius: 40px;
+            padding: 10px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: #2d5a55;
+            font-weight: 500;
+        }
+        .green-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 10px;
+            margin-right: 8px;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.8);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="cs-icon">💬</div>
+    <h2>Customer Service</h2>
+    <div class="sub">Kirim notifikasi instan ke AGENT</div>
+
+    <div class="status-cs">
+        <span class="green-dot"></span> Channel realtime aktif — Agent akan terima notif jika halaman agent terbuka atau di background (izin notifikasi sudah diberikan).
+    </div>
+
+    <div class="input-group">
+        <label>📌 Judul Notifikasi</label>
+        <input type="text" id="notifTitle" placeholder="Contoh: Pertanyaan dari Customer" value="🆘 Butuh bantuan agent">
+    </div>
+    <div class="input-group">
+        <label>✉️ Pesan Notifikasi</label>
+        <textarea rows="3" id="notifMessage" placeholder="Tulis pesan untuk agent...">Ada customer baru menunggu respon. Tolong segera hubungi.</textarea>
+    </div>
+
+    <button id="sendBtn">
+        📨 Kirim Notifikasi ke Agent
+    </button>
+
+    <div class="info-box">
+        💡 Pastikan halaman AGENT sudah terbuka di perangkat lain (HP/PC) dan sudah mengaktifkan notifikasi.<br>
+        ✅ Notifikasi akan muncul secara realtime, support iOS (dengan Add to Home Screen) + Android + desktop.
+    </div>
+</div>
+
+<script>
+    const sendBtn = document.getElementById('sendBtn');
+    const titleInput = document.getElementById('notifTitle');
+    const msgInput = document.getElementById('notifMessage');
+
+    // Fungsi mengirim pesan ke agent melalui BroadcastChannel
+    function sendNotificationToAgent() {
+        let title = titleInput.value.trim();
+        let message = msgInput.value.trim();
+
+        if (title === "") title = "Pesan dari CS";
+        if (message === "") message = "Ada notifikasi baru, periksa segera.";
+
+        // 1. Cek dukungan BroadcastChannel
+        if (!window.BroadcastChannel) {
+            alert("Browser Anda tidak mendukung BroadcastChannel. Coba gunakan Chrome, Edge, Safari modern.");
+            return;
+        }
+
+        // 2. Buat channel dengan nama yang sama dengan agent (agent_cs_channel)
+        const channel = new BroadcastChannel('agent_cs_channel');
+        const payload = {
+            type: 'NOTIF_CS_TO_AGENT',
+            title: title,
+            message: message,
+            timestamp: Date.now()
+        };
+
+        try {
+            channel.postMessage(payload);
+            // Tampilkan feedback bahwa notifikasi sudah dikirim
+            showToastSukses(`Notifikasi terkirim: "${title}"`);
+            // Opsional: Kirim juga ke service worker agent (tapi channel sudah cukup)
+            console.log('Broadcast sent', payload);
+            // Animasi kecil di tombol
+            sendBtn.style.transform = 'scale(0.97)';
+            setTimeout(() => { sendBtn.style.transform = ''; }, 150);
+        } catch (err) {
+            alert("Gagal mengirim: " + err.message);
+        } finally {
+            // Tidak menutup channel agar bisa kirim lagi (tidak masalah)
+            // channel.close() optional, tapi biarkan terbuka
+        }
+    }
+
+    function showToastSukses(text) {
+        // Toast sederhana
+        let toast = document.createElement('div');
+        toast.innerText = `✅ ${text}`;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '30px';
+        toast.style.left = '20px';
+        toast.style.right = '20px';
+        toast.style.backgroundColor = '#1e6f5c';
+        toast.style.color = 'white';
+        toast.style.padding = '14px 20px';
+        toast.style.borderRadius = '40px';
+        toast.style.fontWeight = '500';
+        toast.style.textAlign = 'center';
+        toast.style.zIndex = '999';
+        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+        toast.style.backdropFilter = 'blur(4px)';
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }, 2500);
+    }
+
+    sendBtn.addEventListener('click', sendNotificationToAgent);
+</script>
+</body>
+</html>
